@@ -1,0 +1,47 @@
+# Ignore the following directories and files
+.gradle/
+.hg/
+Debug/
+Release/
+bin/
+build/
+dist/
+gradle.properties
+testbin/
+**/Ensemble8/lib/
+**/Ensemble8/src/generated/resources/ensemble/search/index/write.lock
+**/nbproject/private/
+
+# Ignore webrevs
+/webrev/
+/webrev.zip
+
+# Ignore IntelliJ files
+.idea/tasks.xml
+.idea/workspace.xml
+.idea/inspectionProfiles/**
+.idea/copyright/profiles_settings.xml
+.idea/codeStyles/**
+.idea/checkstyle-idea.xml
+
+# Ignore the following file suffixes
+*.vcxproj.user
+*.orig
+*.bak
+*.rej
+*.swp
+*~
+
+# Ignore macOS system files
+.DS_Store
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Ignore Windows system files
+Desktop.ini
+Thumbs.db
