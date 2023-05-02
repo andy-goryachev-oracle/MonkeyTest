@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.scene.control.Accordion;
@@ -38,7 +39,7 @@ public class AccordionPage extends TestPaneBase {
     private final Accordion accordion;
 
     public AccordionPage() {
-        setId("AccordionPage");
+        FX.name(this, "AccordionPage");
 
         accordion = new Accordion();
         addPane();

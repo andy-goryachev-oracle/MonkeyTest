@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -67,7 +68,7 @@ public class TextFlowPage extends TestPaneBase {
     private static final String RICH_TEXT = "$RICH";
 
     public TextFlowPage() {
-        setId("TextFlowPage");
+        FX.name(this, "TextFlowPage");
 
         control = new TextFlow();
         control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
@@ -96,13 +97,13 @@ public class TextFlowPage extends TestPaneBase {
         fontSelector = new FontSelector("font", (f) -> updateControl());
 
         showChars = new CheckBox("show characters");
-        showChars.setId("showChars");
+        FX.name(showChars, "showChars");
         showChars.selectedProperty().addListener((p) -> {
             updateControl();
         });
 
         showCaretPath = new CheckBox("show caret path");
-        showCaretPath.setId("showCaretPath");
+        FX.name(showCaretPath, "showCaretPath");
         showCaretPath.selectedProperty().addListener((p) -> {
             updateControl();
         });

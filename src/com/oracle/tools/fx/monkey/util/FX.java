@@ -38,6 +38,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import com.oracle.tools.fx.monkey.settings.FxSettingsSchema;
 
 /**
  * Shortcuts and convenience methods that perhaps could be added to JavaFX.
@@ -144,5 +145,10 @@ public class FX {
                 w.setY(y + off);
             }
         }
+    }
+
+    /** adds a name property to the Node for the purposes of storing the preferences */
+    public static void name(Node n, String name) {
+        FxSettingsSchema.setName(n, name);
     }
 }

@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.Random;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.scene.chart.AreaChart;
@@ -61,10 +62,10 @@ public class XYChartPage extends TestPaneBase {
     protected static Random rnd = new Random();
 
     public XYChartPage() {
-        setId("XYChartPage");
+        FX.name(this, "XYChartPage");
 
         modeSelector = new ComboBox<>();
-        modeSelector.setId("modeSelector");
+        FX.name(modeSelector, "modeSelector");
         modeSelector.getItems().addAll(Mode.values());
         modeSelector.setEditable(false);
         modeSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {

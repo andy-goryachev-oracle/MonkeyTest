@@ -53,13 +53,13 @@ public class TestPaneBase extends BorderPane {
 
     public void updateContent() {
         SplitPane hsplit = new SplitPane(contentPane, pane());
-        hsplit.setId("hsplit");
+        FX.name(hsplit, "hsplit");
         hsplit.setBorder(null);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
 
         SplitPane vsplit = new SplitPane(hsplit, pane());
-        vsplit.setId("vsplit");
+        FX.name(vsplit, "vsplit");
         vsplit.setBorder(null);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);

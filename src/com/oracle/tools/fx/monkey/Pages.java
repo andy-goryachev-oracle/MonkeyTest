@@ -70,7 +70,7 @@ public class Pages {
             // TODO in tables: Cell, DateCell, IndexedCell* ?
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
-            // TODO VBox
+            new DemoPage("VBox", VBoxPage::new),
             // TODO WebView
             new DemoPage("X/Y Charts", XYChartPage::new),
         };

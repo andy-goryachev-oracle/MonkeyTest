@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -44,13 +45,13 @@ public class TreeViewPage extends TestPaneBase {
     private int childNum;
 
     public TreeViewPage() {
-        setId("TreeViewPage");
+        FX.name(this, "TreeViewPage");
 
         CheckBox indeterminate = new CheckBox("Indeterminate");
-        indeterminate.setId("indeterminate");
+        FX.name(indeterminate, "indeterminate");
 
         CheckBox selected = new CheckBox("Selected");
-        selected.setId("selected");
+        FX.name(selected, "selected");
 
         Button add = new Button("Add");
         add.setOnAction((ev) -> {

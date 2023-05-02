@@ -31,6 +31,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -41,7 +42,7 @@ public class ComboBoxPage extends TestPaneBase {
     private ComboBox control;
 
     public ComboBoxPage() {
-        setId("ComboBoxPage");
+        FX.name(this, "ComboBoxPage");
 
         control = new ComboBox();
         control.getItems().setAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");

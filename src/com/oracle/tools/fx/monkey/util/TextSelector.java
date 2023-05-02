@@ -40,7 +40,7 @@ public class TextSelector {
     private final ComboBox<Object> field = new ComboBox<>();
 
     public TextSelector(String id, Consumer<String> client, Object... items) {
-        field.setId("PosSelector");
+        FX.name(field, "TextSelector");
         field.getItems().setAll(items);
         field.setConverter(new StringConverter<Object>() {
             @Override

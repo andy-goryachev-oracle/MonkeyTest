@@ -31,6 +31,7 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.Border;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -50,7 +51,7 @@ public class TextPage extends TestPaneBase {
     private Text control;
 
     public TextPage() {
-        setId("TextPage");
+        FX.name(this, "TextPage");
 
         textSelector = TextSelector.fromPairs(
             "textSelector",
@@ -61,13 +62,13 @@ public class TextPage extends TestPaneBase {
         fontSelector = new FontSelector("font", (f) -> updateText());
 
         showChars = new CheckBox("show characters");
-        showChars.setId("showChars");
+        FX.name(showChars, "showChars");
         showChars.selectedProperty().addListener((p) -> {
             updateText();
         });
 
         wrap = new CheckBox("wrap width");
-        wrap.setId("wrap");
+        FX.name(wrap, "wrap");
         wrap.selectedProperty().addListener((p) -> {
             updateWrap(wrap.selectedProperty().get());
         });

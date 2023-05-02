@@ -105,16 +105,17 @@ public class MonkeyTesterApp extends Application {
         pages.setAll(createPages());
 
         pageSelector = new ListView(pages);
-        pageSelector.setId("pageSelector");
+        FX.name(pageSelector, "pageSelector");
         pageSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePage(c);
         });
 
         contentPane = new BorderPane();
-        contentPane.setId("contentPane");
+        FX.name(contentPane, "contentPane");
 
         SplitPane split = new SplitPane(pageSelector, contentPane);
-        split.setDividerPositions(0.15);
+        FX.name(split, "MainSplit");
+        split.setDividerPositions(0.2);
         SplitPane.setResizableWithParent(pageSelector, Boolean.FALSE);
         SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
 

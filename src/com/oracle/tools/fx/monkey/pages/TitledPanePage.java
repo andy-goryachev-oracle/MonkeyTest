@@ -31,6 +31,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.Templates;
@@ -46,7 +47,7 @@ public class TitledPanePage extends TestPaneBase {
     private final TitledPane titledPane;
 
     public TitledPanePage() {
-        setId("TitledPane");
+        FX.name(this, "TitledPane");
 
         textSelector = TextSelector.fromPairs(
             "textSelector",

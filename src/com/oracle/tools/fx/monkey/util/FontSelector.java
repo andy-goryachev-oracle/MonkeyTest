@@ -39,14 +39,14 @@ public class FontSelector {
     private final ComboBox<Integer> sizeField;
 
     public FontSelector(String id, Consumer<Font> client) {
-        fontField.setId(id + "_FONT");
+        FX.name(fontField, id + "_FONT");
         fontField.getItems().setAll(collectFonts());
         fontField.getSelectionModel().selectedItemProperty().addListener((p) -> {
             update(client);
         });
 
         sizeField = new ComboBox<>();
-        sizeField.setId(id + "_SIZE");
+        FX.name(sizeField, id + "_SIZE");
         sizeField.getItems().setAll(
             8,
             12,

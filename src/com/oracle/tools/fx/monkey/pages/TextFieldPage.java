@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.PosSelector;
@@ -43,7 +44,7 @@ public class TextFieldPage extends TestPaneBase {
     private final TextSelector textSelector;
 
     public TextFieldPage() {
-        setId("TextFieldPage");
+        FX.name(this, "TextFieldPage");
 
         control = new TextField();
         control.setAlignment(Pos.BASELINE_RIGHT);
@@ -63,7 +64,7 @@ public class TextFieldPage extends TestPaneBase {
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
 
         ComboBox<Integer> prefColumnCount = new ComboBox<>();
-        prefColumnCount.setId("prefColumnCount");
+        FX.name(prefColumnCount, "prefColumnCount");
         prefColumnCount.getItems().setAll(
             null,
             1,
@@ -79,7 +80,7 @@ public class TextFieldPage extends TestPaneBase {
         });
 
         CheckBox editable = new CheckBox("editable");
-        editable.setId("editable");
+        FX.name(editable, "editable");
         editable.selectedProperty().bindBidirectional(control.editableProperty());
 
         OptionPane p = new OptionPane();
