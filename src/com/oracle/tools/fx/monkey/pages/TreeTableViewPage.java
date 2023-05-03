@@ -25,9 +25,6 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -44,6 +41,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.SequenceNumber;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TreeTableView page
@@ -587,7 +588,7 @@ public class TreeTableViewPage extends TestPaneBase {
     }
 
     protected String newItem() {
-        return System.currentTimeMillis() + "." + System.nanoTime();
+        return SequenceNumber.next();
     }
 
     /**

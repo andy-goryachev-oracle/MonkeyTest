@@ -25,9 +25,6 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.Random;
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -38,6 +35,10 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.SequenceNumber;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * ListView page
@@ -227,7 +228,7 @@ public class ListViewPage extends TestPaneBase {
     }
 
     protected String newItem(Object n) {
-        return n + "." + System.currentTimeMillis() + "." + System.nanoTime();
+        return n + "." + SequenceNumber.next();
     }
 
     protected String newVariableItem(Object n) {
@@ -239,7 +240,7 @@ public class ListViewPage extends TestPaneBase {
             }
             sb.append(i);
         }
-        return n + "." + System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
+        return n + "." + SequenceNumber.next() + "." + sb;
     }
 
     protected void jump() {
