@@ -50,7 +50,7 @@ public class Pages {
             // TODO MenuBar
             // TODO MenuButton
             // TODO Pagination
-            // TODO PieChart
+            new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
             new DemoPage("ScrollBar", ScrollBarPage::new),
             // TODO ScrollPane
