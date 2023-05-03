@@ -71,7 +71,7 @@ public class Pages {
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("VBox", VBoxPage::new),
-            // TODO WebView
+            new DemoPage("WebView", WebViewPage::new),
             new DemoPage("X/Y Charts", XYChartPage::new),
         };
     }
