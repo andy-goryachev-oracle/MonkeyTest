@@ -219,21 +219,26 @@ public class MonkeyTesterApp extends Application {
 
     protected void openModalWindow() {
         Button b = new Button("Platform.exit()");
+        b.setDefaultButton(false);
         b.setOnAction((ev) -> Platform.exit());
 
         Button b2 = new Button("OK");
 
         HBox bp = new HBox(b, b2);
+        // FIX BUG: default button property ignored on macOS, ENTER goes to the first button
+        b2.setDefaultButton(true);
 
         BorderPane p = new BorderPane();
         p.setBottom(bp);
+        System.out.println(b.isDefaultButton() + " " + b2.isDefaultButton());
 
         Stage d = new Stage();
+        d.setTitle("Modal Window");
         d.setScene(new Scene(p));
         d.initModality(Modality.APPLICATION_MODAL);
         d.initOwner(stage);
         d.setWidth(500);
-        d.setHeight(400);
+        d.setHeight(200);
         d.show();
 
         b2.setOnAction((ev) -> d.hide());
