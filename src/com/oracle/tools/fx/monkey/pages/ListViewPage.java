@@ -32,10 +32,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -43,7 +45,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * ListView page
  */
-public class ListViewPage extends TestPaneBase {
+public class ListViewPage extends TestPaneBase implements HasSkinnable {
     enum Demo {
         EMPTY("Empty"),
         LARGE("Large"),
@@ -117,6 +119,11 @@ public class ListViewPage extends TestPaneBase {
             jump();
         });
 
+        Button refresh = new Button("Refresh");
+        refresh.setOnAction((ev) -> {
+            control.refresh();
+        });
+
         // layout
 
         OptionPane p = new OptionPane();
@@ -128,6 +135,7 @@ public class ListViewPage extends TestPaneBase {
         p.option(selectionSelector);
         p.option(nullFocusModel);
         p.option(jumpButton);
+        p.option(refresh);
         setOptions(p);
 
         demoSelector.getSelectionModel().selectFirst();
@@ -267,5 +275,15 @@ public class ListViewPage extends TestPaneBase {
             }
         }
         return null;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ListViewSkin(control));
     }
 }

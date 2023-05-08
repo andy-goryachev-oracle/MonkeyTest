@@ -37,11 +37,14 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeTableView.ResizeFeatures;
+import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -49,7 +52,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * TreeTableView page
  */
-public class TreeTableViewPage extends TestPaneBase {
+public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     enum Demo {
         PREF("pref only"),
         VARIABLE("variable cell height"),
@@ -115,6 +118,7 @@ public class TreeTableViewPage extends TestPaneBase {
     protected final ComboBox<ResizePolicy> policySelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
+    protected final ItemSelector<Double> fixedSize;
     protected TreeTableView<String> tree;
 
     public TreeTableViewPage() {
@@ -157,6 +161,22 @@ public class TreeTableViewPage extends TestPaneBase {
             tree.setShowRoot(false);
         });
 
+        Button refresh = new Button("Refresh");
+        refresh.setOnAction((ev) -> {
+            tree.refresh();
+        });
+
+        fixedSize = new ItemSelector<Double>(
+            "fixedSize",
+            (x) -> {
+                tree.setFixedCellSize(x);
+            },
+            "<none>", 0.0,
+            "18", 18.0,
+            "24", 24.0,
+            "66", 66.0
+        );
+
         // layout
 
         OptionPane p = new OptionPane();
@@ -168,6 +188,9 @@ public class TreeTableViewPage extends TestPaneBase {
         p.label("Selection Model:");
         p.option(selectionSelector);
         p.option(nullFocusModel);
+        p.label("Fixed Cell Size:");
+        p.option(fixedSize.node());
+        p.option(refresh);
         setOptions(p);
 
         demoSelector.getSelectionModel().selectFirst();
@@ -502,6 +525,7 @@ public class TreeTableViewPage extends TestPaneBase {
         if (nullFocusModel.isSelected()) {
             tree.setFocusModel(null);
         }
+        tree.setFixedCellSize(fixedSize.getSelectedItem());
 
         Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
         tree.setColumnResizePolicy(p);
@@ -533,10 +557,14 @@ public class TreeTableViewPage extends TestPaneBase {
                                 @Override
                                 protected void updateItem(String item, boolean empty) {
                                     super.updateItem(item, empty);
-                                    Text t = new Text("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
-                                    t.wrappingWidthProperty().bind(widthProperty());
+                                    if (empty) {
+                                        setGraphic(null);
+                                    } else {
+                                        Text t = new Text("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+                                        t.wrappingWidthProperty().bind(widthProperty());
+                                        setGraphic(t);
+                                    }
                                     setPrefHeight(USE_COMPUTED_SIZE);
-                                    setGraphic(t);
                                 }
                             };
                         });
@@ -589,6 +617,16 @@ public class TreeTableViewPage extends TestPaneBase {
 
     protected String newItem() {
         return SequenceNumber.next();
+    }
+
+    @Override
+    public void nullSkin() {
+        tree.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        tree.setSkin(new TreeTableViewSkin<>(tree));
     }
 
     /**
