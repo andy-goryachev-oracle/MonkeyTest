@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.util.function.Supplier;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -44,7 +45,8 @@ import com.oracle.tools.fx.monkey.util.TextSelector;
 public class TitledPanePage extends TestPaneBase {
     private final TextSelector textSelector;
     private final ItemSelector<Supplier<Node>> contentSelector;
-    private final TitledPane titledPane;
+    private final CheckBox snap;
+    private final TitledPane control;
 
     public TitledPanePage() {
         FX.name(this, "TitledPane");
@@ -54,6 +56,7 @@ public class TitledPanePage extends TestPaneBase {
             (t) -> update(),
             Templates.multiLineTextPairs()
         );
+        textSelector.removeChoice("Writing Systems");
 
         contentSelector = new ItemSelector<Supplier<Node>>(
             "contentSelector",
@@ -64,16 +67,22 @@ public class TitledPanePage extends TestPaneBase {
                 "Label", mk(() -> new Label("Label"))
             }
         );
+        
+        snap = new CheckBox("snap");
+        FX.name(snap, "snap");
 
-        titledPane = new TitledPane();
+        control = new TitledPane();
+        
+        snap.selectedProperty().bindBidirectional(control.snapToPixelProperty());
 
         OptionPane op = new OptionPane();
         op.label("Text:");
         op.option(textSelector.node());
         op.label("Content:");
         op.option(contentSelector.node());
+        op.option(snap);
 
-        setContent(titledPane);
+        setContent(control);
         setOptions(op);
 
         update();
@@ -83,8 +92,8 @@ public class TitledPanePage extends TestPaneBase {
         Supplier<Node> gen = contentSelector.getSelectedItem();
         Node n = (gen == null) ? null : gen.get();
 
-        titledPane.setText(textSelector.getSelectedText());
-        titledPane.setContent(n);
+        control.setText(textSelector.getSelectedText());
+        control.setContent(n);
     }
 
     protected Supplier<Node> mk(Supplier<Node> gen) {
