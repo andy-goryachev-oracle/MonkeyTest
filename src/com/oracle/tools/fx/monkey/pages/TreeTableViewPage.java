@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -37,6 +38,7 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeTableView.ResizeFeatures;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -54,6 +56,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  */
 public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     enum Demo {
+        //CELL_TYPES("various cell types"), // FIX
         PREF("pref only"),
         VARIABLE("variable cell height"),
         ALL("all set: min, pref, max"),
@@ -111,7 +114,11 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         PREF,
         MAX,
         COMBINE,
-        COL_WITH_GRAPHIC
+        COL_WITH_GRAPHIC,
+//        COL_CHECKBOX,
+//        COL_CHOICE_BOX,
+//        COL_COMBO_BOX,
+//        COL_TEXT_FIELD,
     }
 
     protected final ComboBox<Demo> demoSelector;
@@ -270,6 +277,17 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400,
                 Cmd.COL
             };
+// FIX
+//        case CELL_TYPES:
+//            return new Object[] {
+//                Cmd.ROWS, 300,
+//                Cmd.COL,
+//                Cmd.COL_CHECKBOX,
+//                Cmd.COL_CHOICE_BOX,
+//                Cmd.COL_COMBO_BOX,
+//                Cmd.COL_TEXT_FIELD,
+//                Cmd.COL_WITH_GRAPHIC
+//            };
         case PREF:
             return new Object[] {
                 Cmd.ROWS, 3,
@@ -546,19 +564,12 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             if (x instanceof Cmd cmd) {
                 switch (cmd) {
                 case COL:
-                    {
-                        TreeTableColumn<String,String> c = new TreeTableColumn<>();
-                        control.getColumns().add(c);
-                        c.setText("C" + control.getColumns().size());
+                    lastColumn = makeColumn((c) -> {
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                        lastColumn = c;
-                    }
+                    });
                     break;
                 case COL_WITH_GRAPHIC:
-                    {
-                        TreeTableColumn<String,String> c = new TreeTableColumn<>();
-                        control.getColumns().add(c);
-                        c.setText("C" + control.getColumns().size());
+                    lastColumn = makeColumn((c) -> {
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                         c.setCellFactory((r) -> {
                             return new TreeTableCell<>() {
@@ -576,9 +587,23 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                                 }
                             };
                         });
-                        lastColumn = c;
-                    }
+                    });
                     break;
+//                case COL_CHECKBOX:
+//                    lastColumn = makeColumn((c) -> { });
+//                    break;
+//                case COL_CHOICE_BOX:
+//                    lastColumn = makeColumn((c) -> {
+//                    });
+//                    break;
+//                case COL_COMBO_BOX:
+//                    lastColumn = makeColumn((c) -> {
+//                    });
+//                    break;
+//                case COL_TEXT_FIELD:
+//                    lastColumn = makeColumn((c) -> {
+//                    });
+//                    break;
                 case MAX:
                     {
                         int w = (int)(spec[i++]);
@@ -621,6 +646,14 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         BorderPane bp = new BorderPane();
         bp.setCenter(control);
         return bp;
+    }
+
+    protected TreeTableColumn<String, String> makeColumn(Consumer<TreeTableColumn<String, String>> updater) {
+        TreeTableColumn<String, String> c = new TreeTableColumn<>();
+        control.getColumns().add(c);
+        c.setText("C" + control.getColumns().size());
+        updater.accept(c);
+        return c;
     }
 
     protected String newItem() {

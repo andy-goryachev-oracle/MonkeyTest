@@ -33,6 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -54,13 +55,13 @@ public class TestPaneBase extends BorderPane {
     public void updateContent() {
         SplitPane hsplit = new SplitPane(contentPane, pane());
         FX.name(hsplit, "hsplit");
-        hsplit.setBorder(null);
+        hsplit.setBorder(Border.EMPTY);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
 
         SplitPane vsplit = new SplitPane(hsplit, pane());
         FX.name(vsplit, "vsplit");
-        vsplit.setBorder(null);
+        vsplit.setBorder(Border.EMPTY);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
 
