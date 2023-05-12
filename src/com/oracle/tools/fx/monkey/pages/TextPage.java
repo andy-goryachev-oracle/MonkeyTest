@@ -28,6 +28,8 @@ import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.Border;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -111,6 +113,11 @@ public class TextPage extends TestPaneBase {
             Group g = ShowCharacterRuns.createFor(control);
             group.getChildren().add(g);
         }
+
+        control.addEventHandler(MouseEvent.MOUSE_PRESSED, (ev) -> {
+            PickResult p = ev.getPickResult();
+            System.out.println(p);
+        });
     }
 
     protected void updateWrap(boolean on) {
