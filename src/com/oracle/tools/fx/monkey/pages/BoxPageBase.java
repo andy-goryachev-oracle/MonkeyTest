@@ -137,14 +137,14 @@ public abstract class BoxPageBase extends TestPaneBase {
 
         // layout
 
-        OptionPane p = new OptionPane();
-        p.label("Configuration:");
-        p.option(demoSelector);
-        p.option(addButton);
-        p.option(clearButton);
-        p.option(snap);
-        p.option(grow);
-        setOptions(p);
+        OptionPane op = new OptionPane();
+        op.label("Configuration:");
+        op.option(demoSelector);
+        op.option(addButton);
+        op.option(clearButton);
+        op.option(snap);
+        op.option(grow);
+        setOptions(op);
 
         FX.selectFirst(demoSelector);
     }

@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -136,5 +137,17 @@ public class TextSelector {
     public String getSelectedText() {
         Object v = field.getSelectionModel().getSelectedItem();
         return toValue(v);
+    }
+
+    public void removeChoice(String name) {
+        int ix = 0;
+        for (Object x: field.getItems()) {
+            String s = toDisplay(x);
+            if (Objects.equals(name, s)) {
+                field.getItems().remove(ix);
+                return;
+            }
+            ix++;
+        }
     }
 }
