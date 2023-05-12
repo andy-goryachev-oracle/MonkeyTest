@@ -120,7 +120,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     protected final CheckBox nullFocusModel;
     protected final CheckBox hideColumn;
     protected final CheckBox fixedHeight;
-    protected TableView<String> table;
+    protected final CheckBox menuButtonVisible;
+    protected TableView<String> control;
 
     public TableViewPage() {
         FX.name(this, "TableViewPage");
@@ -158,12 +159,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         Button addButton = new Button("Add Data Item");
         addButton.setOnAction((ev) -> {
-            table.getItems().add(newItem());
+            control.getItems().add(newItem());
         });
 
         Button clearButton = new Button("Clear Data Items");
         clearButton.setOnAction((ev) -> {
-            table.getItems().clear();
+            control.getItems().clear();
         });
 
         SplitMenuButton addColumnButton = new SplitMenuButton(
@@ -192,27 +193,31 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         Button refresh = new Button("Refresh");
         refresh.setOnAction((ev) -> {
-            table.refresh();
+            control.refresh();
         });
+        
+        menuButtonVisible = new CheckBox("menu button visible");
+        FX.name(menuButtonVisible, "menuButton");
 
         // layout
 
-        OptionPane p = new OptionPane();
-        p.label("Data:");
-        p.option(demoSelector);
-        p.option(addButton);
-        p.option(clearButton);
-        p.option(addColumnButton);
-        p.option(removeColumnButton);
-        p.label("Column Resize Policy:");
-        p.option(policySelector);
-        p.label("Selection Model:");
-        p.option(selectionSelector);
-        p.option(nullFocusModel);
-        p.option(hideColumn);
-        p.option(fixedHeight);
-        p.option(refresh);
-        setOptions(p);
+        OptionPane op = new OptionPane();
+        op.label("Data:");
+        op.option(demoSelector);
+        op.option(addButton);
+        op.option(clearButton);
+        op.option(addColumnButton);
+        op.option(removeColumnButton);
+        op.label("Column Resize Policy:");
+        op.option(policySelector);
+        op.label("Selection Model:");
+        op.option(selectionSelector);
+        op.option(nullFocusModel);
+        op.option(hideColumn);
+        op.option(fixedHeight);
+        op.option(refresh);
+        op.option(menuButtonVisible);
+        setOptions(op);
 
         demoSelector.getSelectionModel().selectFirst();
         policySelector.getSelectionModel().selectFirst();
@@ -230,7 +235,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         c.setText("C" + System.currentTimeMillis());
         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
 
-        int ct = table.getColumns().size();
+        int ct = control.getColumns().size();
         int ix;
         switch (where) {
         case 0:
@@ -245,14 +250,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             break;
         }
         if ((ct == 0) || (ix >= ct)) {
-            table.getColumns().add(c);
+            control.getColumns().add(c);
         } else {
-            table.getColumns().add(ix, c);
+            control.getColumns().add(ix, c);
         }
     }
 
     protected void removeColumn(int where) {
-        int ct = table.getColumns().size();
+        int ct = control.getColumns().size();
         int ix;
         switch (where) {
         case 0:
@@ -268,7 +273,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
 
         if ((ct >= 0) && (ix < ct)) {
-            table.getColumns().remove(ix);
+            control.getColumns().remove(ix);
         }
     }
 
@@ -590,21 +595,24 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
         }
 
-        table = new TableView<>();
-        table.getSelectionModel().setCellSelectionEnabled(cellSelection);
-        table.getSelectionModel().setSelectionMode(selectionMode);
+        control = new TableView<>();
+        control.getSelectionModel().setCellSelectionEnabled(cellSelection);
+        control.getSelectionModel().setSelectionMode(selectionMode);
         if (nullSelectionModel) {
-            table.setSelectionModel(null);
+            control.setSelectionModel(null);
         }
         if (nullFocusModel.isSelected()) {
-            table.setFocusModel(null);
+            control.setFocusModel(null);
         }
         if (fixedHeight.isSelected()) {
-            table.setFixedCellSize(20);
+            control.setFixedCellSize(20);
         }
 
+        control.setTableMenuButtonVisible(menuButtonVisible.isSelected());
+        menuButtonVisible.selectedProperty().bindBidirectional(control.tableMenuButtonVisibleProperty());
+
         Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
-        table.setColumnResizePolicy(p);
+        control.setColumnResizePolicy(p);
 
         TableColumn<String, String> lastColumn = null;
         int id = 1;
@@ -615,16 +623,16 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 switch (cmd) {
                 case COL: {
                     TableColumn<String, String> c = new TableColumn<>();
-                    table.getColumns().add(c);
-                    c.setText("C" + table.getColumns().size());
+                    control.getColumns().add(c);
+                    c.setText("C" + control.getColumns().size());
                     c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                     lastColumn = c;
                 }
                     break;
                 case COL_WITH_GRAPHIC: {
                     TableColumn<String, String> c = new TableColumn<>();
-                    table.getColumns().add(c);
-                    c.setText("C" + table.getColumns().size());
+                    control.getColumns().add(c);
+                    c.setText("C" + control.getColumns().size());
                     c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                     c.setCellFactory((r) -> {
                         return new TableCell<>() {
@@ -660,14 +668,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 case ROWS: {
                     int n = (int)(spec[i++]);
                     for (int j = 0; j < n; j++) {
-                        table.getItems().add(newItem());
+                        control.getItems().add(newItem());
                     }
                 }
                     break;
                 case COMBINE:
                     int ix = (int)(spec[i++]);
                     int ct = (int)(spec[i++]);
-                    combineColumns(table, ix, ct, id++);
+                    combineColumns(control, ix, ct, id++);
                     break;
                 default:
                     throw new Error("?" + cmd);
@@ -680,18 +688,18 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         hideMiddleColumn(hideColumn.isSelected());
 
         BorderPane bp = new BorderPane();
-        bp.setCenter(table);
+        bp.setCenter(control);
         return bp;
     }
 
     protected void hideMiddleColumn(boolean on) {
         if (on) {
-            int ct = table.getColumns().size();
+            int ct = control.getColumns().size();
             if (ct > 0) {
-                table.getColumns().get(ct / 2).setVisible(false);
+                control.getColumns().get(ct / 2).setVisible(false);
             }
         } else {
-            for (TableColumn c: table.getColumns()) {
+            for (TableColumn c: control.getColumns()) {
                 c.setVisible(true);
             }
         }
@@ -726,11 +734,11 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
     @Override
     public void nullSkin() {
-        table.setSkin(null);
+        control.setSkin(null);
     }
 
     @Override
     public void newSkin() {
-        table.setSkin(new TableViewSkin<>(table));
+        control.setSkin(new TableViewSkin<>(control));
     }
 }

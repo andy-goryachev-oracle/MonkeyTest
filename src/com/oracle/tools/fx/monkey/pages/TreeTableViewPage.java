@@ -119,7 +119,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
     protected final ItemSelector<Double> fixedSize;
-    protected TreeTableView<String> tree;
+    protected final CheckBox menuButtonVisible;
+    protected TreeTableView<String> control;
 
     public TreeTableViewPage() {
         FX.name(this, "TreeTableViewPage");
@@ -157,19 +158,19 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
         Button clearButton = new Button("Clear Items");
         clearButton.setOnAction((ev) -> {
-            tree.setRoot(new TreeItem(null));
-            tree.setShowRoot(false);
+            control.setRoot(new TreeItem(null));
+            control.setShowRoot(false);
         });
 
         Button refresh = new Button("Refresh");
         refresh.setOnAction((ev) -> {
-            tree.refresh();
+            control.refresh();
         });
 
         fixedSize = new ItemSelector<Double>(
             "fixedSize",
             (x) -> {
-                tree.setFixedCellSize(x);
+                control.setFixedCellSize(x);
             },
             "<none>", 0.0,
             "18", 18.0,
@@ -177,21 +178,25 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             "66", 66.0
         );
 
+        menuButtonVisible = new CheckBox("menu button visible");
+        FX.name(menuButtonVisible, "menuButton");
+
         // layout
 
-        OptionPane p = new OptionPane();
-        p.label("Data:");
-        p.option(demoSelector);
-        p.option(clearButton);
-        p.label("Column Resize Policy:");
-        p.option(policySelector);
-        p.label("Selection Model:");
-        p.option(selectionSelector);
-        p.option(nullFocusModel);
-        p.label("Fixed Cell Size:");
-        p.option(fixedSize.node());
-        p.option(refresh);
-        setOptions(p);
+        OptionPane op = new OptionPane();
+        op.label("Data:");
+        op.option(demoSelector);
+        op.option(clearButton);
+        op.label("Column Resize Policy:");
+        op.option(policySelector);
+        op.label("Selection Model:");
+        op.option(selectionSelector);
+        op.option(nullFocusModel);
+        op.label("Fixed Cell Size:");
+        op.option(fixedSize.node());
+        op.option(refresh);
+        op.option(menuButtonVisible);
+        setOptions(op);
 
         demoSelector.getSelectionModel().selectFirst();
         policySelector.getSelectionModel().selectFirst();
@@ -516,19 +521,22 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             }
         }
 
-        tree = new TreeTableView<>(new TreeItem<>(null));
-        tree.getSelectionModel().setCellSelectionEnabled(cellSelection);
-        tree.getSelectionModel().setSelectionMode(selectionMode);
+        control = new TreeTableView<>(new TreeItem<>(null));
+        control.getSelectionModel().setCellSelectionEnabled(cellSelection);
+        control.getSelectionModel().setSelectionMode(selectionMode);
         if (nullSelectionModel) {
-            tree.setSelectionModel(null);
+            control.setSelectionModel(null);
         }
         if (nullFocusModel.isSelected()) {
-            tree.setFocusModel(null);
+            control.setFocusModel(null);
         }
-        tree.setFixedCellSize(fixedSize.getSelectedItem());
+        control.setFixedCellSize(fixedSize.getSelectedItem());
+
+        control.setTableMenuButtonVisible(menuButtonVisible.isSelected());
+        menuButtonVisible.selectedProperty().bindBidirectional(control.tableMenuButtonVisibleProperty());
 
         Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
-        tree.setColumnResizePolicy(p);
+        control.setColumnResizePolicy(p);
 
         TreeTableColumn<String, String> lastColumn = null;
         int id = 1;
@@ -540,8 +548,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 case COL:
                     {
                         TreeTableColumn<String,String> c = new TreeTableColumn<>();
-                        tree.getColumns().add(c);
-                        c.setText("C" + tree.getColumns().size());
+                        control.getColumns().add(c);
+                        c.setText("C" + control.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                         lastColumn = c;
                     }
@@ -549,8 +557,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 case COL_WITH_GRAPHIC:
                     {
                         TreeTableColumn<String,String> c = new TreeTableColumn<>();
-                        tree.getColumns().add(c);
-                        c.setText("C" + tree.getColumns().size());
+                        control.getColumns().add(c);
+                        c.setText("C" + control.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                         c.setCellFactory((r) -> {
                             return new TreeTableCell<>() {
@@ -593,14 +601,14 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                     {
                         int n = (int)(spec[i++]);
                         for (int j = 0; j < n; j++) {
-                            tree.getRoot().getChildren().add(new TreeItem(newItem()));
+                            control.getRoot().getChildren().add(new TreeItem(newItem()));
                         }
                     }
                     break;
                 case COMBINE:
                     int ix = (int)(spec[i++]);
                     int ct = (int)(spec[i++]);
-                    combineColumns(tree, ix, ct, id++);
+                    combineColumns(control, ix, ct, id++);
                     break;
                 default:
                     throw new Error("?" + cmd);
@@ -611,7 +619,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         }
 
         BorderPane bp = new BorderPane();
-        bp.setCenter(tree);
+        bp.setCenter(control);
         return bp;
     }
 
@@ -621,12 +629,12 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
     @Override
     public void nullSkin() {
-        tree.setSkin(null);
+        control.setSkin(null);
     }
 
     @Override
     public void newSkin() {
-        tree.setSkin(new TreeTableViewSkin<>(tree));
+        control.setSkin(new TreeTableViewSkin<>(control));
     }
 
     /**
