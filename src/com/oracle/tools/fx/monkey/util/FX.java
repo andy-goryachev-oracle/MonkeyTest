@@ -36,6 +36,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import com.oracle.tools.fx.monkey.settings.FxSettingsSchema;
@@ -150,5 +152,19 @@ public class FX {
     /** adds a name property to the Node for the purposes of storing the preferences */
     public static void name(Node n, String name) {
         FxSettingsSchema.setName(n, name);
+    }
+
+    /** perhaps it should be a method in TextFlow: getTextLength() */
+    public static int getTextLength(TextFlow f) {
+        int len = 0;
+        for (Node n : f.getChildrenUnmodifiable()) {
+            if (n instanceof Text t) {
+                len += t.getText().length();
+            } else {
+                // treat non-Text nodes as having 1 character
+                len++;
+            }
+        }
+        return len;
     }
 }

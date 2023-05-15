@@ -24,14 +24,6 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.FontSelector;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
-import com.oracle.tools.fx.monkey.util.Templates;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
-import com.oracle.tools.fx.monkey.util.Utils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
@@ -50,6 +42,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.FontSelector;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
+import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextSelector;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * TextFlow Page
@@ -147,24 +147,12 @@ public class TextFlowPage extends TestPaneBase {
             caretPath.getElements().clear();
             control.getChildren().add(caretPath);
 
-            int len = computeTextLength(control);
+            int len = FX.getTextLength(control);
             for (int i = 0; i < len; i++) {
                 PathElement[] es = control.caretShape(i, true);
                 caretPath.getElements().addAll(es);
             }
         }
-    }
-
-    /** TextFlow.getTextLength() */
-    private static int computeTextLength(TextFlow f) {
-        int len = 0;
-        for (Node n: f.getChildrenUnmodifiable()) {
-            if (n instanceof Text t) {
-                len += t.getText().length();
-            }
-            // embedded nodes do not have an associated text
-        }
-        return len;
     }
 
     protected Node[] createTextArray(String text, Font f) {
