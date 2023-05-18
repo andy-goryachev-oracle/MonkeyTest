@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -31,7 +32,11 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Border;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
+import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
@@ -50,10 +55,16 @@ public class TextPage extends TestPaneBase {
     private final CheckBox showChars;
     private final ScrollPane scroll;
     private final CheckBox wrap;
+    private final Path caretPath;
     private Text control;
 
     public TextPage() {
         FX.name(this, "TextPage");
+
+        caretPath = new Path();
+        caretPath.setStrokeWidth(1);
+        caretPath.setStroke(Color.RED);
+        caretPath.setManaged(false);
 
         textSelector = TextSelector.fromPairs(
             "textSelector",
@@ -75,15 +86,16 @@ public class TextPage extends TestPaneBase {
             updateWrap(wrap.selectedProperty().get());
         });
 
-        OptionPane p = new OptionPane();
-        p.label("Text:");
-        p.option(textSelector.node());
-        p.label("Font:");
-        p.option(fontSelector.fontNode());
-        p.label("Font Size:");
-        p.option(fontSelector.sizeNode());
-        p.option(wrap);
-        p.option(showChars);
+        OptionPane op = new OptionPane();
+        op.label("Text:");
+        op.option(textSelector.node());
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Font Size:");
+        op.option(fontSelector.sizeNode());
+        op.option(wrap);
+        op.option(showChars);
+        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
 
         scroll = new ScrollPane();
         scroll.setBorder(Border.EMPTY);
@@ -92,7 +104,7 @@ public class TextPage extends TestPaneBase {
         scroll.setFitToWidth(false);
 
         setContent(scroll);
-        setOptions(p);
+        setOptions(op);
 
         textSelector.selectFirst();
         fontSelector.selectSystemFont();
@@ -104,7 +116,8 @@ public class TextPage extends TestPaneBase {
 
         control = new Text(text);
         control.setFont(f);
-        Group group = new Group(control);
+
+        Group group = new Group(control, caretPath);
         scroll.setContent(group);
 
         updateWrap(wrap.isSelected());
@@ -116,7 +129,13 @@ public class TextPage extends TestPaneBase {
 
         control.addEventHandler(MouseEvent.MOUSE_PRESSED, (ev) -> {
             PickResult p = ev.getPickResult();
-            System.out.println(p);
+            //System.out.println(p);
+        });
+        
+        control.addEventHandler(MouseEvent.MOUSE_CLICKED, (ev) -> {
+            if(ev.isShortcutDown()) {
+                showCaretShape(new Point2D(ev.getX(), ev.getY()));
+            }
         });
     }
 
@@ -127,5 +146,12 @@ public class TextPage extends TestPaneBase {
             control.wrappingWidthProperty().unbind();
             control.setWrappingWidth(0);
         }
+    }
+    
+    protected void showCaretShape(Point2D p) {
+        HitInfo h = control.hitTest(p);
+        System.out.println("hit=" + h);
+        PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
+        caretPath.getElements().setAll(pe);
     }
 }

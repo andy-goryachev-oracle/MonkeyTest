@@ -108,25 +108,26 @@ public class TextFlowPage extends TestPaneBase {
             updateControl();
         });
 
-        OptionPane p = new OptionPane();
-        p.label("Text:");
-        p.option(textSelector.node());
-        p.label("Font:");
-        p.option(fontSelector.fontNode());
-        p.label("Font Size:");
-        p.option(fontSelector.sizeNode());
-        p.option(showChars);
-        p.option(showCaretPath);
-        p.option(new Separator(Orientation.HORIZONTAL));
-        p.label("Pick Result:");
-        p.option(pickResult);
-        p.label("Text.hitTest:");
-        p.option(hitInfo2);
-        p.label("TextFlow.hitTest:");
-        p.option(hitInfo);
+        OptionPane op = new OptionPane();
+        op.label("Text:");
+        op.option(textSelector.node());
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Font Size:");
+        op.option(fontSelector.sizeNode());
+        op.option(showChars);
+        op.option(showCaretPath);
+        op.option(new Separator(Orientation.HORIZONTAL));
+        op.label("Pick Result:");
+        op.option(pickResult);
+        op.label("Text.hitTest:");
+        op.option(hitInfo2);
+        op.label("TextFlow.hitTest:");
+        op.option(hitInfo);
+        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
 
         setContent(control);
-        setOptions(p);
+        setOptions(op);
 
         fontSelector.selectSystemFont();
         textSelector.selectFirst();
@@ -138,15 +139,15 @@ public class TextFlowPage extends TestPaneBase {
         Node[] ts = createTextArray(text, f);
         control.getChildren().setAll(ts);
 
+        caretPath.getElements().clear();
+        control.getChildren().add(caretPath);
+
         if (showChars.isSelected()) {
             Group g = ShowCharacterRuns.createFor(control);
             control.getChildren().add(g);
         }
 
         if (showCaretPath.isSelected()) {
-            caretPath.getElements().clear();
-            control.getChildren().add(caretPath);
-
             int len = FX.getTextLength(control);
             for (int i = 0; i < len; i++) {
                 PathElement[] es = control.caretShape(i, true);
@@ -209,5 +210,18 @@ public class TextFlowPage extends TestPaneBase {
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = control.hitTest(p);
         hitInfo.setText(String.valueOf(h));
+
+        if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
+            if (ev.isShortcutDown()) {
+                showCaretShape(new Point2D(ev.getX(), ev.getY()));
+            }
+        }
+    }
+
+    protected void showCaretShape(Point2D p) {
+        HitInfo h = control.hitTest(p);
+        System.out.println("hit=" + h);
+        PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
+        caretPath.getElements().setAll(pe);
     }
 }
