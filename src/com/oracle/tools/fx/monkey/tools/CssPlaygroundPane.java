@@ -63,18 +63,15 @@ public class CssPlaygroundPane extends BorderPane {
         }
         
         String css = generate(c);
-        System.out.println(css); // FIX
+        //System.out.println(css); // FIX
 
-        String encoded = encode(css);
-        applyStyleSheet(encoded);
+        applyStyleSheet(css);
     }
     
     protected String generate(Color bg) {
         StringBuilder sb = new StringBuilder();
         sb.append(".root {\n");
         sb.append(" -fx-base: " + toCssColor(bg) + ";\n");
-        sb.append(" -fx-color: " + toCssColor(bg) + ";\n");
-        sb.append(" -fx-text-background-color: " + toCssColor(bg) + ";\n");
         sb.append("}\n");
         return sb.toString();
     }
@@ -102,7 +99,7 @@ public class CssPlaygroundPane extends BorderPane {
         }
         Charset utf8 = Charset.forName("utf-8");
         byte[] b = s.getBytes(utf8);
-        return "data:text/css;charset=UTF-8;base64," + Base64.getEncoder().encodeToString(b);
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(b);
     }
 
     public static void applyStyleSheet(String styleSheet) {
