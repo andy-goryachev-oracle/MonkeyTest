@@ -50,9 +50,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
+import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
+import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
-import com.oracle.tools.fx.monkey.util.Native2AsciiPane;
 
 /**
  * Monkey Tester Application.
@@ -162,7 +163,9 @@ public class MonkeyTesterApp extends Application {
         FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
         FX.radio(b, "RadioMenuItem 2", KeyCombination.keyCombination("Shortcut+2"), g);
         FX.radio(b, "RadioMenuItem 3", KeyCombination.keyCombination("Shortcut+3"), g);
+        // Tools
         FX.menu(b, "_Tools");
+        FX.item(b, "CSS Playground", this::openCssPlayground);
         FX.item(b, "Native-to-ascii", this::openNative2Ascii);
         // Window
         FX.menu(b, "_Window");
@@ -250,9 +253,18 @@ public class MonkeyTesterApp extends Application {
     }
 
     protected void openNative2Ascii() {
+        // TODO single instance
         Stage s = new Stage();
         s.setTitle("Native to ASCII");
         s.setScene(new Scene(new Native2AsciiPane()));
+        s.show();
+    }
+
+    protected void openCssPlayground() {
+        // TODO single instance
+        Stage s = new Stage();
+        s.setTitle("CSS Playground");
+        s.setScene(new Scene(new CssPlaygroundPane()));
         s.show();
     }
 

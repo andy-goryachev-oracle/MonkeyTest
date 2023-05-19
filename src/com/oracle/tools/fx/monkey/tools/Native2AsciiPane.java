@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.tools;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -31,7 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 
 /**
- *
+ * Native-to-ASCII and ASCII-to-Native Converter Pane.
  */
 public class Native2AsciiPane extends BorderPane {
     private final TextArea nat;
