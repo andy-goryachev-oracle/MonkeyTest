@@ -46,6 +46,11 @@ import com.oracle.tools.fx.monkey.settings.FxSettingsSchema;
  * Shortcuts and convenience methods that perhaps could be added to JavaFX.
  */
 public class FX {
+    private static final String os = System.getProperty("os.name");
+    private static final boolean WINDOWS = os.startsWith("Windows");
+    private static final boolean MAC = os.startsWith("Mac");
+    private static final boolean LINUX = os.startsWith("Linux");
+
     public static Menu menu(MenuBar b, String text) {
         Menu m = new Menu(text);
         applyMnemonic(m);
@@ -166,5 +171,13 @@ public class FX {
             }
         }
         return len;
+    }
+
+    public static boolean isWindows() {
+        return WINDOWS;
+    }
+
+    public static boolean isMac() {
+        return MAC;
     }
 }
