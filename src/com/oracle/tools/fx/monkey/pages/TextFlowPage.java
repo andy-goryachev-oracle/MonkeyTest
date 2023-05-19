@@ -90,7 +90,8 @@ public class TextFlowPage extends TestPaneBase {
             Utils.combine(
                 Templates.multiLineTextPairs(),
                 "Inline Nodes", INLINE,
-                "Rich Text", RICH_TEXT
+                "Rich Text", RICH_TEXT,
+                "Accadian", "Akkadian:  𒀝𒅗𒁺𒌑"
             )
         );
 
