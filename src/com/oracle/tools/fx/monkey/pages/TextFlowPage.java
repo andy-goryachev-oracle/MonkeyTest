@@ -33,6 +33,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
@@ -56,6 +57,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class TextFlowPage extends TestPaneBase {
     protected final TextSelector textSelector;
+    protected final TextField styleField;
     protected final FontSelector fontSelector;
     protected final CheckBox showChars;
     protected final CheckBox showCaretPath;
@@ -72,6 +74,15 @@ public class TextFlowPage extends TestPaneBase {
 
         control = new TextFlow();
         control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+
+        styleField = new TextField();
+        styleField.setOnAction((ev) -> {
+            String s = styleField.getText();
+            if (Utils.isBlank(s)) {
+                s = null;
+            }
+            control.setStyle(s);
+        });
 
         pickResult = new Label();
 
@@ -91,7 +102,7 @@ public class TextFlowPage extends TestPaneBase {
                 Templates.multiLineTextPairs(),
                 "Inline Nodes", INLINE,
                 "Rich Text", RICH_TEXT,
-                "Accadian", "Akkadian:  𒀝𒅗𒁺𒌑"
+                "Accadian", Templates.AKKADIAN
             )
         );
 
@@ -118,6 +129,9 @@ public class TextFlowPage extends TestPaneBase {
         op.option(fontSelector.sizeNode());
         op.option(showChars);
         op.option(showCaretPath);
+        op.label("Direct Style:");
+        op.option(styleField);
+        //
         op.option(new Separator(Orientation.HORIZONTAL));
         op.label("Pick Result:");
         op.option(pickResult);

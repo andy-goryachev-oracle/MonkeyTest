@@ -29,6 +29,7 @@ import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Border;
@@ -45,12 +46,14 @@ import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextSelector;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Text Page
  */
 public class TextPage extends TestPaneBase {
     private final TextSelector textSelector;
+    private final TextField styleField;
     private final FontSelector fontSelector;
     private final CheckBox showChars;
     private final ScrollPane scroll;
@@ -60,6 +63,15 @@ public class TextPage extends TestPaneBase {
 
     public TextPage() {
         FX.name(this, "TextPage");
+
+        styleField = new TextField();
+        styleField.setOnAction((ev) -> {
+            String s = styleField.getText();
+            if (Utils.isBlank(s)) {
+                s = null;
+            }
+            control.setStyle(s);
+        });
 
         caretPath = new Path();
         caretPath.setStrokeWidth(1);
@@ -96,6 +108,8 @@ public class TextPage extends TestPaneBase {
         op.option(wrap);
         op.option(showChars);
         op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
+        op.label("Direct Style:");
+        op.option(styleField);
 
         scroll = new ScrollPane();
         scroll.setBorder(Border.EMPTY);
