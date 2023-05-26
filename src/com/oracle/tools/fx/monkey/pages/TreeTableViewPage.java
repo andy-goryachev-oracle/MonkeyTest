@@ -74,7 +74,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         MAX_IN_CENTER("max widths set in middle columns"),
         NO_NESTED("no nested columns"),
         NESTED("nested columns"),
-        MILLION("million rows"),
+        THOUSAND("1,000 rows"),
+        MILLION("10,000,000 rows"),
         MANY_COLUMNS("many columns"),
         MANY_COLUMNS_SAME("many columns, same pref");
 
@@ -479,7 +480,17 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             };
         case MILLION:
             return new Object[] {
-                Cmd.ROWS, 1_000_000,
+                Cmd.ROWS, 10_000_000,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+            };
+        case THOUSAND:
+            return new Object[] {
+                Cmd.ROWS, 1_000,
+                Cmd.COL,
+                Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
             };

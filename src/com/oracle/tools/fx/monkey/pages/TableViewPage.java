@@ -71,7 +71,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         MAX_IN_CENTER("max widths set in middle columns"),
         NO_NESTED("no nested columns"),
         NESTED("nested columns"),
-        MILLION("million rows"),
+        THOUSAND("1,000 rows"),
+        MILLION("10,000,000 rows"),
         MANY_COLUMNS("many columns"),
         MANY_COLUMNS_SAME("many columns, same pref");
 
@@ -535,7 +536,17 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             };
         case MILLION:
             return new Object[] {
-                Cmd.ROWS, 1_000_000,
+                Cmd.ROWS, 10_000_000,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+            };
+        case THOUSAND:
+            return new Object[] {
+                Cmd.ROWS, 1_000,
+                Cmd.COL,
+                Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
             };
@@ -621,56 +632,62 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             Object x = spec[i++];
             if (x instanceof Cmd cmd) {
                 switch (cmd) {
-                case COL: {
-                    TableColumn<String, String> c = new TableColumn<>();
-                    control.getColumns().add(c);
-                    c.setText("C" + control.getColumns().size());
-                    c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                    lastColumn = c;
-                }
-                    break;
-                case COL_WITH_GRAPHIC: {
-                    TableColumn<String, String> c = new TableColumn<>();
-                    control.getColumns().add(c);
-                    c.setText("C" + control.getColumns().size());
-                    c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                    c.setCellFactory((r) -> {
-                        return new TableCell<>() {
-                            @Override
-                            protected void updateItem(String item, boolean empty) {
-                                super.updateItem(item, empty);
-                                Text t = new Text(
-                                    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
-                                t.wrappingWidthProperty().bind(widthProperty());
-                                setPrefHeight(USE_COMPUTED_SIZE);
-                                setGraphic(t);
-                            }
-                        };
-                    });
-                    lastColumn = c;
-                }
-                    break;
-                case MAX: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setMaxWidth(w);
-                }
-                    break;
-                case MIN: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setMinWidth(w);
-                }
-                    break;
-                case PREF: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setPrefWidth(w);
-                }
-                    break;
-                case ROWS: {
-                    int n = (int)(spec[i++]);
-                    for (int j = 0; j < n; j++) {
-                        control.getItems().add(newItem());
+                case COL:
+                    {
+                        TableColumn<String, String> c = new TableColumn<>();
+                        control.getColumns().add(c);
+                        c.setText("C" + control.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        lastColumn = c;
                     }
-                }
+                    break;
+                case COL_WITH_GRAPHIC:
+                    {
+                        TableColumn<String, String> c = new TableColumn<>();
+                        control.getColumns().add(c);
+                        c.setText("C" + control.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        c.setCellFactory((r) -> {
+                            return new TableCell<>() {
+                                @Override
+                                protected void updateItem(String item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    Text t = new Text(
+                                        "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+                                    t.wrappingWidthProperty().bind(widthProperty());
+                                    setPrefHeight(USE_COMPUTED_SIZE);
+                                    setGraphic(t);
+                                }
+                            };
+                        });
+                        lastColumn = c;
+                    }
+                    break;
+                case MAX:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMaxWidth(w);
+                    }
+                    break;
+                case MIN:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMinWidth(w);
+                    }
+                    break;
+                case PREF:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setPrefWidth(w);
+                    }
+                    break;
+                case ROWS:
+                    {
+                        int n = (int)(spec[i++]);
+                        for (int j = 0; j < n; j++) {
+                            control.getItems().add(newItem());
+                        }
+                    }
                     break;
                 case COMBINE:
                     int ix = (int)(spec[i++]);
