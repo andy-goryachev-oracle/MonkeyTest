@@ -199,8 +199,10 @@ public class MonkeyTesterApp extends Application {
 
     protected void updateStatus() {
         StringBuilder sb = new StringBuilder();
-        sb.append("   ");
+        sb.append("   fx:");
         sb.append(System.getProperty("javafx.runtime.version"));
+        sb.append(" jdk:");
+        sb.append(System.getProperty("java.version"));
 
         if (stage.getRenderScaleX() == stage.getRenderScaleY()) {
             sb.append("  scale=");
