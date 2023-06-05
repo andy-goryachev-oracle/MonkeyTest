@@ -68,8 +68,8 @@ public class TextFlowPage extends TestPaneBase {
     private final Label hitInfo2;
     private final Path caretPath;
     private String currentText;
-    private static final String INLINE = "$INLINE";
-    private static final String RICH_TEXT = "$RICH";
+    private static final String INLINE = "\u0000_INLINE";
+    private static final String RICH_TEXT = "\u0000_RICH";
 
     public TextFlowPage() {
         FX.name(this, "TextFlowPage");
@@ -201,7 +201,8 @@ public class TextFlowPage extends TestPaneBase {
                 t("BOLD ", f, "-fx-font-weight:bold;"),
                 t("italic ", f, "-fx-font-style:italic;"),
                 t("underline ", f, "-fx-underline:true;"),
-                t(Templates.TWO_EMOJIS, f)
+                t(Templates.TWO_EMOJIS, f),
+                t(Templates.CLUSTERS, f)
             };
         } else {
             return new Node[] { t(text, f) };

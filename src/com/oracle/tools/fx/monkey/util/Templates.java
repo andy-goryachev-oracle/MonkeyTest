@@ -32,6 +32,7 @@ import java.util.function.Consumer;
  */
 public class Templates {
     public static final String TWO_EMOJIS = "😊😇";
+    public static final String CLUSTERS = "☝🏿☝🏿☝🏿🤦🏼‍♂️";
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
 
     public static TextSelector promptChoice(String id, Consumer<String> client) {
