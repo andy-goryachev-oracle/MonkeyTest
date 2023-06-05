@@ -43,6 +43,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -108,6 +109,15 @@ public class TextFlowPage extends TestPaneBase {
 
         fontSelector = new FontSelector("font", (f) -> updateControl());
 
+        Button editButton = new Button("Enter Text");
+        editButton.setOnAction((ev) -> {
+            new EnterTextDialog(this, (s) -> {
+                Font f = fontSelector.getFont();
+                Node[] ts = createTextArray(s, f);
+                control.getChildren().setAll(ts);
+            }).show();
+        });
+
         showChars = new CheckBox("show characters");
         FX.name(showChars, "showChars");
         showChars.selectedProperty().addListener((p) -> {
@@ -123,6 +133,7 @@ public class TextFlowPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.label("Text:");
         op.option(textSelector.node());
+        op.option(editButton);
         op.label("Font:");
         op.option(fontSelector.fontNode());
         op.label("Font Size:");

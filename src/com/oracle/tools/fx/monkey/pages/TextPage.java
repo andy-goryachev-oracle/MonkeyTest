@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -39,6 +40,7 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
+import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -86,6 +88,13 @@ public class TextPage extends TestPaneBase {
 
         fontSelector = new FontSelector("font", (f) -> updateText());
 
+        Button editButton = new Button("Enter Text");
+        editButton.setOnAction((ev) -> {
+            new EnterTextDialog(this, (s) -> {
+                control.setText(s);
+            }).show();
+        });
+
         showChars = new CheckBox("show characters");
         FX.name(showChars, "showChars");
         showChars.selectedProperty().addListener((p) -> {
@@ -101,6 +110,7 @@ public class TextPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.label("Text:");
         op.option(textSelector.node());
+        op.option(editButton);
         op.label("Font:");
         op.option(fontSelector.fontNode());
         op.label("Font Size:");
