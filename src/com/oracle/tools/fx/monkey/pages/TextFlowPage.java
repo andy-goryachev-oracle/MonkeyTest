@@ -57,16 +57,17 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
-    protected final TextSelector textSelector;
-    protected final TextField styleField;
-    protected final FontSelector fontSelector;
-    protected final CheckBox showChars;
-    protected final CheckBox showCaretPath;
-    protected final TextFlow control;
-    protected final Label pickResult;
-    protected final Label hitInfo;
-    protected final Label hitInfo2;
-    protected final Path caretPath;
+    private final TextSelector textSelector;
+    private final TextField styleField;
+    private final FontSelector fontSelector;
+    private final CheckBox showChars;
+    private final CheckBox showCaretPath;
+    private final TextFlow control;
+    private final Label pickResult;
+    private final Label hitInfo;
+    private final Label hitInfo2;
+    private final Path caretPath;
+    private String currentText;
     private static final String INLINE = "$INLINE";
     private static final String RICH_TEXT = "$RICH";
 
@@ -98,7 +99,7 @@ public class TextFlowPage extends TestPaneBase {
 
         textSelector = TextSelector.fromPairs(
             "textSelector",
-            (t) -> updateControl(),
+            (t) -> updateText(),
             Utils.combine(
                 Templates.multiLineTextPairs(),
                 "Inline Nodes", INLINE,
@@ -112,9 +113,8 @@ public class TextFlowPage extends TestPaneBase {
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
             new EnterTextDialog(this, (s) -> {
-                Font f = fontSelector.getFont();
-                Node[] ts = createTextArray(s, f);
-                control.getChildren().setAll(ts);
+                currentText = s;
+                updateControl();
             }).show();
         });
 
@@ -159,10 +159,14 @@ public class TextFlowPage extends TestPaneBase {
         textSelector.selectFirst();
     }
 
-    protected void updateControl() {
+    private void updateText() {
+        currentText = textSelector.getSelectedText();
+        updateControl();
+    }
+
+    private void updateControl() {
         Font f = fontSelector.getFont();
-        String text = textSelector.getSelectedText();
-        Node[] ts = createTextArray(text, f);
+        Node[] ts = createTextArray(currentText, f);
         control.getChildren().setAll(ts);
 
         caretPath.getElements().clear();
@@ -182,7 +186,7 @@ public class TextFlowPage extends TestPaneBase {
         }
     }
 
-    protected Node[] createTextArray(String text, Font f) {
+    private Node[] createTextArray(String text, Font f) {
         if (INLINE.equals(text)) {
             return new Node[] {
                 t("Inline Nodes:", f),
@@ -204,20 +208,20 @@ public class TextFlowPage extends TestPaneBase {
         }
     }
 
-    protected static Text t(String text, Font f) {
+    private static Text t(String text, Font f) {
         Text t = new Text(text);
         t.setFont(f);
         return t;
     }
 
-    protected static Text t(String text, Font f, String style) {
+    private static Text t(String text, Font f, String style) {
         Text t = new Text(text);
         t.setFont(f);
         t.setStyle(style);
         return t;
     }
 
-    protected void handleMouseEvent(MouseEvent ev) {
+    private void handleMouseEvent(MouseEvent ev) {
         PickResult pick = ev.getPickResult();
         Node n = pick.getIntersectedNode();
         hitInfo2.setText(null);
@@ -244,7 +248,7 @@ public class TextFlowPage extends TestPaneBase {
         }
     }
 
-    protected void showCaretShape(Point2D p) {
+    private void showCaretShape(Point2D p) {
         HitInfo h = control.hitTest(p);
         System.out.println("hit=" + h);
         PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());

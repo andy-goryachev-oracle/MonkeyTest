@@ -62,6 +62,7 @@ public class TextPage extends TestPaneBase {
     private final CheckBox wrap;
     private final Path caretPath;
     private Text control;
+    private String currentText;
 
     public TextPage() {
         FX.name(this, "TextPage");
@@ -86,19 +87,20 @@ public class TextPage extends TestPaneBase {
             Templates.multiLineTextPairs()
         );
 
-        fontSelector = new FontSelector("font", (f) -> updateText());
+        fontSelector = new FontSelector("font", (f) -> updateControl());
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
             new EnterTextDialog(this, (s) -> {
-                control.setText(s);
+                currentText = s;
+                updateControl();
             }).show();
         });
 
         showChars = new CheckBox("show characters");
         FX.name(showChars, "showChars");
         showChars.selectedProperty().addListener((p) -> {
-            updateText();
+            updateControl();
         });
 
         wrap = new CheckBox("wrap width");
@@ -134,11 +136,15 @@ public class TextPage extends TestPaneBase {
         fontSelector.selectSystemFont();
     }
 
-    protected void updateText() {
-        String text = textSelector.getSelectedText();
+    private void updateText() {
+        currentText = textSelector.getSelectedText();
+        updateControl();
+    }
+
+    private void updateControl() {
         Font f = fontSelector.getFont();
 
-        control = new Text(text);
+        control = new Text(currentText);
         control.setFont(f);
 
         Group group = new Group(control, caretPath);
@@ -163,7 +169,7 @@ public class TextPage extends TestPaneBase {
         });
     }
 
-    protected void updateWrap(boolean on) {
+    private void updateWrap(boolean on) {
         if (on) {
             control.wrappingWidthProperty().bind(scroll.viewportBoundsProperty().map((b) -> b.getWidth()));
         } else {
@@ -172,7 +178,7 @@ public class TextPage extends TestPaneBase {
         }
     }
     
-    protected void showCaretShape(Point2D p) {
+    private void showCaretShape(Point2D p) {
         HitInfo h = control.hitTest(p);
         System.out.println("hit=" + h);
         PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
