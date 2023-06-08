@@ -25,7 +25,12 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -35,12 +40,17 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -53,7 +63,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * TableView page
  */
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
-    enum Demo {
+    private enum Demo {
         PREF("pref only"),
         VARIABLE("variable cell height"),
         ALL("all set: min, pref, max"),
@@ -81,7 +91,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         public String toString() { return text; }
     }
 
-    public enum ResizePolicy {
+    private enum ResizePolicy {
         AUTO_RESIZE_FLEX_NEXT_COLUMN,
         AUTO_RESIZE_FLEX_LAST_COLUMN,
         AUTO_RESIZE_NEXT_COLUMN,
@@ -93,7 +103,20 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         USER_DEFINED_EQUAL_WIDTHS,
     }
 
-    public enum Selection {
+    private enum CellValue {
+        VALUE,
+        NULL,
+        MIN_MAX,
+        QUOTED,
+    }
+
+    private enum Cells {
+        DEFAULT,
+        GRAPHICS,
+        VARIABLE,
+    }
+
+    private enum Selection {
         SINGLE_ROW("single row selection"),
         MULTIPLE_ROW("multiple row selection"),
         SINGLE_CELL("single cell selection"),
@@ -105,7 +128,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         public String toString() { return text; }
     }
 
-    public enum Cmd {
+    private enum Cmd {
         ROWS,
         COL,
         MIN,
@@ -115,25 +138,42 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         COL_WITH_GRAPHIC
     }
 
-    protected final ComboBox<Demo> demoSelector;
-    protected final ComboBox<ResizePolicy> policySelector;
-    protected final ComboBox<Selection> selectionSelector;
-    protected final CheckBox nullFocusModel;
-    protected final CheckBox hideColumn;
-    protected final CheckBox fixedHeight;
-    protected final CheckBox menuButtonVisible;
-    protected TableView<String> control;
+    private final ComboBox<Demo> demoSelector;
+    private final ComboBox<CellValue> cellValueSelector;
+    private final ComboBox<Cells> cellSelector;
+    private final ComboBox<ResizePolicy> policySelector;
+    private final ComboBox<Selection> selectionSelector;
+    private final CheckBox nullFocusModel;
+    private final CheckBox hideColumn;
+    private final CheckBox fixedHeight;
+    private final CheckBox menuButtonVisible;
+    private TableView<String> control;
 
     public TableViewPage() {
         FX.name(this, "TableViewPage");
 
-        // selector
         demoSelector = new ComboBox<>();
         FX.name(demoSelector, "demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
         demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
+        });
+        
+        cellValueSelector = new ComboBox<>();
+        FX.name(cellValueSelector, "cellValueSelector");
+        cellValueSelector.getItems().addAll(CellValue.values());
+        cellValueSelector.setEditable(false);
+        cellValueSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+            updateCellValueFactory();
+        });
+
+        cellSelector = new ComboBox<>();
+        FX.name(cellSelector, "cellSelector");
+        cellSelector.getItems().addAll(Cells.values());
+        cellSelector.setEditable(false);
+        cellSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+            updateCellFactory();
         });
 
         policySelector = new ComboBox<>();
@@ -209,6 +249,10 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(clearButton);
         op.option(addColumnButton);
         op.option(removeColumnButton);
+        op.label("Cell Value:");
+        op.option(cellValueSelector);
+        op.label("Cell Factory:");
+        op.option(cellSelector);
         op.label("Column Resize Policy:");
         op.option(policySelector);
         op.label("Selection Model:");
@@ -221,6 +265,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         setOptions(op);
 
         demoSelector.getSelectionModel().selectFirst();
+        cellValueSelector.getSelectionModel().selectFirst();
+        cellSelector.getSelectionModel().selectFirst();
         policySelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
     }
@@ -704,6 +750,9 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         hideMiddleColumn(hideColumn.isSelected());
 
+        updateCellValueFactory();
+        updateCellFactory();
+
         BorderPane bp = new BorderPane();
         bp.setCenter(control);
         return bp;
@@ -724,6 +773,124 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
     protected String newItem() {
         return SequenceNumber.next();
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TableViewSkin<>(control));
+    }
+
+    private Callback<CellDataFeatures<String, String>, ObservableValue<String>> getValueFactory(CellValue t) {
+        if (t != null) {
+            switch (t) {
+            case MIN_MAX:
+                return (f) -> {
+                    String s = describe(f.getTableColumn());
+                    return new SimpleStringProperty(s);
+                };
+            case QUOTED:
+                return (f) -> {
+                    String s = '"' + f.getValue() + '"';
+                    return new SimpleStringProperty(s);
+                };
+            case VALUE:
+                return (f) -> {
+                    String s = f.getValue();
+                    return new SimpleStringProperty(s);
+                };
+            }
+        }
+        return null;
+    }
+
+    private Node getIcon(String text) {
+        if (text.contains("0")) {
+            return icon(Color.RED);
+        } else if (text.contains("1")) {
+            return icon(Color.GREEN);
+        }
+        return null;
+    }
+
+    private Node icon(Color color) {
+        Canvas c = new Canvas(16, 16);
+        GraphicsContext g = c.getGraphicsContext2D();
+        g.setFill(color);
+        g.fillRect(0, 0, c.getWidth(), c.getHeight());
+        return c;
+    }
+
+    private Callback getCellFactory(Cells t) {
+        if (t != null) {
+            switch (t) {
+            case GRAPHICS:
+                return (r) -> {
+                    return new TableCell<String,String>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (item == null) {
+                                super.setText(null);
+                                super.setGraphic(null);
+                            } else {
+                                String s = item.toString();
+                                super.setText(s);
+                                Node n = getIcon(s);
+                                super.setGraphic(n);
+                            }
+                        }
+                    };
+                };
+            case VARIABLE:
+                return (r) -> {
+                    return new TableCell<String,String>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            String s =
+                                "111111111111111111111111111111111111111111111" +
+                                "11111111111111111111111111111111111111111\n2\n3\n";
+                            Text t = new Text(s);
+                            t.wrappingWidthProperty().bind(widthProperty());
+                            setPrefHeight(USE_COMPUTED_SIZE);
+                            setGraphic(t);
+                        }
+                    };
+                };
+            }
+        }
+        return TableColumn.DEFAULT_CELL_FACTORY;
+    }
+
+    private void updateColumns(Consumer<TableColumn<String, String>> handler) {
+        if (control != null) {
+            for (TableColumn<String, ?> c: control.getColumns()) {
+                handler.accept((TableColumn<String, String>)c);
+            }
+        }
+    }
+
+    private void updateCellValueFactory() {
+        CellValue t = cellValueSelector.getSelectionModel().getSelectedItem();
+        Callback<CellDataFeatures<String, String>, ObservableValue<String>> f = getValueFactory(t);
+
+        updateColumns((c) -> {
+            c.setCellValueFactory(f);
+        });
+    }
+
+    private void updateCellFactory() {
+        Cells t = cellSelector.getSelectionModel().getSelectedItem();
+        Callback<TableColumn<String, String>, TableCell<String, String>> f = getCellFactory(t);
+
+        updateColumns((c) -> {
+            c.setCellFactory(f);
+        });
     }
 
     /**
@@ -747,15 +914,5 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return false;
         }
-    }
-
-    @Override
-    public void nullSkin() {
-        control.setSkin(null);
-    }
-
-    @Override
-    public void newSkin() {
-        control.setSkin(new TableViewSkin<>(control));
     }
 }
