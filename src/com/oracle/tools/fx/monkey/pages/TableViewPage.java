@@ -64,9 +64,9 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  */
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private enum Demo {
+        ALL("all set: min, pref, max"),
         PREF("pref only"),
         VARIABLE("variable cell height"),
-        ALL("all set: min, pref, max"),
         EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
@@ -386,9 +386,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             return new Object[] {
                 Cmd.ROWS, 3,
                 Cmd.COL,
-                Cmd.COL, Cmd.MIN, 20, Cmd.PREF, 20, Cmd.MAX, 20,
+                Cmd.COL, Cmd.MIN, 30, Cmd.MAX, 30,
                 Cmd.COL, Cmd.PREF, 200,
                 Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400,
+                Cmd.COL, Cmd.MIN, 40,
+                Cmd.COL,
+                Cmd.COL,
                 Cmd.COL
             };
         case PREF:
