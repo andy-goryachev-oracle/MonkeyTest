@@ -47,7 +47,7 @@ public class TextFieldPage extends TestPaneBase {
         FX.name(this, "TextFieldPage");
 
         control = new TextField();
-        control.setAlignment(Pos.BASELINE_RIGHT);
+        control.setAlignment(Pos.CENTER_LEFT);
 
         textSelector = TextSelector.fromPairs(
             "textSelector",
