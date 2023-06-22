@@ -58,7 +58,7 @@ public class AccordionPage extends TestPaneBase {
         setOptions(op);
     }
 
-    protected void addPane() {
+    private void addPane() {
         String name = SequenceNumber.next();
         System.nanoTime();
         Button b = new Button(name);
@@ -69,7 +69,7 @@ public class AccordionPage extends TestPaneBase {
         accordion.getPanes().add(p);
     }
 
-    protected void removePane() {
+    private void removePane() {
         int sz = accordion.getPanes().size();
         if (sz > 0) {
             accordion.getPanes().remove(0);
