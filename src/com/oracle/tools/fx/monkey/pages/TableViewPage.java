@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -45,9 +48,6 @@ import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.skin.TableViewSkin;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -127,6 +127,16 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         Selection(String text) { this.text = text; }
         public String toString() { return text; }
     }
+    
+    private enum Filter {
+        NONE("<NONE>"),
+        SKIP1S("skip 11s"),
+        SKIP2S("skip 22s");
+
+        private final String text;
+        Filter(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
 
     private enum Cmd {
         ROWS,
@@ -143,6 +153,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final ComboBox<Cells> cellSelector;
     private final ComboBox<ResizePolicy> policySelector;
     private final ComboBox<Selection> selectionSelector;
+    private final ComboBox<Filter> filterSelector;
     private final CheckBox nullFocusModel;
     private final CheckBox hideColumn;
     private final CheckBox fixedHeight;
@@ -189,6 +200,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
         selectionSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+            updatePane();
+        });
+        
+        filterSelector = new ComboBox<>();
+        FX.name(filterSelector, "filterSelector");
+        filterSelector.getItems().addAll(Filter.values());
+        filterSelector.setEditable(false);
+        filterSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
 
@@ -249,6 +268,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(clearButton);
         op.option(addColumnButton);
         op.option(removeColumnButton);
+        op.label("Filter:");
+        op.option(filterSelector);
         op.label("Cell Value:");
         op.option(cellValueSelector);
         op.label("Cell Factory:");
@@ -264,11 +285,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(menuButtonVisible);
         setOptions(op);
 
-        demoSelector.getSelectionModel().selectFirst();
-        cellValueSelector.getSelectionModel().selectFirst();
-        cellSelector.getSelectionModel().selectFirst();
-        policySelector.getSelectionModel().selectFirst();
-        selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
+        FX.selectFirst(demoSelector);
+        FX.selectFirst(cellValueSelector);
+        FX.selectFirst(cellSelector);
+        FX.selectFirst(policySelector);
+        FX.select(selectionSelector, Selection.MULTIPLE_CELL);
+        FX.selectFirst(filterSelector);
     }
 
     protected MenuItem menuItem(String text, Runnable r) {
@@ -755,6 +777,37 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         updateCellValueFactory();
         updateCellFactory();
+
+        Filter f = filterSelector.getSelectionModel().getSelectedItem();
+        if (f == Filter.NONE) {
+            f = null;
+        }
+        if (f != null) {
+            ObservableList<String> items = FXCollections.observableArrayList();
+            items.addAll(control.getItems());
+            FilteredList<String> filteredList = new FilteredList<>(items);
+            switch(f) {
+            case SKIP1S:
+                filteredList.setPredicate((s) -> {
+                    if (s == null) {
+                        return true;
+                    }
+                    return !s.contains("11");
+                });
+                break;
+            case SKIP2S:
+                filteredList.setPredicate((s) -> {
+                    if (s == null) {
+                        return true;
+                    }
+                    return !s.contains("22");
+                });
+                break;
+            default:
+                throw new Error("?" + f);
+            }
+            control.setItems(filteredList);
+        }
 
         BorderPane bp = new BorderPane();
         bp.setCenter(control);
