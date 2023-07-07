@@ -38,10 +38,11 @@ import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeTableView.ResizeFeatures;
-import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -126,6 +127,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     protected final ComboBox<ResizePolicy> policySelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
+    protected final CheckBox addGraphics;
+    protected final CheckBox addSubNodes;
     protected final ItemSelector<Double> fixedSize;
     protected final CheckBox menuButtonVisible;
     protected TreeTableView<String> control;
@@ -161,6 +164,18 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         nullFocusModel = new CheckBox("null focus model");
         FX.name(nullFocusModel, "nullFocusModel");
         nullFocusModel.selectedProperty().addListener((s, p, c) -> {
+            updatePane();
+        });
+
+        addGraphics = new CheckBox("add graphics");
+        addGraphics.setId("addGraphics");
+        addGraphics.selectedProperty().addListener((s, p, c) -> {
+            updatePane();
+        });
+
+        addSubNodes = new CheckBox("add sub-nodes");
+        addSubNodes.setId("addSubNodes");
+        addSubNodes.selectedProperty().addListener((s, p, c) -> {
             updatePane();
         });
 
@@ -204,6 +219,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(fixedSize.node());
         op.option(refresh);
         op.option(menuButtonVisible);
+        op.option(addGraphics);
+        op.option(addSubNodes);
         setOptions(op);
 
         demoSelector.getSelectionModel().selectFirst();
@@ -636,8 +653,20 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 case ROWS:
                     {
                         int n = (int)(spec[i++]);
+                        TreeItem subNodeTreeItem = null;
                         for (int j = 0; j < n; j++) {
-                            control.getRoot().getChildren().add(new TreeItem(newItem()));
+                            TreeItem treeItem = new TreeItem(newItem());
+                            if (addSubNodes.isSelected()) {
+                                subNodeTreeItem = new TreeItem(newItem());
+                                treeItem.getChildren().add(subNodeTreeItem);
+                            }
+                            if (addGraphics.isSelected()) {
+                                treeItem.setGraphic(new Rectangle(10, 10, Color.RED));
+                                if (subNodeTreeItem != null) {
+                                    subNodeTreeItem.setGraphic(new Rectangle(10, 10));
+                                }
+                            }
+                            control.getRoot().getChildren().add(treeItem);
                         }
                     }
                     break;
