@@ -27,7 +27,9 @@ package com.oracle.tools.fx.monkey.pages;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
@@ -102,8 +104,8 @@ public class ClipboardPage extends TestPaneBase {
             control.getColumns().add(c);
         }
 
-        Button addButton = new Button("Read");
-        addButton.setOnAction((ev) -> read());
+        Button addButton = new Button("Reload");
+        addButton.setOnAction((ev) -> reload());
 
         OptionPane op = new OptionPane();
         op.add(addButton);
@@ -111,10 +113,11 @@ public class ClipboardPage extends TestPaneBase {
         setContent(control);
         setOptions(op);
         
-        read();
+        reload();
     }
 
-    private void read() {
+    private void reload() {
+        Set<DataFormat> expanded = getExpandedItems();
         Clipboard c = Clipboard.getSystemClipboard();
         List<DataFormat> formats = new ArrayList<>(c.getContentTypes());
         Collections.sort(formats, new Comparator<DataFormat>() {
@@ -125,28 +128,44 @@ public class ClipboardPage extends TestPaneBase {
         });
 
         ArrayList<TreeItem<Entry>> items = new ArrayList<>();
-        for (DataFormat f: formats) {
-            TreeItem<Entry> fn = new TreeItem<>(new Entry(f.toString(), null));
-            items.add(fn);
-            
+        for (DataFormat f : formats) {
+            TreeItem<Entry> item = new TreeItem<>(new Entry(f, f.toString(), null));
+            items.add(item);
+
             Object x = c.getContent(f);
             String val = convert(x);
-            fn.getChildren().add(new TreeItem<>(new Entry(null, val)));
+            item.getChildren().add(new TreeItem<>(new Entry(f, null, val)));
+
+            if (expanded.contains(f)) {
+                item.setExpanded(true);
+            }
         }
         
         root.getChildren().setAll(items);
     }
-    
+
+    private Set<DataFormat> getExpandedItems() {
+        HashSet<DataFormat> rv = new HashSet<>();
+        for (TreeItem<Entry> item : root.getChildren()) {
+            if (item.isExpanded()) {
+                rv.add(item.getValue().format);
+            }
+        }
+        return rv;
+    }
+
     private static String convert(Object x) {
         // String, ByteBuffer
         return x.toString();
     }
 
     private static class Entry {
+        public final DataFormat format;
         public final SimpleStringProperty text;
         public final SimpleStringProperty text2;
 
-        public Entry(String s1, String s2) {
+        public Entry(DataFormat f, String s1, String s2) {
+            this.format = f;
             text = new SimpleStringProperty(s1);
             text2 = new SimpleStringProperty(s2);
         }
