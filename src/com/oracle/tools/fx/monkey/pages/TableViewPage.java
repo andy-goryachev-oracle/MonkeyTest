@@ -150,7 +150,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
     private final ComboBox<Demo> demoSelector;
     private final ComboBox<CellValue> cellValueSelector;
-    private final ComboBox<Cells> cellSelector;
+    private final ComboBox<Cells> cellFactorySelector;
     private final ComboBox<ResizePolicy> policySelector;
     private final ComboBox<Selection> selectionSelector;
     private final ComboBox<Filter> filterSelector;
@@ -179,11 +179,11 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             updateCellValueFactory();
         });
 
-        cellSelector = new ComboBox<>();
-        FX.name(cellSelector, "cellSelector");
-        cellSelector.getItems().addAll(Cells.values());
-        cellSelector.setEditable(false);
-        cellSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+        cellFactorySelector = new ComboBox<>();
+        FX.name(cellFactorySelector, "cellSelector");
+        cellFactorySelector.getItems().addAll(Cells.values());
+        cellFactorySelector.setEditable(false);
+        cellFactorySelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateCellFactory();
         });
 
@@ -273,7 +273,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.label("Cell Value:");
         op.option(cellValueSelector);
         op.label("Cell Factory:");
-        op.option(cellSelector);
+        op.option(cellFactorySelector);
         op.label("Column Resize Policy:");
         op.option(policySelector);
         op.label("Selection Model:");
@@ -287,7 +287,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         FX.selectFirst(demoSelector);
         FX.selectFirst(cellValueSelector);
-        FX.selectFirst(cellSelector);
+        FX.selectFirst(cellFactorySelector);
         FX.selectFirst(policySelector);
         FX.select(selectionSelector, Selection.MULTIPLE_CELL);
         FX.selectFirst(filterSelector);
@@ -941,7 +941,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     }
 
     private void updateCellFactory() {
-        Cells t = cellSelector.getSelectionModel().getSelectedItem();
+        Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
         Callback<TableColumn<String, String>, TableCell<String, String>> f = getCellFactory(t);
 
         updateColumns((c) -> {

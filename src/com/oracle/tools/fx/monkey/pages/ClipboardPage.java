@@ -59,7 +59,7 @@ public class ClipboardPage extends TestPaneBase {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>();
             c.setText("Data Format");
             c.setMinWidth(100);
-            c.setMaxWidth(100);
+            c.setMaxWidth(200);
             c.setCellValueFactory((f) -> {
                 var t = f.getValue();
                 if (t != null) {

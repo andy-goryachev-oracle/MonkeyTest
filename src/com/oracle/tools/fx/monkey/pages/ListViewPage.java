@@ -24,18 +24,29 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -51,6 +62,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         LARGE("Large"),
         SMALL("Small"),
         VARIABLE("Variable Height"),
+        LARGE_IMG("Large Images"),
         ;
 
         private final String text;
@@ -73,21 +85,35 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         VARIABLE_ROWS,
     }
 
-    protected final ComboBox<Demo> demoSelector;
-    protected final ComboBox<Selection> selectionSelector;
-    protected final CheckBox nullFocusModel;
-    protected ListView<Object> control;
+    private enum Cells {
+        DEFAULT,
+        LARGE_ICON,
+        VARIABLE,
+    }
+
+    private final ComboBox<Demo> demoSelector;
+    private final ComboBox<Cells> cellFactorySelector;
+    private final ComboBox<Selection> selectionSelector;
+    private final CheckBox nullFocusModel;
+    private ListView<Object> control;
 
     public ListViewPage() {
         FX.name(this, "ListViewPage");
 
-        // selector
         demoSelector = new ComboBox<>();
         FX.name(demoSelector, "demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
         demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
+        });
+
+        cellFactorySelector = new ComboBox<>();
+        FX.name(cellFactorySelector, "cellSelector");
+        cellFactorySelector.getItems().addAll(Cells.values());
+        cellFactorySelector.setEditable(false);
+        cellFactorySelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+            updateCellFactory();
         });
 
         selectionSelector = new ComboBox<>();
@@ -126,17 +152,19 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
         // layout
 
-        OptionPane p = new OptionPane();
-        p.label("Data:");
-        p.option(demoSelector);
-        p.option(addButton);
-        p.option(clearButton);
-        p.label("Selection Model:");
-        p.option(selectionSelector);
-        p.option(nullFocusModel);
-        p.option(jumpButton);
-        p.option(refresh);
-        setOptions(p);
+        OptionPane op = new OptionPane();
+        op.label("Data:");
+        op.option(demoSelector);
+        op.option(addButton);
+        op.option(clearButton);
+        op.label("Cell Factory:");
+        op.option(cellFactorySelector);
+        op.label("Selection Model:");
+        op.option(selectionSelector);
+        op.option(nullFocusModel);
+        op.option(jumpButton);
+        op.option(refresh);
+        setOptions(op);
 
         demoSelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE);
@@ -172,6 +200,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         setContent(n);
     }
 
+    // TODO consider updating the existing control instead of re-creating it
     protected Pane createPane(Demo demo, Object[] spec) {
         if ((demo == null) || (spec == null)) {
             return new BorderPane();
@@ -285,5 +314,90 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     @Override
     public void newSkin() {
         control.setSkin(new ListViewSkin(control));
+    }
+
+    private void updateCellFactory() {
+        Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
+        Callback<ListView<Object>, ListCell<Object>> f = getCellFactory(t);
+        control.setCellFactory(f);
+    }
+    
+    private static Image createImage(String s) {
+        byte[] hash;
+        try {
+            hash = MessageDigest.getInstance("sha-256").digest(s.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            hash = new byte[3];
+        }
+        Color color = Color.rgb(hash[0] & 0xff, hash[1] & 0xff, hash[2] & 0xff);
+        Canvas c = new Canvas(512, 512);
+        GraphicsContext g = c.getGraphicsContext2D();
+        g.setFill(color);
+        g.fillRect(0, 0, c.getWidth(), c.getHeight());
+        return c.snapshot(null, null);
+    }
+    
+    private Callback getCellFactory(Cells t) {
+        if (t != null) {
+            switch (t) {
+            case LARGE_ICON:
+                return (r) -> {
+                    return new ListCell<Object>() {
+                        @Override
+                        protected void updateItem(Object item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (item == null) {
+                                super.setText(null);
+                                super.setGraphic(null);
+                            } else {
+                                String s = item.toString();
+                                super.setText(s);
+                                Node n = new ImageView(createImage(s));
+                                super.setGraphic(n);
+                            }
+                        }
+                    };
+                };
+            case VARIABLE:
+                return (r) -> {
+                    return new ListCell<Object>() {
+                        @Override
+                        protected void updateItem(Object item, boolean empty) {
+                            super.updateItem(item, empty);
+                            String s =
+                                "111111111111111111111111111111111111111111111" +
+                                "11111111111111111111111111111111111111111\n2\n3\n";
+                            Text t = new Text(s);
+                            t.wrappingWidthProperty().bind(widthProperty());
+                            setPrefHeight(USE_COMPUTED_SIZE);
+                            setGraphic(t);
+                        }
+                    };
+                };
+            }
+        }
+
+        // ListViewSkin
+        return (r) -> new ListCell<Object>() {
+            @Override
+            public void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else if (item instanceof Node) {
+                    setText(null);
+                    Node currentNode = getGraphic();
+                    Node newNode = (Node)item;
+                    if (currentNode == null || !currentNode.equals(newNode)) {
+                        setGraphic(newNode);
+                    }
+                } else {
+                    setText(item == null ? "null" : item.toString());
+                    setGraphic(null);
+                }
+            }
+        };
     }
 }
