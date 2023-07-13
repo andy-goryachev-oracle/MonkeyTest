@@ -56,6 +56,7 @@ public class ClipboardPage extends TestPaneBase {
         root = new TreeItem<>(null);
         control = new TreeTableView<>(root);
         control.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+        control.getSelectionModel().setCellSelectionEnabled(true);
         control.setShowRoot(false);
         {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>();
