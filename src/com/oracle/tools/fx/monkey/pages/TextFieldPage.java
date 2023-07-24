@@ -24,6 +24,11 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -31,10 +36,6 @@ import com.oracle.tools.fx.monkey.util.PosSelector;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextSelector;
-import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 
 /**
  * TextField Page
@@ -42,11 +43,16 @@ import javafx.scene.control.TextField;
 public class TextFieldPage extends TestPaneBase {
     private final TextField control;
     private final TextSelector textSelector;
+    private final CheckBox inScroll;
 
     public TextFieldPage() {
+        this(new TextField(), "TextFieldPage");
+    }
+
+    protected TextFieldPage(TextField control, String name) {
         FX.name(this, "TextFieldPage");
 
-        control = new TextField();
+        this.control = control;
         control.setAlignment(Pos.CENTER_LEFT);
 
         textSelector = TextSelector.fromPairs(
@@ -82,26 +88,40 @@ public class TextFieldPage extends TestPaneBase {
         CheckBox editable = new CheckBox("editable");
         FX.name(editable, "editable");
         editable.selectedProperty().bindBidirectional(control.editableProperty());
+        
+        inScroll = new CheckBox("in scroll pane");
+        FX.name(inScroll, "scroll");
+        inScroll.setOnAction((ev) -> updateScroll());
 
-        OptionPane p = new OptionPane();
-        p.label("Text:");
-        p.option(textSelector.node());
-        p.label("Font:");
-        p.option(fontSelector.fontNode());
-        p.label("Size:");
-        p.option(fontSelector.sizeNode());
-        p.label("Alignment:");
-        p.option(posSelector.node());
-        p.label("Prompt:");
-        p.option(promptChoice.node());
-        p.label("Preferred Column Count:");
-        p.option(prefColumnCount);
-        p.option(editable);
+        OptionPane op = new OptionPane();
+        op.label("Text:");
+        op.option(textSelector.node());
+        op.option(editable);
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Size:");
+        op.option(fontSelector.sizeNode());
+        op.label("Alignment:");
+        op.option(posSelector.node());
+        op.label("Prompt:");
+        op.option(promptChoice.node());
+        op.label("Preferred Column Count:");
+        op.option(prefColumnCount);
+        op.option(inScroll);
 
         setContent(control);
-        setOptions(p);
+        setOptions(op);
 
         posSelector.select(Pos.BASELINE_RIGHT);
         fontSelector.selectSystemFont();
+    }
+    
+    private void updateScroll() {
+        if(inScroll.isSelected()) {
+            ScrollPane sp = new ScrollPane(control);
+            setContent(sp);
+        } else {
+            setContent(control);
+        }
     }
 }

@@ -51,6 +51,7 @@ public class Pages {
             // TODO MenuBar
             // TODO MenuButton
             // TODO Pagination
+            new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
             new DemoPage("ScrollBar", ScrollBarPage::new),
