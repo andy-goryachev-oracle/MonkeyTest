@@ -27,23 +27,52 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * Test code from CheckBoxTreeEditor, see https://bugs.openjdk.org/browse/JDK-8209017
- *
- * TODO add different cell types
  */
 public class TreeViewPage extends TestPaneBase {
-    private TreeView<String> control;
+    private enum Cells {
+        DEFAULT,
+        EDITABLE_TEXT_FIELD,
+    }
+    
+    private final TreeView<String> control;
+    private final CheckBox editable;
+    private final ComboBox<Cells> cellFactorySelector;
     private int childNum;
+    private Callback<TreeView<String>, TreeCell<String>> defaultCellFactory;
 
     public TreeViewPage() {
         FX.name(this, "TreeViewPage");
+        
+        control = new TreeView<>(new CheckBoxTreeItem<>("root"));
+        control.getRoot().setExpanded(true);
+        control.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
+        control.setTooltip(new Tooltip("edit to 'updated' to commit the change"));
+        addChild(true, true);
+        setContent(control);
+        defaultCellFactory = control.getCellFactory();
+        control.setOnEditCommit((ev) -> {
+            if ("updated".equals(ev.getNewValue())) {
+                TreeItem<String> item = ev.getTreeItem();
+                item.setValue("UPDATED!");
+                System.out.println("committing the value `UPDATED!`");
+            } else {
+                System.out.println("discarding the new value: " + ev.getNewValue());
+            }
+        });
 
         CheckBox indeterminate = new CheckBox("Indeterminate");
         FX.name(indeterminate, "indeterminate");
@@ -51,45 +80,70 @@ public class TreeViewPage extends TestPaneBase {
         CheckBox selected = new CheckBox("Selected");
         FX.name(selected, "selected");
 
-        Button add = new Button("Add");
-        add.setOnAction((ev) -> {
+        Button addButton = new Button("Add");
+        addButton.setOnAction((ev) -> {
             addChild(indeterminate.isSelected(), selected.isSelected());
         });
 
-        Button remove = new Button("Remove");
-        remove.setOnAction((ev) -> {
+        Button removeButton = new Button("Remove");
+        removeButton.setOnAction((ev) -> {
             removeChild();
         });
+        
+        editable = new CheckBox("editable");
+        editable.setOnAction((ev) -> {
+            updateEditable();
+        });
+        FX.name(editable, "editable");
 
-        toolbar().addAll(
-            add,
-            remove,
-            indeterminate,
-            selected
-        );
+        cellFactorySelector = new ComboBox<>();
+        FX.name(cellFactorySelector, "cellSelector");
+        cellFactorySelector.getItems().addAll(Cells.values());
+        cellFactorySelector.setEditable(false);
+        cellFactorySelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+            updateCellFactory();
+        });
 
-        updatePane();
+        OptionPane op = new OptionPane();
+        op.option(addButton);
+        op.option(indeterminate);
+        op.option(selected);
+        op.option(removeButton);
+        op.option(editable);
+        op.label("Cell Factory:");
+        op.option(cellFactorySelector);
+        setOptions(op);
+
+        control.getSelectionModel().select(control.getRoot());
+        FX.selectFirst(cellFactorySelector);
     }
 
-    protected void updatePane() {
-        control = new TreeView<>(new CheckBoxTreeItem<>("root"));
-        control.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
+    protected void updateEditable() {
+        boolean on = editable.isSelected();
+        control.setEditable(on);
+        if (on) {
+            cellFactorySelector.getSelectionModel().select(Cells.EDITABLE_TEXT_FIELD);
+        }
+    }
 
-        Button button = new Button("0");
-//        control.getRoot().setGraphic(button); // TODO add an option
-        control.getRoot().setExpanded(true);
-        control.getSelectionModel().select(control.getRoot());
+    protected void updateCellFactory() {
+        Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
+        var f = getCellFactory(t);
+        control.setCellFactory(f);
+    }
 
-        // add children for initial setup as needed
-        addChild(true, true);
-
-        setContent(control);
+    private Callback<TreeView<String>, TreeCell<String>> getCellFactory(Cells t) {
+        if (t != null) {
+            switch (t) {
+            case EDITABLE_TEXT_FIELD:
+                return TextFieldTreeCell.forTreeView();
+            }
+        }
+        return defaultCellFactory;
     }
 
     private void addChild(boolean indeterminate, boolean selected) {
         CheckBoxTreeItem<String> item = new CheckBoxTreeItem<>("child " + childNum++);
-        Button button = new Button("" + childNum);
-//        item.setGraphic(button);
         item.setSelected(selected);
         item.setIndeterminate(indeterminate);
         item.setExpanded(true);

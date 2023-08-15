@@ -96,7 +96,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         VARIABLE,
     }
 
-    private final ComboBox<Data> demoSelector;
+    private final ComboBox<Data> dataSelector;
     private final ComboBox<Cells> cellFactorySelector;
     private final ComboBox<Selection> selectionSelector;
     private final CheckBox nullFocusModel;
@@ -114,17 +114,20 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
             if ("updated".equals(ev.getNewValue())) {
                 int ix = ev.getIndex();
                 ev.getSource().getItems().set(ix, "UPDATED!");
+                System.out.println("committing the value `UPDATED!`");
+            } else {
+                System.out.println("discarding the new value: " + ev.getNewValue());
             }
         });
         defaultFocusModel = control.getFocusModel();
         defaultSelectionModel = control.getSelectionModel();
         setContent(new BorderPane(control));
 
-        demoSelector = new ComboBox<>();
-        FX.name(demoSelector, "demoSelector");
-        demoSelector.getItems().addAll(Data.values());
-        demoSelector.setEditable(false);
-        onChange(demoSelector, true, () -> {
+        dataSelector = new ComboBox<>();
+        FX.name(dataSelector, "demoSelector");
+        dataSelector.getItems().addAll(Data.values());
+        dataSelector.setEditable(false);
+        onChange(dataSelector, true, () -> {
             updateData();
         });
 
@@ -180,7 +183,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
         OptionPane op = new OptionPane();
         op.label("Data:");
-        op.option(demoSelector);
+        op.option(dataSelector);
         op.option(addButton);
         op.option(clearButton);
         op.option(editable);
@@ -193,12 +196,12 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         op.option(refresh);
         setOptions(op);
 
-        demoSelector.getSelectionModel().selectFirst();
+        dataSelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE);
     }
     
     protected void updateData() {
-        Data d = demoSelector.getSelectionModel().getSelectedItem();
+        Data d = dataSelector.getSelectionModel().getSelectedItem();
         ObservableList<Object> items = createData(d);
         control.setItems(items);
     }
