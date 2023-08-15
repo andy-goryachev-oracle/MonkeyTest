@@ -27,6 +27,9 @@ package com.oracle.tools.fx.monkey.pages;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.function.Function;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
@@ -34,16 +37,18 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -57,16 +62,15 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ListView page
  */
 public class ListViewPage extends TestPaneBase implements HasSkinnable {
-    enum Demo {
+    enum Data {
         EMPTY("Empty"),
         LARGE("Large"),
         SMALL("Small"),
         VARIABLE("Variable Height"),
-        LARGE_IMG("Large Images"),
         ;
 
         private final String text;
-        Demo(String text) { this.text = text; }
+        Data(String text) { this.text = text; }
         public String toString() { return text; }
     }
 
@@ -87,25 +91,41 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
     private enum Cells {
         DEFAULT,
+        EDITABLE_TEXT_FIELD,
         LARGE_ICON,
         VARIABLE,
     }
 
-    private final ComboBox<Demo> demoSelector;
+    private final ComboBox<Data> demoSelector;
     private final ComboBox<Cells> cellFactorySelector;
     private final ComboBox<Selection> selectionSelector;
     private final CheckBox nullFocusModel;
-    private ListView<Object> control;
+    private final CheckBox editable;
+    private final ListView<Object> control;
+    private FocusModel<Object> defaultFocusModel;
+    private MultipleSelectionModel<Object> defaultSelectionModel;
 
     public ListViewPage() {
         FX.name(this, "ListViewPage");
+        
+        control = new ListView<>();
+        control.setTooltip(new Tooltip("edit to 'updated' to commit the change"));
+        control.setOnEditCommit((ev) -> {
+            if ("updated".equals(ev.getNewValue())) {
+                int ix = ev.getIndex();
+                ev.getSource().getItems().set(ix, ev.getNewValue());
+            }
+        });
+        defaultFocusModel = control.getFocusModel();
+        defaultSelectionModel = control.getSelectionModel();
+        setContent(new BorderPane(control));
 
         demoSelector = new ComboBox<>();
         FX.name(demoSelector, "demoSelector");
-        demoSelector.getItems().addAll(Demo.values());
+        demoSelector.getItems().addAll(Data.values());
         demoSelector.setEditable(false);
-        demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
+        onChange(demoSelector, true, () -> {
+            updateData();
         });
 
         cellFactorySelector = new ComboBox<>();
@@ -120,14 +140,14 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         FX.name(selectionSelector, "selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
-        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
+        onChange(selectionSelector, true, () -> {
+            updateSelectionModel();
         });
 
         nullFocusModel = new CheckBox("null focus model");
         FX.name(nullFocusModel, "nullFocusModel");
-        nullFocusModel.selectedProperty().addListener((s, p, c) -> {
-            updatePane();
+        onChange(nullFocusModel, true, () -> {
+            updateFocusModel();
         });
 
         Button addButton = new Button("Add Item");
@@ -150,6 +170,12 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
             control.refresh();
         });
 
+        editable = new CheckBox("editable");
+        editable.setOnAction((ev) -> {
+            updateEditable();
+        });
+        FX.name(editable, "editable");
+
         // layout
 
         OptionPane op = new OptionPane();
@@ -157,6 +183,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         op.option(demoSelector);
         op.option(addButton);
         op.option(clearButton);
+        op.option(editable);
         op.label("Cell Factory:");
         op.option(cellFactorySelector);
         op.label("Selection Model:");
@@ -169,44 +196,54 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         demoSelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE);
     }
+    
+    protected void updateData() {
+        Data d = demoSelector.getSelectionModel().getSelectedItem();
+        ObservableList<Object> items = createData(d);
+        control.setItems(items);
+    }
 
-    protected Object[] createSpec(Demo d) {
-        switch (d) {
-        case EMPTY:
-            return new Object[] {
-            };
-        case LARGE:
-            return new Object[] {
-                Cmd.ROWS, 10_000,
-            };
-        case SMALL:
-            return new Object[] {
-                Cmd.ROWS, 3,
-            };
-        case VARIABLE:
-            return new Object[] {
-                Cmd.VARIABLE_ROWS, 500,
-            };
-        default:
-            throw new Error("?" + d);
+    private ObservableList<Object> createData(Data d) {
+        ObservableList<Object> items = FXCollections.observableArrayList();
+        if (d != null) {
+            switch (d) {
+            case EMPTY:
+                break;
+            case LARGE:
+                createItems(items, 10_000, this::newItem);
+                break;
+            case SMALL:
+                createItems(items, 3, this::newItem);
+                break;
+            case VARIABLE:
+                createItems(items, 500, this::newVariableItem);
+                break;
+            default:
+                throw new Error("?" + d);
+            }
+        }
+        return items;
+    }
+
+    private void createItems(ObservableList<Object> items, int count, Function<Integer, Object> gen) {
+        for (int i = 0; i < count; i++) {
+            Object v = gen.apply(i);
+            items.add(v);
         }
     }
 
-    protected void updatePane() {
-        Demo d = demoSelector.getSelectionModel().getSelectedItem();
-        Object[] spec = createSpec(d);
-
-        Pane n = createPane(d, spec);
-        setContent(n);
+    protected void updateFocusModel() {
+        FocusModel<Object> m;
+        if (nullFocusModel.isSelected()) {
+            m = null;
+        } else {
+            m = defaultFocusModel;
+        }
+        control.setFocusModel(m);
     }
 
-    // TODO consider updating the existing control instead of re-creating it
-    protected Pane createPane(Demo demo, Object[] spec) {
-        if ((demo == null) || (spec == null)) {
-            return new BorderPane();
-        }
-
-        boolean nullSelectionModel = false;
+    protected void updateSelectionModel() {
+        MultipleSelectionModel<Object> sm = defaultSelectionModel;
         SelectionMode selectionMode = SelectionMode.SINGLE;
         Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
         if (sel != null) {
@@ -215,7 +252,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
                 selectionMode = SelectionMode.MULTIPLE;
                 break;
             case NULL:
-                nullSelectionModel = true;
+                sm = null;
                 break;
             case SINGLE:
                 break;
@@ -224,44 +261,8 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
             }
         }
 
-        control = new ListView<>();
         control.getSelectionModel().setSelectionMode(selectionMode);
-        if (nullSelectionModel) {
-            control.setSelectionModel(null);
-        }
-        if (nullFocusModel.isSelected()) {
-            control.setFocusModel(null);
-        }
-
-        for (int i = 0; i < spec.length;) {
-            Object x = spec[i++];
-            if (x instanceof Cmd cmd) {
-                switch (cmd) {
-                case ROWS: {
-                    int n = (int)(spec[i++]);
-                    for (int j = 0; j < n; j++) {
-                        control.getItems().add(newItem(i));
-                    }
-                }
-                    break;
-                case VARIABLE_ROWS: {
-                    int n = (int)(spec[i++]);
-                    for (int j = 0; j < n; j++) {
-                        control.getItems().add(newVariableItem(j));
-                    }
-                }
-                    break;
-                default:
-                    throw new Error("?" + cmd);
-                }
-            } else {
-                throw new Error("?" + x);
-            }
-        }
-
-        BorderPane bp = new BorderPane();
-        bp.setCenter(control);
-        return bp;
+        control.setSelectionModel(sm);
     }
 
     protected String newItem(Object n) {
@@ -321,7 +322,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         Callback<ListView<Object>, ListCell<Object>> f = getCellFactory(t);
         control.setCellFactory(f);
     }
-    
+
     private static Image createImage(String s) {
         byte[] hash;
         try {
@@ -341,6 +342,8 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     private Callback getCellFactory(Cells t) {
         if (t != null) {
             switch (t) {
+            case EDITABLE_TEXT_FIELD:
+                return TextFieldListCell.forListView();
             case LARGE_ICON:
                 return (r) -> {
                     return new ListCell<Object>() {
@@ -399,5 +402,13 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
                 }
             }
         };
+    }
+
+    protected void updateEditable() {
+        boolean on = editable.isSelected();
+        control.setEditable(on);
+        if (on) {
+            cellFactorySelector.getSelectionModel().select(Cells.EDITABLE_TEXT_FIELD);
+        }
     }
 }
