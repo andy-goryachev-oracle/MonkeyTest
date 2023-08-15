@@ -113,7 +113,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         control.setOnEditCommit((ev) -> {
             if ("updated".equals(ev.getNewValue())) {
                 int ix = ev.getIndex();
-                ev.getSource().getItems().set(ix, ev.getNewValue());
+                ev.getSource().getItems().set(ix, "UPDATED!");
             }
         });
         defaultFocusModel = control.getFocusModel();
