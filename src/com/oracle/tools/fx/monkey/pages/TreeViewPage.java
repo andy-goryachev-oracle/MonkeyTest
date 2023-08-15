@@ -60,12 +60,12 @@ public class TreeViewPage extends TestPaneBase {
         control = new TreeView<>(new CheckBoxTreeItem<>("root"));
         control.getRoot().setExpanded(true);
         control.setCellFactory(CheckBoxTreeCell.<String>forTreeView());
-        control.setTooltip(new Tooltip("edit to 'updated' to commit the change"));
+        control.setTooltip(new Tooltip("edit to 'update' to commit the change"));
         addChild(true, true);
         setContent(control);
         defaultCellFactory = control.getCellFactory();
         control.setOnEditCommit((ev) -> {
-            if ("updated".equals(ev.getNewValue())) {
+            if ("update".equals(ev.getNewValue())) {
                 TreeItem<String> item = ev.getTreeItem();
                 item.setValue("UPDATED!");
                 System.out.println("committing the value `UPDATED!`");

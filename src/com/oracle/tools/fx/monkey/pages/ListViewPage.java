@@ -109,9 +109,9 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         FX.name(this, "ListViewPage");
         
         control = new ListView<>();
-        control.setTooltip(new Tooltip("edit to 'updated' to commit the change"));
+        control.setTooltip(new Tooltip("edit to 'update' to commit the change"));
         control.setOnEditCommit((ev) -> {
-            if ("updated".equals(ev.getNewValue())) {
+            if ("update".equals(ev.getNewValue())) {
                 int ix = ev.getIndex();
                 ev.getSource().getItems().set(ix, "UPDATED!");
                 System.out.println("committing the value `UPDATED!`");
