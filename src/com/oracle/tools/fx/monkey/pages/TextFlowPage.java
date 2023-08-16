@@ -199,6 +199,8 @@ public class TextFlowPage extends TestPaneBase {
             return new Node[] {
                 t("Rich Text: ", f),
                 t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("BOLD ", f, "-fx-font-weight:900;"),
                 t("italic ", f, "-fx-font-style:italic;"),
                 t("underline ", f, "-fx-underline:true;"),
                 t(Templates.TWO_EMOJIS, f),
