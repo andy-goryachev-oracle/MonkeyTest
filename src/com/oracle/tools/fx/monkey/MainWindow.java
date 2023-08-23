@@ -63,6 +63,8 @@ public class MainWindow extends Stage {
     protected Label status;
 
     public MainWindow() {
+        FX.name(this, "MainWindow");
+
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
 
@@ -210,16 +212,22 @@ public class MainWindow extends Stage {
     private void openNative2Ascii() {
         // TODO single instance
         Stage s = new Stage();
+        FX.name(s, "Native2AsciiWindow");
         s.setTitle("Native to ASCII");
         s.setScene(new Scene(new Native2AsciiPane()));
+        s.setWidth(900);
+        s.setHeight(500);
         s.show();
     }
 
     private void openCssPlayground() {
         // TODO single instance
         Stage s = new Stage();
+        FX.name(s, "CSSPlayground");
         s.setTitle("CSS Playground");
         s.setScene(new Scene(new CssPlaygroundPane()));
+        s.setWidth(900);
+        s.setHeight(500);
         s.show();
     }
 

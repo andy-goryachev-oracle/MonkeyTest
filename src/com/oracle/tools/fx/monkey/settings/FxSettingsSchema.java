@@ -402,8 +402,22 @@ public class FxSettingsSchema {
         if (x instanceof String s) {
             return s;
         }
-        if(n instanceof Pane) {
+        if (n instanceof Pane) {
             return n.getClass().getSimpleName();
+        }
+        return null;
+    }
+
+    /** sets the name for the purposes of storing user preferences */
+    public static void setName(Window w, String name) {
+        w.getProperties().put(NAME_PROP, name);
+    }
+
+    /** returns the name for the purposes of storing user preferences, or null */
+    public static String getName(Window w) {
+        Object x = w.getProperties().get(NAME_PROP);
+        if (x instanceof String s) {
+            return s;
         }
         return null;
     }
