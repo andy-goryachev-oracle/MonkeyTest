@@ -41,7 +41,7 @@ public class TextSelector {
     private final ComboBox<Object> field = new ComboBox<>();
 
     public TextSelector(String id, Consumer<String> client, Object... items) {
-        FX.name(field, "TextSelector");
+        FX.name(field, id);
         field.getItems().setAll(items);
         field.setConverter(new StringConverter<Object>() {
             @Override
