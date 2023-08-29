@@ -31,6 +31,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -108,7 +110,14 @@ public class TestPaneBase extends BorderPane {
     }
 
     public void setOptions(Node n) {
-        setRight(n);
+        if (n == null) {
+            setRight(null);
+        } else {
+            ScrollPane sp = new ScrollPane(n);
+            sp.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+            sp.setHbarPolicy(ScrollBarPolicy.NEVER);
+            setRight(sp);
+        }
     }
 
     protected void onChange(ComboBox<?> cb, boolean immediately, Runnable client) {
