@@ -48,6 +48,7 @@ import javafx.util.Duration;
  * TODO handle i/o errors - set handler?
  */
 public class FxSettings {
+    public static final boolean LOG = Boolean.getBoolean("FxSettings.LOG");
     private static final Duration SAVE_DELAY = Duration.millis(100);
     private static ISettingsProvider provider;
     private static boolean save;

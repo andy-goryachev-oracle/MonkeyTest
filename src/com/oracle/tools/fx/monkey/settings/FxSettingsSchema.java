@@ -30,16 +30,28 @@ import java.awt.Shape;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -161,21 +173,21 @@ public class FxSettingsSchema {
     }
 
     public static void storeNode(WindowMonitor m, Node n) {
-        //System.out.println("storeNode " + n); // FIX
-        // ignore nodes that have no set names
-        String name = getName(n);
-        if(name == null) {
-            return;
-        }
-
         if (n instanceof ListView lv) {
             storeListView(m, lv);
+            return;
         } else if (n instanceof ComboBox cb) {
             storeComboBox(m, cb);
+            return;
         } else if (n instanceof CheckBox cb) {
             storeCheckBox(m, cb);
+            return;
         } else if (n instanceof SplitPane sp) {
             storeSplitPane(m, sp);
+            return;
+        } else if (n instanceof ScrollPane sp) {
+            storeNode(m, sp.getContent());
+            return;
         }
 
         if (n instanceof Parent p) {
@@ -192,7 +204,6 @@ public class FxSettingsSchema {
 
         WindowMonitor m = WindowMonitor.getFor(n);
 
-        //System.out.println("restoreNode " + n); // FIX
         if (n instanceof ListView lv) {
             restoreListView(m, lv);
         } else if (n instanceof ComboBox cb) {
@@ -201,6 +212,8 @@ public class FxSettingsSchema {
             restoreCheckBox(m, cb);
         } else if (n instanceof SplitPane sp) {
             restoreSplitPane(m, sp);
+        } else if (n instanceof ScrollPane sp) {
+            restoreNode(sp.getContent());
         }
 
         if (n instanceof Parent p) {
@@ -291,31 +304,23 @@ public class FxSettingsSchema {
         n.getSelectionModel().select(ix);
     }
 
-    private static boolean checkNoScene(Node n) {
-        if (n.getScene() == null) {
-            class ChLi implements ChangeListener<Scene> {
-                private final Node node;
-
-                public ChLi(Node n) {
-                    this.node = n;
-                }
-
+    private static boolean checkNoScene(Node node) {
+        if (node == null) {
+            return true;
+        } else if (node.getScene() == null) {
+            // delay restore until node becomes a part of the scene
+            node.sceneProperty().addListener(new ChangeListener<Scene>() {
                 @Override
                 public void changed(ObservableValue<? extends Scene> src, Scene old, Scene scene) {
                     if (scene != null) {
                         Window w = scene.getWindow();
                         if (w != null) {
-                            n.sceneProperty().removeListener(this);
-                            restoreNode(n);
-                            FxSettings.restore(n);
+                            node.sceneProperty().removeListener(this);
+                            restoreNode(node);
                         }
                     }
                 }
-            }
-            ;
-
-            n.sceneProperty().addListener(new ChLi(n));
-
+            });
             return true;
         }
         return false;
@@ -398,12 +403,39 @@ public class FxSettingsSchema {
 
     /** returns a name associated with this node for the purposes of storing user preferences */
     public static String getName(Node n) {
-        Object x = n.getProperties().get(NAME_PROP);
-        if (x instanceof String s) {
-            return s;
-        }
-        if (n instanceof Pane) {
-            return n.getClass().getSimpleName();
+        if (n != null) {
+            Object x = n.getProperties().get(NAME_PROP);
+            if (x instanceof String s) {
+                return s;
+            }
+
+            if (n instanceof Pane) {
+                if (n instanceof AnchorPane) {
+                    return "AnchorPane";
+                } else if (n instanceof BorderPane) {
+                    return "BorderPane";
+                } else if (n instanceof DialogPane) {
+                    return "DialogPane";
+                } else if (n instanceof FlowPane) {
+                    return "FlowPane";
+                } else if (n instanceof GridPane) {
+                    return "GridPane";
+                } else if (n instanceof HBox) {
+                    return "HBox";
+                } else if (n instanceof StackPane) {
+                    return "StackPane";
+                } else if (n instanceof TilePane) {
+                    return "TilePane";
+                } else if (n instanceof VBox) {
+                    return "VBox";
+                } else {
+                    return "Pane";
+                }
+            } else if (n instanceof Group) {
+                return "Group";
+            } else if (n instanceof Region) {
+                return "Region";
+            }
         }
         return null;
     }
