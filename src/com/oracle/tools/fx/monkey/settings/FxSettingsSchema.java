@@ -134,7 +134,6 @@ public class FxSettingsSchema {
         return false;
     }
 
-    // TODO add type-specific suffix
     private static String getName(WindowMonitor m, Node n) {
         StringBuilder sb = new StringBuilder();
         if (collectNames(sb, n)) {
@@ -155,14 +154,13 @@ public class FxSettingsSchema {
         }
 
         Parent p = n.getParent();
-        // FIX parent is null, so it's not yet connected (probably because of the skin)
         if (p != null) {
             if (collectNames(sb, p)) {
                 return true;
             }
         }
 
-        String name = getName(n);
+        String name = getNodeName(n);
         if (name == null) {
             return true;
         }
@@ -170,6 +168,44 @@ public class FxSettingsSchema {
         sb.append('.');
         sb.append(name);
         return false;
+    }
+    
+    private static String getNodeName(Node n) {
+        if (n != null) {
+            String name = getName(n);
+            if (name != null) {
+                return name;
+            }
+
+            if (n instanceof Pane) {
+                if (n instanceof AnchorPane) {
+                    return "AnchorPane";
+                } else if (n instanceof BorderPane) {
+                    return "BorderPane";
+                } else if (n instanceof DialogPane) {
+                    return "DialogPane";
+                } else if (n instanceof FlowPane) {
+                    return "FlowPane";
+                } else if (n instanceof GridPane) {
+                    return "GridPane";
+                } else if (n instanceof HBox) {
+                    return "HBox";
+                } else if (n instanceof StackPane) {
+                    return "StackPane";
+                } else if (n instanceof TilePane) {
+                    return "TilePane";
+                } else if (n instanceof VBox) {
+                    return "VBox";
+                } else {
+                    return "Pane";
+                }
+            } else if (n instanceof Group) {
+                return "Group";
+            } else if (n instanceof Region) {
+                return "Region";
+            }
+        }
+        return null;
     }
 
     public static void storeNode(WindowMonitor m, Node n) {
@@ -401,55 +437,37 @@ public class FxSettingsSchema {
         n.getProperties().put(NAME_PROP, name);
     }
 
-    /** returns a name associated with this node for the purposes of storing user preferences */
+    /** sets the name for the purposes of storing user preferences */
+    public static void setName(Window w, String name) {
+        w.getProperties().put(NAME_PROP, name);
+    }
+    
+    /**
+     * Returns the name for the purposes of storing user preferences,
+     * set previously by {@link #setName(Node, String)},
+     * or null.
+     */
     public static String getName(Node n) {
         if (n != null) {
             Object x = n.getProperties().get(NAME_PROP);
             if (x instanceof String s) {
                 return s;
             }
-
-            if (n instanceof Pane) {
-                if (n instanceof AnchorPane) {
-                    return "AnchorPane";
-                } else if (n instanceof BorderPane) {
-                    return "BorderPane";
-                } else if (n instanceof DialogPane) {
-                    return "DialogPane";
-                } else if (n instanceof FlowPane) {
-                    return "FlowPane";
-                } else if (n instanceof GridPane) {
-                    return "GridPane";
-                } else if (n instanceof HBox) {
-                    return "HBox";
-                } else if (n instanceof StackPane) {
-                    return "StackPane";
-                } else if (n instanceof TilePane) {
-                    return "TilePane";
-                } else if (n instanceof VBox) {
-                    return "VBox";
-                } else {
-                    return "Pane";
-                }
-            } else if (n instanceof Group) {
-                return "Group";
-            } else if (n instanceof Region) {
-                return "Region";
-            }
         }
         return null;
     }
 
-    /** sets the name for the purposes of storing user preferences */
-    public static void setName(Window w, String name) {
-        w.getProperties().put(NAME_PROP, name);
-    }
-
-    /** returns the name for the purposes of storing user preferences, or null */
+    /**
+     * Returns the name for the purposes of storing user preferences,
+     * set previously by {@link #setName(Window, String)},
+     * or null.
+     */
     public static String getName(Window w) {
-        Object x = w.getProperties().get(NAME_PROP);
-        if (x instanceof String s) {
-            return s;
+        if (w != null) {
+            Object x = w.getProperties().get(NAME_PROP);
+            if (x instanceof String s) {
+                return s;
+            }
         }
         return null;
     }
