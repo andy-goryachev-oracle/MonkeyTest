@@ -140,7 +140,7 @@ public class FxSettings {
             FxSettingsSchema.storeWindow(m, w);
 
             Node p = w.getScene().getRoot();
-            FxSettingsSchema.storeNode(m, p);
+            FxSettingsSchema.storeNode(p);
         }
     }
 
@@ -225,9 +225,6 @@ public class FxSettings {
     }
 
     public static void store(Node n) {
-        WindowMonitor m = WindowMonitor.getFor(n);
-        if (m != null) {
-            FxSettingsSchema.storeNode(m, n);
-        }
+        FxSettingsSchema.storeNode(n);
     }
 }

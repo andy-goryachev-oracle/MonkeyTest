@@ -134,11 +134,17 @@ public class FxSettingsSchema {
         return false;
     }
 
-    private static String getName(WindowMonitor m, Node n) {
+    private static String computeName(Node n) {
+        WindowMonitor m = WindowMonitor.getFor(n);
+        if (m == null) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
         if (collectNames(sb, n)) {
             return null;
         }
+
         String id = m.getID();
         return id + sb;
     }
@@ -208,27 +214,27 @@ public class FxSettingsSchema {
         return null;
     }
 
-    public static void storeNode(WindowMonitor m, Node n) {
+    public static void storeNode(Node n) {
         if (n instanceof ListView lv) {
-            storeListView(m, lv);
+            storeListView(lv);
             return;
         } else if (n instanceof ComboBox cb) {
-            storeComboBox(m, cb);
+            storeComboBox(cb);
             return;
         } else if (n instanceof CheckBox cb) {
-            storeCheckBox(m, cb);
+            storeCheckBox(cb);
             return;
         } else if (n instanceof SplitPane sp) {
-            storeSplitPane(m, sp);
+            storeSplitPane(sp);
             return;
         } else if (n instanceof ScrollPane sp) {
-            storeNode(m, sp.getContent());
+            storeNode(sp.getContent());
             return;
         }
 
         if (n instanceof Parent p) {
             for (Node ch: p.getChildrenUnmodifiable()) {
-                storeNode(m, ch);
+                storeNode(ch);
             }
         }
     }
@@ -238,16 +244,14 @@ public class FxSettingsSchema {
             return;
         }
 
-        WindowMonitor m = WindowMonitor.getFor(n);
-
         if (n instanceof ListView lv) {
-            restoreListView(m, lv);
+            restoreListView(lv);
         } else if (n instanceof ComboBox cb) {
-            restoreComboBox(m, cb);
+            restoreComboBox(cb);
         } else if (n instanceof CheckBox cb) {
-            restoreCheckBox(m, cb);
+            restoreCheckBox(cb);
         } else if (n instanceof SplitPane sp) {
-            restoreSplitPane(m, sp);
+            restoreSplitPane(sp);
         } else if (n instanceof ScrollPane sp) {
             restoreNode(sp.getContent());
         }
@@ -259,22 +263,22 @@ public class FxSettingsSchema {
         }
     }
 
-    private static void storeSplitPane(WindowMonitor m, SplitPane sp) {
+    private static void storeSplitPane(SplitPane sp) {
         double[] div = sp.getDividerPositions();
         SStream ss = SStream.writer();
         ss.add(div.length);
         for (int i = 0; i < div.length; i++) {
             ss.add(div[i]);
         }
-        String name = getName(m, sp);
+        String name = computeName(sp);
         FxSettings.setStream(PREFIX + name, ss);
 
         for (Node ch: sp.getItems()) {
-            storeNode(m, ch);
+            storeNode(ch);
         }
     }
 
-    private static void restoreSplitPane(WindowMonitor m, SplitPane sp) {
+    private static void restoreSplitPane(SplitPane sp) {
         for (Node ch: sp.getItems()) {
             restoreNode(ch);
         }
@@ -297,7 +301,7 @@ public class FxSettingsSchema {
         */
     }
 
-    private static void storeComboBox(WindowMonitor m, ComboBox n) {
+    private static void storeComboBox(ComboBox n) {
         if (n.getSelectionModel() == null) {
             return;
         }
@@ -307,7 +311,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        String name = getName(m, n);
+        String name = computeName(n);
         if (name == null) {
             return;
         }
@@ -316,7 +320,7 @@ public class FxSettingsSchema {
     }
 
     // TODO perhaps operate with selection model instead
-    private static void restoreComboBox(WindowMonitor m, ComboBox n) {
+    private static void restoreComboBox(ComboBox n) {
         if (n.getSelectionModel() == null) {
             return;
         }
@@ -325,7 +329,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        String name = getName(m, n);
+        String name = computeName(n);
         if (name == null) {
             return;
         }
@@ -362,7 +366,7 @@ public class FxSettingsSchema {
         return false;
     }
 
-    private static void storeListView(WindowMonitor m, ListView n) {
+    private static void storeListView(ListView n) {
         if (n.getSelectionModel() == null) {
             return;
         }
@@ -372,7 +376,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        String name = getName(m, n);
+        String name = computeName(n);
         if (name == null) {
             return;
         }
@@ -380,7 +384,7 @@ public class FxSettingsSchema {
         FxSettings.setInt(PREFIX + name, ix);
     }
 
-    private static void restoreListView(WindowMonitor m, ListView n) {
+    private static void restoreListView(ListView n) {
         if (n.getSelectionModel() == null) {
             return;
         }
@@ -389,7 +393,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        String name = getName(m, n);
+        String name = computeName(n);
         if (name == null) {
             return;
         }
@@ -404,8 +408,8 @@ public class FxSettingsSchema {
         n.getSelectionModel().select(ix);
     }
 
-    private static void storeCheckBox(WindowMonitor m, CheckBox n) {
-        String name = getName(m, n);
+    private static void storeCheckBox(CheckBox n) {
+        String name = computeName(n);
         if (name == null) {
             return;
         }
@@ -414,12 +418,12 @@ public class FxSettingsSchema {
         FxSettings.setBoolean(PREFIX + name, sel);
     }
 
-    private static void restoreCheckBox(WindowMonitor m, CheckBox n) {
+    private static void restoreCheckBox(CheckBox n) {
         if (checkNoScene(n)) {
             return;
         }
 
-        String name = getName(m, n);
+        String name = computeName(n);
         if (name == null) {
             return;
         }
