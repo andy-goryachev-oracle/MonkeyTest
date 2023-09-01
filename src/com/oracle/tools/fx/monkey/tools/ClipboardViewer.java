@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.pages;
+package com.oracle.tools.fx.monkey.tools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,25 +32,25 @@ import java.util.List;
 import java.util.Set;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- *
+ * Clipboard Viewer
  */
-public class ClipboardPage extends TestPaneBase {
+public class ClipboardViewer extends BorderPane {
     private final TreeItem<Entry> root;
     private final TreeTableView<Entry> control;
 
-    public ClipboardPage() {
+    public ClipboardViewer() {
         FX.name(this, "ClipboardPage");
 
         root = new TreeItem<>(null);
@@ -108,12 +108,11 @@ public class ClipboardPage extends TestPaneBase {
         Button addButton = new Button("Reload");
         addButton.setOnAction((ev) -> reload());
 
-        OptionPane op = new OptionPane();
-        op.add(addButton);
+        ToolBar tp = new ToolBar(addButton);
 
-        setContent(control);
-        setOptions(op);
-        
+        setCenter(control);
+        setTop(tp);
+
         reload();
     }
 

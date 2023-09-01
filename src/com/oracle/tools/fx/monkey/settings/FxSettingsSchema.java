@@ -26,7 +26,6 @@
 // https://github.com/andy-goryachev/FxDock
 package com.oracle.tools.fx.monkey.settings;
 
-import java.awt.Shape;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
@@ -52,6 +51,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;

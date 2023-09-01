@@ -158,10 +158,18 @@ public class FX {
     public static void name(Node n, String name) {
         FxSettingsSchema.setName(n, name);
     }
-    
+
+    public static String getName(Node n) {
+        return FxSettingsSchema.getName(n);
+    }
+
     /** adds a name property to the Window for the purposes of storing the preferences */
     public static void name(Window w, String name) {
         FxSettingsSchema.setName(w, name);
+    }
+
+    public static String getName(Window w) {
+        return FxSettingsSchema.getName(w);
     }
 
     /** perhaps it should be a method in TextFlow: getTextLength() */

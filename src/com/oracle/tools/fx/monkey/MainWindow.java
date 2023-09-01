@@ -47,10 +47,12 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
+import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import com.oracle.tools.fx.monkey.util.SingleInstance;
 
 /**
  * Monkey Tester Main Window
@@ -140,6 +142,7 @@ public class MainWindow extends Stage {
         FX.radio(b, "RadioMenuItem 3", KeyCombination.keyCombination("Shortcut+3"), g);
         // Tools
         FX.menu(b, "_Tools");
+        FX.item(b, "Clipboard Viewer", this::openClipboardViewer);
         FX.item(b, "CSS Playground", this::openCssPlayground);
         FX.item(b, "Native-to-ascii", this::openNative2Ascii);
         // Window
@@ -210,25 +213,27 @@ public class MainWindow extends Stage {
      }
 
     private void openNative2Ascii() {
-        // TODO single instance
-        Stage s = new Stage();
-        FX.name(s, "Native2AsciiWindow");
-        s.setTitle("Native to ASCII");
-        s.setScene(new Scene(new Native2AsciiPane()));
-        s.setWidth(900);
-        s.setHeight(500);
-        s.show();
+        SingleInstance.openSingleInstance(
+            "Native2AsciiWindow",
+            "Native to ASCII",
+            Native2AsciiPane::new
+        );
     }
 
     private void openCssPlayground() {
-        // TODO single instance
-        Stage s = new Stage();
-        FX.name(s, "CSSPlayground");
-        s.setTitle("CSS Playground");
-        s.setScene(new Scene(new CssPlaygroundPane()));
-        s.setWidth(900);
-        s.setHeight(500);
-        s.show();
+        SingleInstance.openSingleInstance(
+            "CSSPlayground",
+            "CSS Playground",
+            CssPlaygroundPane::new
+        );
+    }
+
+    private void openClipboardViewer() {
+        SingleInstance.openSingleInstance(
+            "ClipboardViewer",
+            "Clipboard Viewer",
+            ClipboardViewer::new
+        );
     }
 
     private void nullSkin() {
