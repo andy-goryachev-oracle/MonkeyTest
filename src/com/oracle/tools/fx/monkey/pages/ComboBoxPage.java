@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -41,7 +42,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ComboBox Page
  */
 public class ComboBoxPage extends TestPaneBase {
-    private ComboBox control;
+    private final ComboBox<String> control;
     private final Label itemCountField;
 
     public ComboBoxPage() {
@@ -49,7 +50,7 @@ public class ComboBoxPage extends TestPaneBase {
 
         itemCountField = new Label("<default>");
 
-        control = new ComboBox();
+        control = new ComboBox<>();
         control.getItems().setAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
         VBox b = new VBox();
@@ -84,15 +85,22 @@ public class ComboBoxPage extends TestPaneBase {
                     changeItemCount(2);
                 })).play();
         });
+        
+        CheckBox editable = new CheckBox("editable");
+        FX.name(editable, "editable");
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
 
-        OptionPane p = new OptionPane();
-        p.option(setConverterButton);
-        p.label("Visible Row Count:");
-        p.option(itemCountField);
-        p.option(changeCountButton);
+        OptionPane op = new OptionPane();
+        // TODO data?
+        op.option(editable);
+        // TODO converter selector
+        op.option(setConverterButton);
+        op.label("Visible Row Count:");
+        op.option(itemCountField);
+        op.option(changeCountButton);
 
         setContent(b);
-        setOptions(p);
+        setOptions(op);
     }
 
     protected void changeItemCount(int x) {
