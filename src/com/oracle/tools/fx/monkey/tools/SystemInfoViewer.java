@@ -22,34 +22,27 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package com.oracle.tools.fx.monkey.tools;
 
-package com.oracle.tools.fx.monkey.util;
+import javafx.application.Platform;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 
-import java.util.function.Supplier;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+/**
+ * Tool shows the System Info
+ */
+public class SystemInfoViewer extends BorderPane {
+    private final TextArea textField;
 
-public class SingleInstance {
-    public static Stage openSingleInstance(String name, String title, Supplier<Parent> content) {
-        for (Window w: Window.getWindows()) {
-            String s = FX.getName(w);
-            if (name.equals(s) && (w instanceof Stage stage)) {
-                stage.requestFocus();
-                return stage;
-            }
-        }
+    public SystemInfoViewer() {
+        textField = new TextArea();
+        textField.setEditable(false);
+        textField.setWrapText(false);
+        setCenter(textField);
 
-        Parent p = content.get();
-
-        Stage s = new Stage();
-        FX.name(s, name);
-        s.setTitle(title);
-        s.setScene(new Scene(p));
-        s.setWidth(900);
-        s.setHeight(500);
-        s.show();
-        return s;
+        Platform.runLater(() -> {
+            String s = SystemInfo.generateReport();
+            textField.setText(s);
+        });
     }
 }

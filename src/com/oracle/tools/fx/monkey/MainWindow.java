@@ -49,7 +49,9 @@ import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
+import com.oracle.tools.fx.monkey.tools.KeyboardEventViewer;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
+import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
@@ -95,7 +97,7 @@ public class MainWindow extends Stage {
 
         SplitPane split = new SplitPane(pageSelector, contentPane);
         FX.name(split, "MainSplit");
-        split.setDividerPositions(0.2);
+        split.setDividerPositions(0.15);
         SplitPane.setResizableWithParent(pageSelector, Boolean.FALSE);
         SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
 
@@ -113,7 +115,7 @@ public class MainWindow extends Stage {
         updateTitle();
         updateStatus();
     }
-    
+
     private MenuBar createMenu() {
         CheckMenuItem orientation = new CheckMenuItem("Orientation: RTL");
         orientation.setOnAction((ev) -> {
@@ -144,7 +146,9 @@ public class MainWindow extends Stage {
         FX.menu(b, "_Tools");
         FX.item(b, "Clipboard Viewer", this::openClipboardViewer);
         FX.item(b, "CSS Playground", this::openCssPlayground);
+        FX.item(b, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(b, "Native-to-ascii", this::openNative2Ascii);
+        FX.item(b, "System Info", this::openSystemInfo);
         // Window
         FX.menu(b, "_Window");
         FX.item(b, orientation);
@@ -191,7 +195,7 @@ public class MainWindow extends Stage {
             sb.append("  scaleY=");
             sb.append(getRenderScaleY());
         }
-        
+
         sb.append("  LOC:");
         sb.append(new File("").getAbsolutePath());
         status.setText(sb.toString());
@@ -233,6 +237,22 @@ public class MainWindow extends Stage {
             "ClipboardViewer",
             "Clipboard Viewer",
             ClipboardViewer::new
+        );
+    }
+
+    private void openKeyboardViewer() {
+        SingleInstance.openSingleInstance(
+            "KeyboardEventViewer",
+            "Keyboard Event Viewer",
+            KeyboardEventViewer::new
+        );
+    }
+
+    private void openSystemInfo() {
+        SingleInstance.openSingleInstance(
+            "SystemInfo",
+            "System Info",
+            SystemInfoViewer::new
         );
     }
 

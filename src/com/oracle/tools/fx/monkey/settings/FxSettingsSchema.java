@@ -175,7 +175,7 @@ public class FxSettingsSchema {
         sb.append(name);
         return false;
     }
-    
+
     private static String getNodeName(Node n) {
         if (n != null) {
             String name = getName(n);
@@ -264,13 +264,17 @@ public class FxSettingsSchema {
     }
 
     private static void storeSplitPane(SplitPane sp) {
+        String name = computeName(sp);
+        if (name == null) {
+            return;
+        }
+
         double[] div = sp.getDividerPositions();
         SStream ss = SStream.writer();
         ss.add(div.length);
         for (int i = 0; i < div.length; i++) {
             ss.add(div[i]);
         }
-        String name = computeName(sp);
         FxSettings.setStream(PREFIX + name, ss);
 
         for (Node ch: sp.getItems()) {
@@ -279,26 +283,35 @@ public class FxSettingsSchema {
     }
 
     private static void restoreSplitPane(SplitPane sp) {
+        if (checkNoScene(sp)) {
+            return;
+        }
+
+        String name = computeName(sp);
+        if (name == null) {
+            return;
+        }
+
         for (Node ch: sp.getItems()) {
             restoreNode(ch);
         }
 
-        /** FIX getting smaller and smaller
-        String name = getName(m, sp);
         SStream ss = FxSettings.getStream(PREFIX + name);
         if (ss != null) {
-            int ct = ss.nextInt(-1);
-            if (ct > 0) {
-                for (int i = 0; i < ct; i++) {
-                    double div = ss.nextDouble(-1);
-                    if (div < 0) {
-                        break;
+            int sz = ss.nextInt(-1);
+            if (sz > 0) {
+                double[] divs = new double[sz];
+                for (int i = 0; i < sz; i++) {
+                    double v = ss.nextDouble(-1);
+                    if (v < 0) {
+                        return;
                     }
-                    sp.setDividerPosition(i, div);
+                    divs[i] = v;
                 }
+                // FIX getting smaller and smaller
+                // sp.setDividerPositions(divs);
             }
         }
-        */
     }
 
     private static void storeComboBox(ComboBox n) {
@@ -445,7 +458,7 @@ public class FxSettingsSchema {
     public static void setName(Window w, String name) {
         w.getProperties().put(NAME_PROP, name);
     }
-    
+
     /**
      * Returns the name for the purposes of storing user preferences,
      * set previously by {@link #setName(Node, String)},
