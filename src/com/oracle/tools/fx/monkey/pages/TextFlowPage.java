@@ -31,6 +31,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -130,6 +131,17 @@ public class TextFlowPage extends TestPaneBase {
             updateControl();
         });
 
+        ComboBox<Double> lineSpacing = new ComboBox<>();
+        FX.name(lineSpacing, "lineSpacing");
+        lineSpacing.getItems().setAll(
+            0.0,
+            5.0,
+            31.415
+        );
+        lineSpacing.getSelectionModel().selectedItemProperty().addListener((s, p, v) -> {
+            control.setLineSpacing(v);
+        });
+
         OptionPane op = new OptionPane();
         op.label("Text:");
         op.option(textSelector.node());
@@ -142,6 +154,8 @@ public class TextFlowPage extends TestPaneBase {
         op.option(showCaretPath);
         op.label("Direct Style:");
         op.option(styleField);
+        op.label("Line Spacing:");
+        op.option(lineSpacing);
         //
         op.option(new Separator(Orientation.HORIZONTAL));
         op.label("Pick Result:");
