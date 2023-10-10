@@ -47,10 +47,10 @@ public class JTextAreaWindow extends BorderPane {
         rtl.selectedProperty().addListener((s, p, c) -> {
             EventQueue.invokeLater(() -> {
                 ComponentOrientation ori = c ? ComponentOrientation.RIGHT_TO_LEFT : ComponentOrientation.LEFT_TO_RIGHT;
-               textArea.setComponentOrientation(ori); 
+                textArea.setComponentOrientation(ori);
             });
         });
-        
+
         CheckBox rtl2 = new CheckBox("right-to-left (FX Scene.NodeOrientation)");
         rtl2.selectedProperty().addListener((s, p, c) -> {
             // ha ha mirror images the text area, including text!
@@ -62,7 +62,7 @@ public class JTextAreaWindow extends BorderPane {
 
         setTop(tb);
         setCenter(swingNode);
-        
+
         EventQueue.invokeLater(() -> {
             textArea = new JTextArea("Arabic: العربية");
             swingNode.setContent(textArea);
