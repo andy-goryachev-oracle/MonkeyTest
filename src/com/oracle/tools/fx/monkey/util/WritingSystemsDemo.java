@@ -86,7 +86,7 @@ public class WritingSystemsDemo {
         "Suret", "ܣܘܪܝܬ",
         "Surgujia", "सरगुजिया",
         "Surjapuri", "सुरजापुरी, সুরজাপুরী",
-        "Tamil", "Tamiḻ",
+        "Tamil", "தமிழ்",
         "Telugu", "తెలుగు",
         "Thaana", "ދިވެހި",
         "Thai", "ไทย",
