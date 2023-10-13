@@ -36,11 +36,11 @@ import javafx.scene.layout.BorderPane;
 /**
  * JTextArea tool for comparison with FX.
  */
-public class JTextAreaWindow extends BorderPane {
+public class EmbeddedJTextAreaWindow extends BorderPane {
     private final SwingNode swingNode;
     private JTextArea textArea;
 
-    public JTextAreaWindow() {
+    public EmbeddedJTextAreaWindow() {
         swingNode = new SwingNode();
 
         CheckBox rtl = new CheckBox("right-to-left (Swing ComponentOrientation)");
@@ -64,7 +64,8 @@ public class JTextAreaWindow extends BorderPane {
         setCenter(swingNode);
 
         EventQueue.invokeLater(() -> {
-            textArea = new JTextArea("Arabic: العربية");
+            textArea = new JTextArea("Arabic: العربية\nHebrew: עברית");
+            textArea.setFont(textArea.getFont().deriveFont(24f));
             swingNode.setContent(textArea);
         });
     }
