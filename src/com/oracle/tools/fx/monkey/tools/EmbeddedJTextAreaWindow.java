@@ -28,8 +28,10 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.EventQueue;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.CheckBox;
@@ -39,12 +41,12 @@ import javafx.scene.layout.BorderPane;
 /**
  * JTextArea tool for comparison with FX.
  */
-public class JTextAreaWindow extends BorderPane {
+public class EmbeddedJTextAreaWindow extends BorderPane {
     private final SwingNode swingNode;
     private JTextArea textArea;
     private JTextField textField;
 
-    public JTextAreaWindow() {
+    public EmbeddedJTextAreaWindow() {
         swingNode = new SwingNode();
 
         CheckBox rtl = new CheckBox("right-to-left (Swing ComponentOrientation)");
@@ -72,8 +74,10 @@ public class JTextAreaWindow extends BorderPane {
             textArea = new JTextArea("Arabic: العربية\nHebrew: עברית");
             textField = new JTextField("Arabic: العربية Hebrew: עברית");
             JPanel p = new JPanel(new BorderLayout());
-            p.add(textArea, BorderLayout.CENTER);
+            JScrollPane sp = new JScrollPane(textArea);
+            p.add(sp, BorderLayout.CENTER);
             p.add(textField, BorderLayout.SOUTH);
+            p.setBorder(new EmptyBorder(10, 10, 10, 10));
             swingNode.setContent(p);
         });
     }
