@@ -24,9 +24,12 @@
  */
 package com.oracle.tools.fx.monkey.tools;
 
+import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.EventQueue;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.CheckBox;
@@ -39,6 +42,7 @@ import javafx.scene.layout.BorderPane;
 public class JTextAreaWindow extends BorderPane {
     private final SwingNode swingNode;
     private JTextArea textArea;
+    private JTextField textField;
 
     public JTextAreaWindow() {
         swingNode = new SwingNode();
@@ -48,6 +52,7 @@ public class JTextAreaWindow extends BorderPane {
             EventQueue.invokeLater(() -> {
                 ComponentOrientation ori = c ? ComponentOrientation.RIGHT_TO_LEFT : ComponentOrientation.LEFT_TO_RIGHT;
                 textArea.setComponentOrientation(ori);
+                textField.setComponentOrientation(ori);
             });
         });
 
@@ -64,8 +69,12 @@ public class JTextAreaWindow extends BorderPane {
         setCenter(swingNode);
 
         EventQueue.invokeLater(() -> {
-            textArea = new JTextArea("Arabic: العربية");
-            swingNode.setContent(textArea);
+            textArea = new JTextArea("Arabic: العربية\nHebrew: עברית");
+            textField = new JTextField("Arabic: العربية Hebrew: עברית");
+            JPanel p = new JPanel(new BorderLayout());
+            p.add(textArea, BorderLayout.CENTER);
+            p.add(textField, BorderLayout.SOUTH);
+            swingNode.setContent(p);
         });
     }
 }

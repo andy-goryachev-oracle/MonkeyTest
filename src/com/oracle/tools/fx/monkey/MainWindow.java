@@ -261,7 +261,7 @@ public class MainWindow extends Stage {
     private void openJTextArea() {
         SingleInstance.openSingleInstance(
             "JTextArea",
-            "JTextArea",
+            "JTextArea/JTextField Embedded in Scene",
             JTextAreaWindow::new
         );
     }
