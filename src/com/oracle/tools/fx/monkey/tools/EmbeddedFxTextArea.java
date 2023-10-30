@@ -27,10 +27,11 @@ package com.oracle.tools.fx.monkey.tools;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.EventQueue;
-import javax.swing.JCheckBox;
+import java.awt.GridLayout;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -44,6 +45,12 @@ import javafx.scene.control.TextArea;
 public class EmbeddedFxTextArea {
     private static JFXPanel jfxPanel;
     private static TextArea textArea;
+    
+    enum Ori {
+        LTR,
+        RTL,
+        INHERIT
+    }
 
     public static void start() {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
@@ -61,25 +68,35 @@ public class EmbeddedFxTextArea {
         jfxPanel = new JFXPanel();
         
         Platform.runLater(EmbeddedFxTextArea::initFX);
+        
+        Ori[] choices = {
+            Ori.INHERIT,
+            Ori.LTR,
+            Ori.RTL,
+        };
 
-        JCheckBox rtl = new JCheckBox("RTL (JFrame.componentOrientation)");
+        JComboBox<Ori> rtl = new JComboBox<Ori>(choices);
         rtl.addActionListener((ev) -> {
-            ComponentOrientation ori = rtl.isSelected() ? ComponentOrientation.RIGHT_TO_LEFT : ComponentOrientation.LEFT_TO_RIGHT;
+            Ori v = (Ori)rtl.getSelectedItem();
+            ComponentOrientation ori = toComponentOrientation(v);
             frame.applyComponentOrientation(ori);
             frame.validate();
             frame.repaint();
         });
-        
-        JCheckBox rtl2 = new JCheckBox("RTL (FX.nodeOrientation)");
+
+        JComboBox<Ori> rtl2 = new JComboBox<Ori>(choices);
         rtl2.addActionListener((ev) -> {
-            NodeOrientation ori = rtl2.isSelected() ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
+            Ori v = (Ori)rtl.getSelectedItem();
+            NodeOrientation ori = toNodeOrientaiton(v);
             Platform.runLater(() -> {
                 textArea.setNodeOrientation(ori);
             });
         });
 
-        JToolBar tb = new JToolBar();
+        JPanel tb = new JPanel(new GridLayout(2, 2));
+        tb.add(new JLabel("JFrame.componentOrientation:"));
         tb.add(rtl);
+        tb.add(new JLabel("FX.nodeOrientation"));
         tb.add(rtl2);
 
         JPanel p = new JPanel(new BorderLayout());
@@ -91,6 +108,30 @@ public class EmbeddedFxTextArea {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setTitle("FX TextArea Embedded in JFXPanel");
         frame.setVisible(true);
+    }
+
+    private static ComponentOrientation toComponentOrientation(Ori x) {
+        if (x != null) {
+            switch (x) {
+            case LTR:
+                return ComponentOrientation.LEFT_TO_RIGHT;
+            case RTL:
+                return ComponentOrientation.RIGHT_TO_LEFT;
+            }
+        }
+        return ComponentOrientation.UNKNOWN;
+    }
+
+    private static NodeOrientation toNodeOrientaiton(Ori x) {
+        if (x != null) {
+            switch (x) {
+            case LTR:
+                return NodeOrientation.LEFT_TO_RIGHT;
+            case RTL:
+                return NodeOrientation.RIGHT_TO_LEFT;
+            }
+        }
+        return NodeOrientation.INHERIT;
     }
 
     private static void initFX() {
