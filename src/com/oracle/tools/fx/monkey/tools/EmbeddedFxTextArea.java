@@ -46,10 +46,16 @@ public class EmbeddedFxTextArea {
     private static JFXPanel jfxPanel;
     private static TextArea textArea;
     
-    enum Ori {
-        LTR,
-        RTL,
-        INHERIT
+    enum CompOri {
+        UNKNOWN(ComponentOrientation.UNKNOWN),
+        LEFT_TO_RIGHT(ComponentOrientation.LEFT_TO_RIGHT),
+        RIGHT_TO_LEFT(ComponentOrientation.RIGHT_TO_LEFT);
+        
+        public final ComponentOrientation ori;
+        
+        CompOri(ComponentOrientation ori) {
+            this.ori = ori;
+        }
     }
 
     public static void start() {
@@ -69,25 +75,28 @@ public class EmbeddedFxTextArea {
         
         Platform.runLater(EmbeddedFxTextArea::initFX);
         
-        Ori[] choices = {
-            Ori.INHERIT,
-            Ori.LTR,
-            Ori.RTL,
-        };
-
-        JComboBox<Ori> rtl = new JComboBox<Ori>(choices);
+        JComboBox<CompOri> rtl = new JComboBox<CompOri>(new CompOri[] {
+            CompOri.UNKNOWN,
+            CompOri.LEFT_TO_RIGHT,
+            CompOri.RIGHT_TO_LEFT
+        });
         rtl.addActionListener((ev) -> {
-            Ori v = (Ori)rtl.getSelectedItem();
-            ComponentOrientation ori = toComponentOrientation(v);
-            frame.applyComponentOrientation(ori);
-            frame.validate();
-            frame.repaint();
+            CompOri v = (CompOri)rtl.getSelectedItem();
+            if (v != null) {
+                ComponentOrientation ori = v.ori;
+                frame.applyComponentOrientation(ori);
+                frame.validate();
+                frame.repaint();
+            }
         });
 
-        JComboBox<Ori> rtl2 = new JComboBox<Ori>(choices);
+        JComboBox<NodeOrientation> rtl2 = new JComboBox<NodeOrientation>(new NodeOrientation[] {
+            NodeOrientation.INHERIT,
+            NodeOrientation.LEFT_TO_RIGHT,
+            NodeOrientation.RIGHT_TO_LEFT
+        });
         rtl2.addActionListener((ev) -> {
-            Ori v = (Ori)rtl.getSelectedItem();
-            NodeOrientation ori = toNodeOrientaiton(v);
+            NodeOrientation ori = (NodeOrientation)rtl2.getSelectedItem();
             Platform.runLater(() -> {
                 textArea.setNodeOrientation(ori);
             });
@@ -108,30 +117,6 @@ public class EmbeddedFxTextArea {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setTitle("FX TextArea Embedded in JFXPanel");
         frame.setVisible(true);
-    }
-
-    private static ComponentOrientation toComponentOrientation(Ori x) {
-        if (x != null) {
-            switch (x) {
-            case LTR:
-                return ComponentOrientation.LEFT_TO_RIGHT;
-            case RTL:
-                return ComponentOrientation.RIGHT_TO_LEFT;
-            }
-        }
-        return ComponentOrientation.UNKNOWN;
-    }
-
-    private static NodeOrientation toNodeOrientaiton(Ori x) {
-        if (x != null) {
-            switch (x) {
-            case LTR:
-                return NodeOrientation.LEFT_TO_RIGHT;
-            case RTL:
-                return NodeOrientation.RIGHT_TO_LEFT;
-            }
-        }
-        return NodeOrientation.INHERIT;
     }
 
     private static void initFX() {
