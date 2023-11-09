@@ -184,17 +184,6 @@ public class TextPage extends TestPaneBase {
     }
 
     private void handleMouseEvent(MouseEvent ev) {
-        PickResult pick = ev.getPickResult();
-        Node n = pick.getIntersectedNode();
-        if (n instanceof Text t) {
-            Point3D p3 = pick.getIntersectedPoint();
-            Point2D p = new Point2D(p3.getX(), p3.getY());
-            HitInfo h = t.hitTest(p);
-            hitInfo.setText(String.valueOf(h));
-        } else {
-            hitInfo.setText(null);
-        }
-
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = control.hitTest(p);
         hitInfo.setText(String.valueOf(h));
