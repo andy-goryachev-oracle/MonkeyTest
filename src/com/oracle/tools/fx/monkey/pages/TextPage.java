@@ -25,9 +25,12 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -61,11 +64,14 @@ public class TextPage extends TestPaneBase {
     private final ScrollPane scroll;
     private final CheckBox wrap;
     private final Path caretPath;
+    private final Label hitInfo;
     private Text control;
     private String currentText;
 
     public TextPage() {
         FX.name(this, "TextPage");
+
+        hitInfo = new Label();
 
         styleField = new TextField();
         styleField.setOnAction((ev) -> {
@@ -119,9 +125,11 @@ public class TextPage extends TestPaneBase {
         op.option(fontSelector.sizeNode());
         op.option(wrap);
         op.option(showChars);
-        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
         op.label("Direct Style:");
         op.option(styleField);
+        op.label("Text.hitTest:");
+        op.option(hitInfo);
+        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
 
         scroll = new ScrollPane();
         scroll.setBorder(Border.EMPTY);
@@ -146,6 +154,7 @@ public class TextPage extends TestPaneBase {
 
         control = new Text(currentText);
         control.setFont(f);
+        control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
 
         Group group = new Group(control, caretPath);
         scroll.setContent(group);
@@ -156,17 +165,6 @@ public class TextPage extends TestPaneBase {
             Group g = ShowCharacterRuns.createFor(control);
             group.getChildren().add(g);
         }
-
-        control.addEventHandler(MouseEvent.MOUSE_PRESSED, (ev) -> {
-            PickResult p = ev.getPickResult();
-            //System.out.println(p);
-        });
-
-        control.addEventHandler(MouseEvent.MOUSE_CLICKED, (ev) -> {
-            if(ev.isShortcutDown()) {
-                showCaretShape(new Point2D(ev.getX(), ev.getY()));
-            }
-        });
     }
 
     private void updateWrap(boolean on) {
@@ -183,5 +181,28 @@ public class TextPage extends TestPaneBase {
         System.out.println("hit=" + h);
         PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
         caretPath.getElements().setAll(pe);
+    }
+
+    private void handleMouseEvent(MouseEvent ev) {
+        PickResult pick = ev.getPickResult();
+        Node n = pick.getIntersectedNode();
+        if (n instanceof Text t) {
+            Point3D p3 = pick.getIntersectedPoint();
+            Point2D p = new Point2D(p3.getX(), p3.getY());
+            HitInfo h = t.hitTest(p);
+            hitInfo.setText(String.valueOf(h));
+        } else {
+            hitInfo.setText(null);
+        }
+
+        Point2D p = new Point2D(ev.getX(), ev.getY());
+        HitInfo h = control.hitTest(p);
+        hitInfo.setText(String.valueOf(h));
+
+        if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
+            if (ev.isShortcutDown()) {
+                showCaretShape(new Point2D(ev.getX(), ev.getY()));
+            }
+        }
     }
 }
