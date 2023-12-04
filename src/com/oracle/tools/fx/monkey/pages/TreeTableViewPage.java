@@ -661,18 +661,27 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 case MAX:
                     {
                         int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
                         lastColumn.setMaxWidth(w);
                     }
                     break;
                 case MIN:
                     {
                         int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
                         lastColumn.setMinWidth(w);
                     }
                     break;
                 case PREF:
                     {
                         int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
                         lastColumn.setPrefWidth(w);
                     }
                     break;
