@@ -49,7 +49,7 @@ public class PieChartPage extends TestPaneBase {
         ;
         private final String text;
         Model(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private final ObservableList<PieChart.Data> data;

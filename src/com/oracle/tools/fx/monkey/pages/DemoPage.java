@@ -44,6 +44,7 @@ public class DemoPage {
         return generator.get();
     }
 
+    @Override
     public String toString() {
         return title;
     }

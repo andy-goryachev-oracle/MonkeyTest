@@ -41,6 +41,7 @@ public class VBoxPage extends BoxPageBase {
         super("VBoxPage");
     }
 
+    @Override
     protected void setGrow(Node n, Priority p) {
         VBox.setVgrow(n, p);
     }

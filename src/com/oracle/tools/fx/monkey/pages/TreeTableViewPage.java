@@ -83,7 +83,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Data(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     public enum ResizePolicy {
@@ -107,7 +107,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Selection(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     public enum Cmd {

@@ -71,7 +71,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Data(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     public enum Selection {
@@ -80,14 +80,8 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         NULL("null selection model");
 
         private final String text;
-
-        Selection(String text) {
-            this.text = text;
-        }
-
-        public String toString() {
-            return text;
-        }
+        Selection(String text) { this.text = text; }
+        @Override public String toString() { return text; }
     }
 
     public enum Cmd {

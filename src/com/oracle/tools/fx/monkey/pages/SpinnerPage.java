@@ -50,7 +50,7 @@ public class SpinnerPage extends TestPaneBase {
         ;
         private final String text;
         Converter(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private final ComboBox<Mode> modeChoice;

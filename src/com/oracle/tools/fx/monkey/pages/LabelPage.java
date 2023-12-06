@@ -54,7 +54,7 @@ public class LabelPage extends TestPaneBase {
         ;
         private final String text;
         Demo(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private final ComboBox<Demo> label1Selector;

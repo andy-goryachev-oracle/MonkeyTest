@@ -88,7 +88,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Demo(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private enum ResizePolicy {
@@ -125,7 +125,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Selection(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private enum Filter {
@@ -135,7 +135,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         private final String text;
         Filter(String text) { this.text = text; }
-        public String toString() { return text; }
+        @Override public String toString() { return text; }
     }
 
     private enum Cmd {

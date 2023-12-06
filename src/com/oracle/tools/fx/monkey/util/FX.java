@@ -229,6 +229,7 @@ public class FX {
                             // javafx does not dismiss the popup when the user
                             // clicks on the owner node
                             EventHandler<MouseEvent> li = new EventHandler<MouseEvent>() {
+                                @Override
                                 public void handle(MouseEvent event) {
                                     m.hide();
                                     owner.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
