@@ -62,7 +62,7 @@ public class Pages {
             new DemoPage("Spinner", SpinnerPage::new),
             // TODO SplitPane
             new DemoPage("TableView", TableViewPage::new),
-            // TODO TabPane
+            new DemoPage("TabPane", TabPanePage::new),
             new DemoPage("Text", TextPage::new),
             new DemoPage("TextArea", TextAreaPage::new),
             new DemoPage("TextField", TextFieldPage::new),
