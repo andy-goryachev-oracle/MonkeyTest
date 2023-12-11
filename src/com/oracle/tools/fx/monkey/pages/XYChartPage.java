@@ -84,6 +84,12 @@ public class XYChartPage extends TestPaneBase {
 
         Button addPointButton = new Button("Add Point");
         addPointButton.setOnAction((ev) -> addPoint());
+        
+        Button changePointButtonX = new Button("Change X");
+        changePointButtonX.setOnAction((ev) -> changePointX());
+
+        Button changePointButtonY = new Button("Change Y");
+        changePointButtonY.setOnAction((ev) -> changePointY());
 
         Button removePointButton = new Button("Remove Point");
         removePointButton.setOnAction((ev) -> removePoint());
@@ -91,16 +97,18 @@ public class XYChartPage extends TestPaneBase {
         Button clearPointsButton = new Button("Clear Points");
         clearPointsButton.setOnAction((ev) -> clearPoints());
 
-        OptionPane p = new OptionPane();
-        p.label("Chart Type:");
-        p.option(modeSelector);
-        p.option(addButton);
-        p.option(removeButton);
-        p.option(addRemoveButton);
-        p.option(addPointButton);
-        p.option(removePointButton);
-        p.option(clearPointsButton);
-        setOptions(p);
+        OptionPane op = new OptionPane();
+        op.label("Chart Type:");
+        op.option(modeSelector);
+        op.option(addButton);
+        op.option(removeButton);
+        op.option(addRemoveButton);
+        op.option(addPointButton);
+        op.option(changePointButtonX);
+        op.option(changePointButtonY);
+        op.option(removePointButton);
+        op.option(clearPointsButton);
+        setOptions(op);
 
         modeSelector.getSelectionModel().selectFirst();
     }
@@ -248,6 +256,52 @@ public class XYChartPage extends TestPaneBase {
             int i = rnd.nextInt(100);
             int v = rnd.nextInt(50);
             add(s.getData(), atIndexZero, new XYChart.Data(i, v));
+        }
+    }
+
+    private void changePointX() {
+        var list = chart.getData();
+        if (list.size() == 0) {
+            return;
+        }
+        XYChart.Series s = list.get(0);
+        int sz = s.getData().size();
+        if(sz < 3) {
+            return;
+        }
+
+        if (chart instanceof BarChart b) {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setXValue("c" + v);
+        } else if (chart instanceof StackedBarChart b) {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setXValue("c" + v);
+        } else {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setXValue(v);
+        }
+    }
+
+    private void changePointY() {
+        var list = chart.getData();
+        if (list.size() == 0) {
+            return;
+        }
+        XYChart.Series s = list.get(0);
+        int sz = s.getData().size();
+        if(sz < 3) {
+            return;
+        }
+
+        if (chart instanceof BarChart b) {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setYValue(v);
+        } else if (chart instanceof StackedBarChart b) {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setYValue(v);
+        } else {
+            int v = rnd.nextInt(50);
+            ((XYChart.Data)s.getData().get(1)).setYValue(v);
         }
     }
 
