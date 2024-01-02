@@ -230,13 +230,16 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         SplitMenuButton addColumnButton = new SplitMenuButton(
             menuItem("at the beginning", () -> addColumn(0)),
             menuItem("in the middle", () -> addColumn(1)),
-            menuItem("at the end", () -> addColumn(2)));
+            menuItem("at the end", () -> addColumn(2))
+        );
         addColumnButton.setText("Add Column");
 
         SplitMenuButton removeColumnButton = new SplitMenuButton(
             menuItem("at the beginning", () -> removeColumn(0)),
             menuItem("in the middle", () -> removeColumn(1)),
-            menuItem("at the end", () -> removeColumn(2)));
+            menuItem("at the end", () -> removeColumn(2)),
+            menuItem("all", () -> removeAllColumns())
+        );
         removeColumnButton.setText("Remove Column");
 
         hideColumn = new CheckBox("hide middle column");
@@ -344,6 +347,10 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         if ((ct >= 0) && (ix < ct)) {
             control.getColumns().remove(ix);
         }
+    }
+
+    protected void removeAllColumns() {
+        control.getColumns().clear();
     }
 
     protected Callback<ResizeFeatures, Boolean> wrap(Callback<ResizeFeatures, Boolean> policy) {
