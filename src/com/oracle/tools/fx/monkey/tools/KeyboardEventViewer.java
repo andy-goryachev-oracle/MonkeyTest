@@ -119,13 +119,13 @@ public class KeyboardEventViewer extends BorderPane {
         sb.append("}\n");
         addToLog(sb.toString());
     }
-    
+
     private static String fmt(String s) {
-        if(s == null) {
+        if (s == null) {
             return "<null>";
-        } else if(s.length() == 1) {
+        } else if (s.length() == 1) {
             char c = s.charAt(0);
-            if(c > 0x20) {
+            if (c > 0x20) {
                 return s;
             }
         }
