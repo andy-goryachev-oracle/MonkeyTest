@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -56,7 +56,7 @@ public class Pages {
             new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
             new DemoPage("ScrollBar", ScrollBarPage::new),
-            // TODO ScrollPane
+            new DemoPage("ScrollPane", ScrollPanePage::new),
             // TODO Separator
             // TODO Slider
             new DemoPage("Spinner", SpinnerPage::new),
