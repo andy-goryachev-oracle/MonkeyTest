@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,9 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -35,17 +33,19 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
 import javafx.scene.layout.Border;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
+import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
@@ -60,6 +60,8 @@ public class TextPage extends TestPaneBase {
     private final TextSelector textSelector;
     private final TextField styleField;
     private final FontSelector fontSelector;
+    private final EnumSelector<FontSmoothingType> fontSmoothing;
+    private final ItemSelector<Double> lineSpacing;
     private final CheckBox showChars;
     private final ScrollPane scroll;
     private final CheckBox wrap;
@@ -102,6 +104,19 @@ public class TextPage extends TestPaneBase {
                 updateControl();
             }).show();
         });
+        
+        fontSmoothing = new EnumSelector<FontSmoothingType>(FontSmoothingType.class, "fontSmoothing", (t) -> updateControl());
+        
+        lineSpacing = new ItemSelector<Double>(
+            "lineSpacing",
+            (v) -> updateControl(),
+            0.0,
+            1.0,
+            2.5,
+            3.3333333,
+            10.0,
+            100.0
+        );
 
         showChars = new CheckBox("show characters");
         FX.name(showChars, "showChars");
@@ -123,6 +138,10 @@ public class TextPage extends TestPaneBase {
         op.option(fontSelector.fontNode());
         op.label("Font Size:");
         op.option(fontSelector.sizeNode());
+        op.label("Font Smoothing:");
+        op.option(fontSmoothing.node());
+        op.label("Line Spacing:");
+        op.option(lineSpacing.node());
         op.option(wrap);
         op.option(showChars);
         op.label("Direct Style:");
@@ -155,6 +174,8 @@ public class TextPage extends TestPaneBase {
         control = new Text(currentText);
         control.setFont(f);
         control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+        control.setFontSmoothingType(fontSmoothing.getValue());
+        control.setLineSpacing(lineSpacing.getValue(0.0));
 
         Group group = new Group(control, caretPath);
         scroll.setContent(group);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,10 +29,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.PosSelector;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextSelector;
@@ -65,7 +65,7 @@ public class TextFieldPage extends TestPaneBase {
 
         FontSelector fontSelector = new FontSelector("font", control::setFont);
 
-        PosSelector posSelector = new PosSelector(control::setAlignment);
+        EnumSelector<Pos> posSelector = new EnumSelector<>(Pos.class, "posSelector", control::setAlignment);
 
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,124 +24,41 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.util.StringConverter;
 
 /**
- * General purpose item selector.
+ * This Selector allows for picking a value from the list.
+ * Items' values are displayed according to their toString().
  */
+// TODO add StringConverter for display values?
 public class ItemSelector<T> {
-    public static record Pair(String display, Object value) { }
-
-    private final ComboBox<Pair> field = new ComboBox<>();
-
-    public ItemSelector(String id, Consumer<T> client, Object... displayValuePairs) {
-        FX.name(field, "PosSelector");
-        field.getItems().setAll(toPairs(displayValuePairs));
-        field.setConverter(new StringConverter<Pair>() {
-            @Override
-            public String toString(Pair x) {
-                return toDisplay(x);
-            }
-
-            @Override
-            public Pair fromString(String text) {
-                return null;
-            }
-        });
-
-        field.getSelectionModel().selectFirst();
-
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            Object v = field.getSelectionModel().getSelectedItem();
-            T text = toValue(v);
-            client.accept(text);
+    private final ComboBox<T> selector = new ComboBox<>();
+    
+    public ItemSelector(String name, Consumer<T> client, T ... items) {
+        
+        FX.name(selector, name);
+        selector.getItems().setAll(items);
+        selector.getSelectionModel().selectedItemProperty().addListener((s, p, v) -> {
+            client.accept(v);
         });
     }
-
-    public T getSelectedItem() {
-        Object x = field.getSelectionModel().getSelectedItem();
-        T v = toValue(x);
-        return v;
-    }
-
-    private Pair[] toPairs(Object[] pairs) {
-        ArrayList<Pair> a = new ArrayList<>();
-        for (int i = 0; i < pairs.length; ) {
-            String display = (String)pairs[i++];
-            T value = (T)pairs[i++];
-            a.add(new Pair(display, value));
-        }
-        return a.toArray(new Pair[a.size()]);
-    }
-
+    
     public Node node() {
-        return field;
+        return selector;
     }
 
-    public void select(Object item) {
-        int ix = indexOf(item);
-        if (ix >= 0) {
-            field.getSelectionModel().select(ix);
-        }
+    public T getValue() {
+        return selector.getSelectionModel().getSelectedItem();
     }
-
-    private int indexOf(Object item) {
-        List<Pair> list = field.getItems();
-        int sz = list.size();
-        for (int i = 0; i < sz; i++) {
-            Object x = list.get(i);
-            if (eq(item, x)) {
-                return i;
-            } else if (x instanceof Pair p) {
-                if (eq(item, p.display()) || eq(item, p.value())) {
-                    return i;
-                }
-            }
-        }
-        return -1;
+    
+    public T getValue(T defaultValue) {
+        T v = getValue();
+        return (v == null) ? defaultValue : v;
     }
-
-    private static boolean eq(Object a, Object b) {
-        if (a == null) {
-            return (b == null);
-        } else {
-            return a.equals(b);
-        }
-    }
-
+    
     public void selectFirst() {
-        field.getSelectionModel().selectFirst();
-    }
-
-    protected String toDisplay(Object x) {
-        if (x == null) {
-            return null;
-        } else if (x instanceof Pair p) {
-            return p.display();
-        } else {
-            return x.toString();
-        }
-    }
-
-    protected T toValue(Object x) {
-        if (x instanceof Pair p) {
-            return (T)p.value();
-        } else {
-            return null;
-        }
-    }
-
-    public void add(String display, T value) {
-        field.getItems().add(new Pair(display, value));
-    }
-
-    public void add(String display, Supplier<T> value) {
-        field.getItems().add(new Pair(display, value));
+        selector.getSelectionModel().selectFirst();
     }
 }

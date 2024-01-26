@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.ItemSelector;
+import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -44,7 +44,7 @@ import com.oracle.tools.fx.monkey.util.TextSelector;
  */
 public class TitledPanePage extends TestPaneBase {
     private final TextSelector textSelector;
-    private final ItemSelector<Supplier<Node>> contentSelector;
+    private final PairSelector<Supplier<Node>> contentSelector;
     private final CheckBox snap;
     private final TitledPane control;
 
@@ -58,7 +58,7 @@ public class TitledPanePage extends TestPaneBase {
         );
         textSelector.removeChoice("Writing Systems");
 
-        contentSelector = new ItemSelector<Supplier<Node>>(
+        contentSelector = new PairSelector<Supplier<Node>>(
             "contentSelector",
             (g) -> update(),
             new Object[] {

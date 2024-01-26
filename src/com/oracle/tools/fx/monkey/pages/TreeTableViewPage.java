@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
-import com.oracle.tools.fx.monkey.util.ItemSelector;
+import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -135,7 +135,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     private final CheckBox nullFocusModel;
     private final CheckBox addGraphics;
     private final CheckBox addSubNodes;
-    private final ItemSelector<Double> fixedSize;
+    private final PairSelector<Double> fixedSize;
     private final CheckBox menuButtonVisible;
     private final CheckBox editable;
     private final ComboBox<Cells> cellFactorySelector;
@@ -199,7 +199,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             control.refresh();
         });
 
-        fixedSize = new ItemSelector<Double>(
+        fixedSize = new PairSelector<Double>(
             "fixedSize",
             (x) -> {
                 control.setFixedCellSize(x);

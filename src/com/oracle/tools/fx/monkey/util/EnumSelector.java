@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,21 +25,21 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.function.Consumer;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 
 /**
- * Alignment Option Selector.
+ * Enum-based Option Selector.
  */
-public class PosSelector {
-    private final ComboBox<Pos> field = new ComboBox<>();
+public class EnumSelector<T extends Enum> {
+    private final ComboBox<T> field = new ComboBox<>();
 
-    public PosSelector(Consumer<Pos> client) {
-        FX.name(field, "PosSelector");
-        field.getItems().setAll(Pos.values());
+    public EnumSelector(Class<T> type, String name, Consumer<T> client) {
+        T[] values = type.getEnumConstants();
+        FX.name(field, name);
+        field.getItems().setAll(values);
         field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            Pos v = field.getSelectionModel().getSelectedItem();
+            T v = field.getSelectionModel().getSelectedItem();
             client.accept(v);
         });
     }
@@ -48,7 +48,11 @@ public class PosSelector {
         return field;
     }
 
-    public void select(Pos v) {
+    public void select(T v) {
         field.getSelectionModel().select(v);
+    }
+
+    public T getValue() {
+        return field.getSelectionModel().getSelectedItem();
     }
 }

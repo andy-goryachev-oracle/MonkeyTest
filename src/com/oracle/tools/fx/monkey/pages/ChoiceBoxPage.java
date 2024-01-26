@@ -26,7 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.ChoiceBox;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.ItemSelector;
+import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -41,7 +41,7 @@ public class ChoiceBoxPage extends TestPaneBase {
 
         control = new ChoiceBox();
 
-        ItemSelector<String[]> itemSelector = new ItemSelector<>(
+        PairSelector<String[]> itemSelector = new PairSelector<>(
             "itemSelector",
             (t) -> control.getItems().setAll(t),
             "0", mk(0),
