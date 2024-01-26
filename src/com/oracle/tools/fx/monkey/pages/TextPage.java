@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
@@ -41,6 +40,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
+import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -62,9 +63,12 @@ public class TextPage extends TestPaneBase {
     private final FontSelector fontSelector;
     private final EnumSelector<FontSmoothingType> fontSmoothing;
     private final ItemSelector<Double> lineSpacing;
-    private final CheckBox showChars;
+    private final EnumSelector<TextBoundsType> textBounds;
+    private final CheckBoxSelector strikeThrough;
+    private final CheckBoxSelector underline;
+    private final CheckBoxSelector showChars;
     private final ScrollPane scroll;
-    private final CheckBox wrap;
+    private final CheckBoxSelector wrap;
     private final Path caretPath;
     private final Label hitInfo;
     private Text control;
@@ -105,7 +109,7 @@ public class TextPage extends TestPaneBase {
             }).show();
         });
         
-        fontSmoothing = new EnumSelector<FontSmoothingType>(FontSmoothingType.class, "fontSmoothing", (t) -> updateControl());
+        fontSmoothing = new EnumSelector<>(FontSmoothingType.class, "fontSmoothing", (v) -> updateControl());
         
         lineSpacing = new ItemSelector<Double>(
             "lineSpacing",
@@ -117,18 +121,16 @@ public class TextPage extends TestPaneBase {
             10.0,
             100.0
         );
+        
+        textBounds = new EnumSelector<>(TextBoundsType.class, "textBounds", (v) -> updateControl());
+        
+        strikeThrough = new CheckBoxSelector("strikeThrough", "strike through", (v) -> updateControl());
 
-        showChars = new CheckBox("show characters");
-        FX.name(showChars, "showChars");
-        showChars.selectedProperty().addListener((p) -> {
-            updateControl();
-        });
+        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateControl());
 
-        wrap = new CheckBox("wrap width");
-        FX.name(wrap, "wrap");
-        wrap.selectedProperty().addListener((p) -> {
-            updateWrap(wrap.selectedProperty().get());
-        });
+        wrap = new CheckBoxSelector("wrap", "wrap width", (v) -> updateWrap(v));
+        
+        underline = new CheckBoxSelector("underline", "underline", (v) -> updateControl());
 
         OptionPane op = new OptionPane();
         op.label("Text:");
@@ -142,8 +144,16 @@ public class TextPage extends TestPaneBase {
         op.option(fontSmoothing.node());
         op.label("Line Spacing:");
         op.option(lineSpacing.node());
-        op.option(wrap);
-        op.option(showChars);
+        // TODO selection fill
+        op.option(strikeThrough.node());
+        // TODO tabSize
+        // TODO textAlignment
+        op.label("Text Bounds Type:");
+        op.option(textBounds.node());
+        // TODO textOrigin
+        op.option(underline.node());
+        op.option(wrap.node());
+        op.option(showChars.node());
         op.label("Direct Style:");
         op.option(styleField);
         op.label("Text.hitTest:");
@@ -169,20 +179,21 @@ public class TextPage extends TestPaneBase {
     }
 
     private void updateControl() {
-        Font f = fontSelector.getFont();
-
         control = new Text(currentText);
-        control.setFont(f);
+        control.setFont(fontSelector.getFont());
         control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
         control.setFontSmoothingType(fontSmoothing.getValue());
         control.setLineSpacing(lineSpacing.getValue(0.0));
+        control.setStrikethrough(strikeThrough.getValue());
+        control.setUnderline(underline.getValue());
+        control.setBoundsType(textBounds.getValue(TextBoundsType.LOGICAL));
 
         Group group = new Group(control, caretPath);
         scroll.setContent(group);
 
-        updateWrap(wrap.isSelected());
+        updateWrap(wrap.getValue());
 
-        if (showChars.isSelected()) {
+        if (showChars.getValue()) {
             Group g = ShowCharacterRuns.createFor(control);
             group.getChildren().add(g);
         }

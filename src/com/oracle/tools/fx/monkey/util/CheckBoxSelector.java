@@ -26,38 +26,28 @@ package com.oracle.tools.fx.monkey.util;
 
 import java.util.function.Consumer;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
 
 /**
- * Enum-based Option Selector.
+ * Selector controls a boolean value.
  */
-public class EnumSelector<T extends Enum> {
-    private final ComboBox<T> field = new ComboBox<>();
+public class CheckBoxSelector {
+    private final CheckBox selector;
 
-    public EnumSelector(Class<T> type, String name, Consumer<T> client) {
-        T[] values = type.getEnumConstants();
-        FX.name(field, name);
-        field.getItems().setAll(values);
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            T v = field.getSelectionModel().getSelectedItem();
-            client.accept(v);
-        });
-    }
-
-    public Node node() {
-        return field;
-    }
-
-    public void select(T v) {
-        field.getSelectionModel().select(v);
-    }
-
-    public T getValue() {
-        return field.getSelectionModel().getSelectedItem();
+    public CheckBoxSelector(String name, String text, Consumer<Boolean> client) {
+        selector = new CheckBox(text);
+        
+        FX.name(selector, name);
+        selector.selectedProperty().addListener((s,p,c) -> {
+            client.accept(p);
+        });   
     }
     
-    public T getValue(T defaultValue) {
-        T v = getValue();
-        return v == null ? defaultValue : v;
+    public Node node() {
+        return selector;
+    }
+    
+    public boolean getValue() {
+        return selector.selectedProperty().get();
     }
 }
