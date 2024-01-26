@@ -39,7 +39,7 @@ public class CheckBoxSelector {
         
         FX.name(selector, name);
         selector.selectedProperty().addListener((s,p,c) -> {
-            client.accept(p);
+            client.accept(c);
         });   
     }
     

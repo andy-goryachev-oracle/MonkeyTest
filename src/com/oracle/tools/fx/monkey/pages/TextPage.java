@@ -36,10 +36,10 @@ import javafx.scene.layout.Border;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextBoundsType;
 import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
@@ -63,6 +63,8 @@ public class TextPage extends TestPaneBase {
     private final FontSelector fontSelector;
     private final EnumSelector<FontSmoothingType> fontSmoothing;
     private final ItemSelector<Double> lineSpacing;
+    private final ItemSelector<Integer> tabSize;
+    private final EnumSelector<TextAlignment> textAlignment;
     private final EnumSelector<TextBoundsType> textBounds;
     private final CheckBoxSelector strikeThrough;
     private final CheckBoxSelector underline;
@@ -122,6 +124,22 @@ public class TextPage extends TestPaneBase {
             100.0
         );
         
+        tabSize = new ItemSelector<Integer>(
+            "tabSize",
+            (v) -> updateControl(),
+            0,
+            1,
+            2,
+            3,
+            4,
+            8,
+            16,
+            32,
+            64
+        );
+        
+        textAlignment = new EnumSelector<>(TextAlignment.class, "textAlignment", (v) -> updateControl());
+        
         textBounds = new EnumSelector<>(TextBoundsType.class, "textBounds", (v) -> updateControl());
         
         strikeThrough = new CheckBoxSelector("strikeThrough", "strike through", (v) -> updateControl());
@@ -146,8 +164,10 @@ public class TextPage extends TestPaneBase {
         op.option(lineSpacing.node());
         // TODO selection fill
         op.option(strikeThrough.node());
-        // TODO tabSize
-        // TODO textAlignment
+        op.label("Tab Size:");
+        op.option(tabSize.node());
+        op.label("Text Alignment:");
+        op.option(textAlignment.node());
         op.label("Text Bounds Type:");
         op.option(textBounds.node());
         // TODO textOrigin
@@ -187,6 +207,8 @@ public class TextPage extends TestPaneBase {
         control.setStrikethrough(strikeThrough.getValue());
         control.setUnderline(underline.getValue());
         control.setBoundsType(textBounds.getValue(TextBoundsType.LOGICAL));
+        control.setTabSize(tabSize.getValue(8));
+        control.setTextAlignment(textAlignment.getValue(TextAlignment.LEFT));
 
         Group group = new Group(control, caretPath);
         scroll.setContent(group);
