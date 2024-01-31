@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,11 +26,13 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -47,7 +49,9 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -65,6 +69,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private enum Demo {
         ALL("all set: min, pref, max"),
+        EDITABLE("editable"),
         PREF("pref only"),
         VARIABLE("variable cell height"),
         EMPTY("empty with pref"),
@@ -114,6 +119,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         DEFAULT,
         GRAPHICS,
         VARIABLE,
+        NULL,
     }
 
     private enum Selection {
@@ -158,7 +164,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final CheckBox hideColumn;
     private final CheckBox fixedHeight;
     private final CheckBox menuButtonVisible;
-    private TableView<String> control;
+    private TableView<Object> control;
 
     public TableViewPage() {
         FX.name(this, "TableViewPage");
@@ -303,7 +309,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     }
 
     protected void addColumn(int where) {
-        TableColumn<String, String> c = new TableColumn<>();
+        TableColumn<Object, String> c = new TableColumn<>();
         c.setText("C" + System.currentTimeMillis());
         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
 
@@ -628,6 +634,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 Cmd.COL,
                 Cmd.COL
             };
+        case EDITABLE:
+            return new Object[0];
         default:
             throw new Error("?" + d);
         }
@@ -642,12 +650,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         setContent(n);
     }
 
-    protected void combineColumns(TableView<String> t, int ix, int count, int name) {
-        TableColumn<String, ?> tc = new TableColumn<>();
+    protected void combineColumns(TableView<Object> t, int ix, int count, int name) {
+        TableColumn<Object, ?> tc = new TableColumn<>();
         tc.setText("N" + name);
 
         for (int i = 0; i < count; i++) {
-            TableColumn<String, ?> c = t.getColumns().remove(ix);
+            TableColumn<Object, ?> c = t.getColumns().remove(ix);
             tc.getColumns().add(c);
         }
         t.getColumns().add(ix, tc);
@@ -685,6 +693,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
 
         control = new TableView<>();
+        control.setPadding(new Insets(2));
+        control.focusedProperty().subscribe(nv -> control.setBackground(Background.fill(nv ? Color.GREEN : Color.RED)));
         control.getSelectionModel().setCellSelectionEnabled(cellSelection);
         control.getSelectionModel().setSelectionMode(selectionMode);
         if (nullSelectionModel) {
@@ -703,7 +713,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
         control.setColumnResizePolicy(p);
 
-        TableColumn<String, String> lastColumn = null;
+        TableColumn<Object, String> lastColumn = null;
         int id = 1;
 
         for (int i = 0; i < spec.length;) {
@@ -712,7 +722,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 switch (cmd) {
                 case COL:
                     {
-                        TableColumn<String, String> c = new TableColumn<>();
+                        TableColumn<Object, String> c = new TableColumn<>();
                         control.getColumns().add(c);
                         c.setText("C" + control.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
@@ -721,7 +731,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                     break;
                 case COL_WITH_GRAPHIC:
                     {
-                        TableColumn<String, String> c = new TableColumn<>();
+                        TableColumn<Object, String> c = new TableColumn<>();
                         control.getColumns().add(c);
                         c.setText("C" + control.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
@@ -789,26 +799,53 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
         }
 
-        hideMiddleColumn(hideColumn.isSelected());
-
         updateCellValueFactory();
         updateCellFactory();
+
+        switch (demo) {
+        case EDITABLE:
+            control.setEditable(true);
+            {
+                TableColumn<Object, String> c = new TableColumn<>("First Name");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).firstName);
+                control.getColumns().add(c);
+            }
+            {
+                TableColumn<Object, String> c = new TableColumn<>("Last Name");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).lastName);
+                c.setCellFactory(TextFieldTableCell.forTableColumn());
+                control.getColumns().add(c);
+            }
+            {
+                TableColumn<Object, Integer> c = new TableColumn<>("Age");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).age);
+                control.getColumns().add(c);
+            }
+
+            control.getItems().addAll(
+                new Item("John", "Doe", 55),
+                new Item("Jane", "Deer", 25),
+                new Item("A", "B", 99)
+            );
+        }
+
+        hideMiddleColumn(hideColumn.isSelected());
 
         Filter f = filterSelector.getSelectionModel().getSelectedItem();
         if (f == Filter.NONE) {
             f = null;
         }
         if (f != null) {
-            ObservableList<String> items = FXCollections.observableArrayList();
+            ObservableList<Object> items = FXCollections.observableArrayList();
             items.addAll(control.getItems());
-            FilteredList<String> filteredList = new FilteredList<>(items);
+            FilteredList<Object> filteredList = new FilteredList<>(items);
             switch(f) {
             case SKIP1S:
                 filteredList.setPredicate((s) -> {
                     if (s == null) {
                         return true;
                     }
-                    return !s.contains("11");
+                    return !((String)s).contains("11");
                 });
                 break;
             case SKIP2S:
@@ -816,7 +853,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                     if (s == null) {
                         return true;
                     }
-                    return !s.contains("22");
+                    return !((String)s).contains("22");
                 });
                 break;
             default:
@@ -857,7 +894,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         control.setSkin(new TableViewSkin<>(control));
     }
 
-    private Callback<CellDataFeatures<String, String>, ObservableValue<String>> getValueFactory(CellValue t) {
+    private Callback<CellDataFeatures<Object, String>, ObservableValue<String>> getValueFactory(CellValue t) {
         if (t != null) {
             switch (t) {
             case MIN_MAX:
@@ -867,12 +904,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 };
             case QUOTED:
                 return (f) -> {
-                    String s = '"' + f.getValue() + '"';
+                    String s = "\"" + f.getValue() + '"';
                     return new SimpleStringProperty(s);
                 };
             case VALUE:
                 return (f) -> {
-                    String s = f.getValue();
+                    String s = String.valueOf(f.getValue());
                     return new SimpleStringProperty(s);
                 };
             }
@@ -900,6 +937,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private Callback getCellFactory(Cells t) {
         if (t != null) {
             switch (t) {
+            case NULL:
+                return null;
             case GRAPHICS:
                 return (r) -> {
                     return new TableCell<String,String>() {
@@ -939,18 +978,17 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return TableColumn.DEFAULT_CELL_FACTORY;
     }
 
-    private void updateColumns(Consumer<TableColumn<String, String>> handler) {
+    private void updateColumns(Consumer<TableColumn<Object, String>> handler) {
         if (control != null) {
-            for (TableColumn<String, ?> c: control.getColumns()) {
-                handler.accept((TableColumn<String, String>)c);
+            for (TableColumn<Object, ?> c: control.getColumns()) {
+                handler.accept((TableColumn<Object, String>)c);
             }
         }
     }
 
     private void updateCellValueFactory() {
         CellValue t = cellValueSelector.getSelectionModel().getSelectedItem();
-        Callback<CellDataFeatures<String, String>, ObservableValue<String>> f = getValueFactory(t);
-
+        Callback<CellDataFeatures<Object, String>, ObservableValue<String>> f = getValueFactory(t);
         updateColumns((c) -> {
             c.setCellValueFactory(f);
         });
@@ -958,18 +996,19 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
     private void updateCellFactory() {
         Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
-        Callback<TableColumn<String, String>, TableCell<String, String>> f = getCellFactory(t);
-
-        updateColumns((c) -> {
-            c.setCellFactory(f);
-        });
+        Callback<TableColumn<Object, String>, TableCell<Object, String>> f = getCellFactory(t);
+        if (f != null) {
+            updateColumns((c) -> {
+                c.setCellFactory(f);
+            });
+        }
     }
 
     /**
      * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
      * this policy simply sizes all columns equally.
      */
-    protected static class UserDefinedResizePolicy
+    static class UserDefinedResizePolicy
         extends ConstrainedColumnResizeBase
         implements Callback<TableView.ResizeFeatures, Boolean> {
 
@@ -985,6 +1024,18 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 rf.setColumnWidth(c, w);
             }
             return false;
+        }
+    }
+    
+    static class Item {
+        public final SimpleStringProperty firstName = new SimpleStringProperty();
+        public final SimpleStringProperty lastName = new SimpleStringProperty();
+        public final SimpleObjectProperty<Integer> age = new SimpleObjectProperty<>();
+
+        public Item(String firstName, String lastName, int age) {
+            this.firstName.set(firstName);
+            this.lastName.set(lastName);
+            this.age.set(age);
         }
     }
 }

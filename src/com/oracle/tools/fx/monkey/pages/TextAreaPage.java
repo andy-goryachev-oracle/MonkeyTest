@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,14 +24,15 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextSelector;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
 
 /**
  * TextArea Page
@@ -67,20 +68,21 @@ public class TextAreaPage extends TestPaneBase {
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
         promptChoice.addPair("Multiline", "1\n2\n3\n4");
 
-        OptionPane p = new OptionPane();
-        p.label("Text:");
-        p.option(textSelector.node());
-        p.label("Font:");
-        p.option(fontSelector.fontNode());
-        p.label("Font Size:");
-        p.option(fontSelector.sizeNode());
-        p.option(wrap);
-        p.option(editable);
-        p.label("Prompt:");
-        p.option(promptChoice.node());
+        OptionPane op = new OptionPane();
+        op.label("Text:");
+        op.option(textSelector.node());
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Font Size:");
+        op.option(fontSelector.sizeNode());
+        op.option(wrap);
+        op.option(editable);
+        op.label("Prompt:");
+        op.option(promptChoice.node());
+        op.option(new TextField());
 
         setContent(control);
-        setOptions(p);
+        setOptions(op);
 
         textSelector.selectFirst();
         fontSelector.selectSystemFont();

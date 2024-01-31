@@ -108,6 +108,7 @@ public class TextFieldPage extends TestPaneBase {
         op.label("Preferred Column Count:");
         op.option(prefColumnCount);
         op.option(inScroll);
+        op.option(new TextField());
 
         setContent(control);
         setOptions(op);
