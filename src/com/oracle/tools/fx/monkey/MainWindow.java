@@ -151,7 +151,7 @@ public class MainWindow extends Stage {
         FX.item(b, "FX TextArea Embedded in JFXPanel", this::openJFXPanel);
         FX.item(b, "JTextArea/JTextField Embedded in SwingNode", this::openJTextArea);
         FX.item(b, "Keyboard Event Viewer", this::openKeyboardViewer);
-        FX.item(b, "Native-to-ascii", this::openNative2Ascii);
+        FX.item(b, "Native to ASCII", this::openNative2Ascii);
         FX.item(b, "System Info", this::openSystemInfo);
         // Window
         FX.menu(b, "_Window");
