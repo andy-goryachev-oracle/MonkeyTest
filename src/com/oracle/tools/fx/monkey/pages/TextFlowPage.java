@@ -113,7 +113,7 @@ public class TextFlowPage extends TestPaneBase {
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
-            new EnterTextDialog(this, (s) -> {
+            new EnterTextDialog(this, getText(), (s) -> {
                 currentText = s;
                 updateControl();
             }).show();
@@ -270,5 +270,18 @@ public class TextFlowPage extends TestPaneBase {
         System.out.println("hit=" + h);
         PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
         caretPath.getElements().setAll(pe);
+    }
+
+    private String getText() {
+        StringBuilder sb = new StringBuilder();
+        for (Node n: control.getChildrenUnmodifiable()) {
+            if (n instanceof Text t) {
+                sb.append(t.getText());
+            } else {
+                // inline node is treated as a single character
+                sb.append(' ');
+            }
+        }
+        return sb.toString();
     }
 }

@@ -105,7 +105,7 @@ public class TextPage extends TestPaneBase {
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
-            new EnterTextDialog(this, (s) -> {
+            new EnterTextDialog(this, control.getText(), (s) -> {
                 currentText = s;
                 updateControl();
             }).show();
