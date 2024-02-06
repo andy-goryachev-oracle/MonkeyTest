@@ -48,6 +48,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.Selectors;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -113,30 +114,13 @@ public class TextPage extends TestPaneBase {
         
         fontSmoothing = new EnumSelector<>(FontSmoothingType.class, "fontSmoothing", (v) -> updateControl());
         
-        lineSpacing = new ItemSelector<Double>(
-            "lineSpacing",
-            (v) -> updateControl(),
-            0.0,
-            1.0,
-            2.5,
-            3.3333333,
-            10.0,
-            100.0
-        );
+        lineSpacing = Selectors.lineSpacing((v) -> {
+            updateControl();
+        });
         
-        tabSize = new ItemSelector<Integer>(
-            "tabSize",
-            (v) -> updateControl(),
-            0,
-            1,
-            2,
-            3,
-            4,
-            8,
-            16,
-            32,
-            64
-        );
+        tabSize = Selectors.tabsize((v) -> {
+            updateControl();
+        });
         
         textAlignment = new EnumSelector<>(TextAlignment.class, "textAlignment", (v) -> updateControl());
         

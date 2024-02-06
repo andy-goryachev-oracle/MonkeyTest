@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,7 +31,6 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -43,11 +42,15 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
+import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.Selectors;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -63,6 +66,9 @@ public class TextFlowPage extends TestPaneBase {
     private final FontSelector fontSelector;
     private final CheckBox showChars;
     private final CheckBox showCaretPath;
+    private final ItemSelector<Double> lineSpacing;
+    private final ItemSelector<Integer> tabSize;
+    private final EnumSelector<TextAlignment> textAlignment;
     private final TextFlow control;
     private final Label pickResult;
     private final Label hitInfo;
@@ -131,15 +137,16 @@ public class TextFlowPage extends TestPaneBase {
             updateControl();
         });
 
-        ComboBox<Double> lineSpacing = new ComboBox<>();
-        FX.name(lineSpacing, "lineSpacing");
-        lineSpacing.getItems().setAll(
-            0.0,
-            5.0,
-            31.415
-        );
-        lineSpacing.getSelectionModel().selectedItemProperty().addListener((s, p, v) -> {
-            control.setLineSpacing(v);
+        lineSpacing = Selectors.lineSpacing((v) -> {
+            updateControl();
+        });
+
+        tabSize = Selectors.tabsize((v) -> {
+            updateControl();
+        });
+
+        textAlignment = new EnumSelector<>(TextAlignment.class, "textAlignment", (v) -> {
+            updateControl();
         });
 
         OptionPane op = new OptionPane();
@@ -155,7 +162,11 @@ public class TextFlowPage extends TestPaneBase {
         op.label("Direct Style:");
         op.option(styleField);
         op.label("Line Spacing:");
-        op.option(lineSpacing);
+        op.option(lineSpacing.node());
+        op.label("Tab Size:");
+        op.option(tabSize.node());
+        op.label("Text Alignment:");
+        op.option(textAlignment.node());
         //
         op.option(new Separator(Orientation.HORIZONTAL));
         op.label("Pick Result:");
@@ -176,28 +187,6 @@ public class TextFlowPage extends TestPaneBase {
     private void updateText() {
         currentText = textSelector.getSelectedText();
         updateControl();
-    }
-
-    private void updateControl() {
-        Font f = fontSelector.getFont();
-        Node[] ts = createTextArray(currentText, f);
-        control.getChildren().setAll(ts);
-
-        caretPath.getElements().clear();
-        control.getChildren().add(caretPath);
-
-        if (showChars.isSelected()) {
-            Group g = ShowCharacterRuns.createFor(control);
-            control.getChildren().add(g);
-        }
-
-        if (showCaretPath.isSelected()) {
-            int len = FX.getTextLength(control);
-            for (int i = 0; i < len; i++) {
-                PathElement[] es = control.caretShape(i, true);
-                caretPath.getElements().addAll(es);
-            }
-        }
     }
 
     private Node[] createTextArray(String text, Font f) {
@@ -283,5 +272,31 @@ public class TextFlowPage extends TestPaneBase {
             }
         }
         return sb.toString();
+    }
+
+    private void updateControl() {
+        control.setLineSpacing(lineSpacing.getValue(0.0));
+        control.setTabSize(tabSize.getValue(0));
+        control.setTextAlignment(textAlignment.getValue(TextAlignment.LEFT));
+
+        Font f = fontSelector.getFont();
+        Node[] ts = createTextArray(currentText, f);
+        control.getChildren().setAll(ts);
+
+        caretPath.getElements().clear();
+        control.getChildren().add(caretPath);
+
+        if (showChars.isSelected()) {
+            Group g = ShowCharacterRuns.createFor(control);
+            control.getChildren().add(g);
+        }
+
+        if (showCaretPath.isSelected()) {
+            int len = FX.getTextLength(control);
+            for (int i = 0; i < len; i++) {
+                PathElement[] es = control.caretShape(i, true);
+                caretPath.getElements().addAll(es);
+            }
+        }
     }
 }
