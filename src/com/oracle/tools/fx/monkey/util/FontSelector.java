@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -49,21 +49,18 @@ public class FontSelector {
         FX.name(sizeField, id + "_SIZE");
         sizeField.getItems().setAll(
             1,
-            2,
-            3,
-            4,
-            5,
             6,
-            7,
             8,
-            9,
             10,
             11,
             12,
+            16,
             24,
+            32,
             48,
             72,
-            144
+            144,
+            480
         );
         sizeField.getSelectionModel().selectedItemProperty().addListener((x) -> {
             update(client);
