@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,13 +24,17 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TabPane.TabDragPolicy;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -65,7 +69,19 @@ public class TabPanePage extends TestPaneBase {
     }
 
     private Node mkContent(String text) {
-        Label t = new Label(text);
-        return new BorderPane(t);
+        Label label = new Label(text);
+
+        TextField textField = new TextField();
+        textField.setPromptText("focus here");
+
+        Button button = new Button("OK");
+
+        VBox b = new VBox(5);
+        b.setPadding(new Insets(0, 20, 0, 20));
+        b.setAlignment(Pos.CENTER);
+        b.getChildren().add(label);
+        b.getChildren().add(textField);
+        b.getChildren().add(button);
+        return b;
     }
 }
