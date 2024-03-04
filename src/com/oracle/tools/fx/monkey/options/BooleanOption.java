@@ -22,43 +22,24 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
-import java.util.function.Consumer;
-import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.CheckBox;
+import com.oracle.tools.fx.monkey.util.FX;
 
 /**
- * Enum-based Option Selector.
+ * Boolean Option Bound to a Property.
  */
-@Deprecated
-public class EnumSelector<T extends Enum> {
-    private final ComboBox<T> field = new ComboBox<>();
+public class BooleanOption extends CheckBox {
+    private final SimpleBooleanProperty property = new SimpleBooleanProperty();
 
-    public EnumSelector(Class<T> type, String name, Consumer<T> client) {
-        T[] values = type.getEnumConstants();
-        FX.name(field, name);
-        field.getItems().setAll(values);
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            T v = field.getSelectionModel().getSelectedItem();
-            client.accept(v);
-        });
-    }
+    public BooleanOption(String name, String text, Property<Boolean> p) {
+        FX.name(this, name);
+        property.bindBidirectional(p);
 
-    public Node node() {
-        return field;
-    }
-
-    public void select(T v) {
-        field.getSelectionModel().select(v);
-    }
-
-    public T getValue() {
-        return field.getSelectionModel().getSelectedItem();
-    }
-    
-    public T getValue(T defaultValue) {
-        T v = getValue();
-        return v == null ? defaultValue : v;
+        setText(text);
+        selectedProperty().bindBidirectional(property);
     }
 }

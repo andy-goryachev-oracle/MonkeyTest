@@ -33,7 +33,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 public class RegionOptions {
     // TODO pass the control instance
     public static void appendTo(Region region, OptionPane op) {
-        BorderSelector border = new BorderSelector("border", region.borderProperty());
+        BorderOption border = new BorderOption("border", region.borderProperty());
 
         op.section("Region");
         op.label("Background: TODO"); // TODO

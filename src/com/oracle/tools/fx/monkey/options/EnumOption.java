@@ -22,43 +22,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
-import java.util.function.Consumer;
-import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
+import java.util.Arrays;
+import java.util.Comparator;
+import javafx.beans.property.ObjectProperty;
 
 /**
- * Enum-based Option Selector.
+ * Enum Option Bound to a Property.
  */
-@Deprecated
-public class EnumSelector<T extends Enum> {
-    private final ComboBox<T> field = new ComboBox<>();
+public class EnumOption<T extends Enum> extends ObjectOption<T> {
+    public EnumOption(String name, Class<T> type, ObjectProperty<T> p) {
+        super(name, p);
 
-    public EnumSelector(Class<T> type, String name, Consumer<T> client) {
         T[] values = type.getEnumConstants();
-        FX.name(field, name);
-        field.getItems().setAll(values);
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            T v = field.getSelectionModel().getSelectedItem();
-            client.accept(v);
+        Arrays.sort(values, new Comparator<T>() {
+            @Override
+            public int compare(T a, T b) {
+                return a.toString().compareTo(b.toString());
+            }
         });
-    }
 
-    public Node node() {
-        return field;
-    }
+        addChoice("<null>", null);
+        for(T v: values) {
+            addChoice(v.toString(), v);
+        }
 
-    public void select(T v) {
-        field.getSelectionModel().select(v);
-    }
-
-    public T getValue() {
-        return field.getSelectionModel().getSelectedItem();
-    }
-    
-    public T getValue(T defaultValue) {
-        T v = getValue();
-        return v == null ? defaultValue : v;
+        selectInitialValue();
     }
 }

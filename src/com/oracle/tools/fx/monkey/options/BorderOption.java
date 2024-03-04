@@ -22,43 +22,40 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
-import java.util.function.Consumer;
-import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 
 /**
- * Enum-based Option Selector.
+ * Border Option.
  */
-@Deprecated
-public class EnumSelector<T extends Enum> {
-    private final ComboBox<T> field = new ComboBox<>();
+public class BorderOption extends ObjectOption<Border> {
+    public BorderOption(String name, ObjectProperty<Border> p) {
+        super(name, p);
 
-    public EnumSelector(Class<T> type, String name, Consumer<T> client) {
-        T[] values = type.getEnumConstants();
-        FX.name(field, name);
-        field.getItems().setAll(values);
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            T v = field.getSelectionModel().getSelectedItem();
-            client.accept(v);
-        });
-    }
+        addChoice("<null>", null);
+        addChoice("EMPTY", Border.EMPTY);
+        addChoice("Red (1)", createBorder(Color.RED, 1, null));
+        addChoice("Green (20)", createBorder(Color.GREEN, 20, null));
+        addChoice("Rounded", createBorder(Color.ORANGE, 1, 5.0));
 
-    public Node node() {
-        return field;
-    }
-
-    public void select(T v) {
-        field.getSelectionModel().select(v);
-    }
-
-    public T getValue() {
-        return field.getSelectionModel().getSelectedItem();
+        selectInitialValue();
     }
     
-    public T getValue(T defaultValue) {
-        T v = getValue();
-        return v == null ? defaultValue : v;
+    private static Border createBorder(Color color, double width, Double radius) {
+        BorderStrokeStyle style = BorderStrokeStyle.SOLID;
+        CornerRadii radii = radius == null ? null : new CornerRadii(radius);
+        BorderWidths widths = new BorderWidths(width);
+
+        BorderStroke[] strokes = {
+            new BorderStroke(color, style, radii, widths)
+        };
+        return new Border(strokes);
     }
 }

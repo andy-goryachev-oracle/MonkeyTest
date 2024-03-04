@@ -24,55 +24,62 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
+import java.util.List;
+import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ComboBox;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.NamedValue;
 
 /**
- * Border Selector
+ * Object Selector Bound to a Property.
  */
-// TODO common base class?
-public class BorderSelector extends ComboBox<NamedValue<Border>> {
-    private final SimpleObjectProperty<Border> property = new SimpleObjectProperty<>();
+public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
+    private final SimpleObjectProperty<T> property = new SimpleObjectProperty<>();
 
-    public BorderSelector(String name, ObjectProperty<Border> p) {
+    public ObjectOption(String name, ObjectProperty<T> p) {
         property.bindBidirectional(p);
         FX.name(this, name);
-
-        addChoice("<null>", null);
-        addChoice("EMPTY", Border.EMPTY);
-        addChoice("Red (1)", createBorder(Color.RED, 1, null));
-        addChoice("Green (20)", createBorder(Color.GREEN, 20, null));
-        addChoice("Rounded", createBorder(Color.ORANGE, 1, 5.0));
 
         // TODO add the current value to choices and select it
 
         getSelectionModel().selectedItemProperty().addListener((s,pr,c) -> {
-            Border b = c.getValue();
-            property.set(b);
+            T v = c.getValue();
+            property.set(v);
         });
     }
 
-    public void addChoice(String name, Border border) {
-        getItems().add(new NamedValue<>(name, border));
+    public void addChoice(String name, T item) {
+        getItems().add(new NamedValue<>(name, item));
     }
-    
-    private static Border createBorder(Color color, double width, Double radius) {
-        BorderStrokeStyle style = BorderStrokeStyle.SOLID;
-        CornerRadii radii = radius == null ? null : new CornerRadii(radius);
-        BorderWidths widths = new BorderWidths(width);
 
-        BorderStroke[] strokes = {
-            new BorderStroke(color, style, radii, widths)
-        };
-        return new Border(strokes);
+    /**
+     * Selects the property value, adding it to the list of items under "<INITIAL>" name.
+     */
+    public void selectInitialValue() {
+        T value = property.get();
+        List<NamedValue<T>> items = getItems();
+        int sz = items.size();
+        for (int i = 0; i < sz; i++) {
+            NamedValue<T> item = items.get(i);
+            if (Objects.equals(value, item.getValue())) {
+                select(i);
+                return;
+            }
+        }
+
+        items.add(new NamedValue<T>("<INITIAL>", value));
+        select(sz);
+    }
+
+    /**
+     * Selects the given index.  Does nothing if the index is outside of the valid range.
+     * @param ix
+     */
+    public void select(int ix) {
+        if ((ix >= 0) && (ix < getItems().size())) {
+            getSelectionModel().select(ix);
+        }
     }
 }
