@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,22 +24,30 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.geometry.Pos;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import com.oracle.tools.fx.monkey.options.ControlOptions;
+import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.util.EnumSelector;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.FontSelector;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextOption;
+import com.oracle.tools.fx.monkey.util.TextSelector;
 
 /**
- *
+ * Label Page
  */
 public class LabelPage extends TestPaneBase {
     enum Demo {
@@ -57,72 +65,94 @@ public class LabelPage extends TestPaneBase {
         @Override public String toString() { return text; }
     }
 
-    private final ComboBox<Demo> label1Selector;
-    private final ComboBox<Demo> label2Selector;
-    private final ComboBox<Pos> alignmentSelector;
-    private final Image im;
+    private final Label control;
 
     public LabelPage() {
         FX.name(this, "LabelPage");
 
-        im = createImage();
+        control = new Label();
+        setContent(control);
 
-        label1Selector = new ComboBox<>();
-        FX.name(label1Selector, "label1Selector");
-        label1Selector.getItems().addAll(Demo.values());
-        label1Selector.setEditable(false);
-        label1Selector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updateControl();
+        control.truncatedProperty().addListener((s,p,c) -> {
+            System.err.println("truncated: " + c);
+        });
+        
+        TextSelector textSelector = TextSelector.fromPairs(
+            "textSelector",
+            (v) -> control.setText(v),
+            Templates.multiLineTextPairs()
+        );
+
+        Button editButton = new Button("Enter Text");
+        editButton.setOnAction((ev) -> {
+            String text = control.getText();
+            new EnterTextDialog(this, text, (v) -> {
+                control.setText(v);
+            }).show();
         });
 
-        label2Selector = new ComboBox<>();
-        FX.name(label2Selector, "label2Selector");
-        label2Selector.getItems().addAll(Demo.values());
-        label2Selector.setEditable(false);
-        label2Selector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updateControl();
+        // TODO default value?
+        EnumSelector<Pos> alignment = new EnumSelector<Pos>(Pos.class, "alignment", (v) -> {
+            control.setAlignment(v);
         });
 
-        alignmentSelector = new ComboBox<>();
-        FX.name(alignmentSelector, "alignmentSelector");
-        alignmentSelector.getItems().addAll(Pos.values());
-        alignmentSelector.setEditable(false);
-        alignmentSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updateControl();
+        TextOption ellipsisString = new TextOption(
+            "ellipsisString",
+            control.ellipsisStringProperty()
+        );
+        
+        EnumSelector<OverrunStyle> overrun = new EnumSelector<OverrunStyle>(OverrunStyle.class, "overrun", (v) -> {
+            control.setTextOverrun(v);
+        });
+        
+        FontSelector fontSelector = new FontSelector("font", (v) -> {
+            control.setFont(v);
         });
 
-        OptionPane p = new OptionPane();
-        p.label("Label 1:");
-        p.option(label1Selector);
-        p.label("Label 2:");
-        p.option(label2Selector);
-        p.label("HBox Alignment:");
-        p.option(alignmentSelector);
-        setOptions(p);
+        CheckBox wrapText = new CheckBox("wrap text");
+        FX.name(wrapText, "wrap");
+        wrapText.selectedProperty().bindBidirectional(control.wrapTextProperty());
 
-        FX.select(label1Selector, Demo.TEXT_ONLY);
-        FX.select(label2Selector, Demo.TEXT_ONLY);
-    }
+        OptionPane op = new OptionPane();
+        op.section("Label");
+        op.label("Text:");
+        op.option(textSelector.node());
+        op.option(editButton);
+        op.label("Alignment:");
+        op.option(alignment.node());
+        op.label("Graphic:");
+        // TODO
+        // TODO content display
+        op.label("Ellipsis String:");
+        op.option(ellipsisString);
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Font Size:");
+        op.option(fontSelector.sizeNode());
+        // TODO graphic
+        // TODO padding
+        // TODO line spacing
+        // TODO text fill
+        // TODO text overrun
+        op.label("Overrun:");
+        op.option(overrun.node());
+        // TODO mnemonic parsing
+        // TODO text alignment
+        // TODO underline
+        op.option(wrapText);
 
-    protected void updateControl() {
-        Demo d1 = FX.getSelectedItem(label1Selector);
-        Label label1 = create(d1);
-
-        Demo d2 = FX.getSelectedItem(label2Selector);
-        Label label2 = create(d2);
-
-        HBox b = new HBox(label1, label2);
-        Pos a = FX.getSelectedItem(alignmentSelector);
-        if (a != null) {
-            b.setAlignment(a);
-        }
-        setContent(b);
+        // control
+        ControlOptions.appendTo(op);
+        setOptions(op);
     }
 
     protected Label create(Demo d) {
         if(d == null) {
             return new Label();
         }
+
+        // FIX
+        Image im = createImage();
 
         switch(d) {
         case TEXT_GRAPHIC_LEFT:

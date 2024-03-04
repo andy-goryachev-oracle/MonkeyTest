@@ -25,7 +25,6 @@
 package com.oracle.tools.fx.monkey;
 
 import com.oracle.tools.fx.monkey.pages.*;
-import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 
 /**
  * Monkey Tester Pages.
@@ -39,7 +38,6 @@ public class Pages {
             new DemoPage("Canvas", CanvasPage::new),
             // TODO CheckBox
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
-            new DemoPage("Clipboard", ClipboardViewer::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
             new DemoPage("DatePicker", DatePickerPage::new),
@@ -50,7 +48,7 @@ public class Pages {
             new DemoPage("Label", LabelPage::new),
             new DemoPage("ListView", ListViewPage::new),
             // TODO MenuBar
-            // TODO MenuButton
+            new DemoPage("MenuButton", MenuButtonPage::new),
             // TODO Pagination
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
