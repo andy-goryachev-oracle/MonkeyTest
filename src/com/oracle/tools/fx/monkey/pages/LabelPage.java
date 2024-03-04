@@ -142,7 +142,7 @@ public class LabelPage extends TestPaneBase {
         op.option(wrapText);
 
         // control
-        ControlOptions.appendTo(op);
+        ControlOptions.appendTo(control, op);
         setOptions(op);
     }
 

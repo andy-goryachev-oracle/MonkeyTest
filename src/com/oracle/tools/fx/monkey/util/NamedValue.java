@@ -22,36 +22,55 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.pages;
+package com.oracle.tools.fx.monkey.util;
 
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import com.oracle.tools.fx.monkey.options.ControlOptions;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import java.util.Objects;
 
 /**
- *
+ * Named value.
+ * @param <V> the type of the value
  */
-public class MenuButtonPage extends TestPaneBase {
-    private final MenuButton control;
+public class NamedValue<V> {
+    private final String display;
+    private final V value;
 
-    public MenuButtonPage() {
-        control = new MenuButton();
-        // TODO
-        control.setText("Text");
-        control.getItems().add(new MenuItem("Edit"));
-        setContent(control);
-
-        OptionPane op = new OptionPane();
-        op.section("MenuButton");
-        // TODO popup side
-        // TODO items
-        // TODO graphic
-        // TODO all button base properties
-
-        // control
-        ControlOptions.appendTo(control, op);
-        setOptions(op);
+    /**
+     * Constructor.
+     * @param display the display name
+     * @param value the value
+     */
+    public NamedValue(String display, V value) {
+        Objects.nonNull(display);
+        this.display = display;
+        this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return display;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    @Override
+    public int hashCode() {
+        int h = NamedValue.class.hashCode();
+        h = 31 * h + display.hashCode();
+        h = 31 * h + (value != null ? value.hashCode() : 0);
+        return h;
+    }
+
+     @Override
+     public boolean equals(Object x) {
+         if(x == this) {
+             return true;
+         } else if(x instanceof NamedValue v) {
+             return
+                 Objects.equals(display, v.display) &&
+                 Objects.equals(value, v.value);
+         }
+         return false;
+     }
 }

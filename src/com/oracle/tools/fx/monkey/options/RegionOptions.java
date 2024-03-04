@@ -22,36 +22,37 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.pages;
+package com.oracle.tools.fx.monkey.options;
 
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import com.oracle.tools.fx.monkey.options.ControlOptions;
+import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- *
+ * Region Property Sheet.
  */
-public class MenuButtonPage extends TestPaneBase {
-    private final MenuButton control;
+public class RegionOptions {
+    // TODO pass the control instance
+    public static void appendTo(Region region, OptionPane op) {
+        BorderSelector border = new BorderSelector("border", region.borderProperty());
 
-    public MenuButtonPage() {
-        control = new MenuButton();
-        // TODO
-        control.setText("Text");
-        control.getItems().add(new MenuItem("Edit"));
-        setContent(control);
+        op.section("Region");
+        op.label("Background: TODO"); // TODO
+        op.label("Border:");
+        op.option(border);
+        op.label("Set Cache Shape: TODO"); // TODO
+        op.label("Set Center Shape: TODO"); // TODO
+        op.label("Set Max Height: TODO"); // TODO
+        op.label("Set Max Width: TODO"); // TODO
+        op.label("Set Min Height: TODO"); // TODO
+        op.label("Set Min Width: TODO"); // TODO
+        op.label("Set Opaque Insets: TODO"); // TODO
+        op.label("Set Padding: TODO"); // TODO
+        op.label("Set Pref Height: TODO"); // TODO
+        op.label("Set Pref Width: TODO"); // TODO
+        op.label("Set Scale Shape: TODO"); // TODO
+        op.label("Set Shape: TODO"); // TODO
+        op.label("Set Snap to Pixel: TODO"); // TODO
 
-        OptionPane op = new OptionPane();
-        op.section("MenuButton");
-        // TODO popup side
-        // TODO items
-        // TODO graphic
-        // TODO all button base properties
-
-        // control
-        ControlOptions.appendTo(control, op);
-        setOptions(op);
+        // TODO node?  too many properties?
     }
 }

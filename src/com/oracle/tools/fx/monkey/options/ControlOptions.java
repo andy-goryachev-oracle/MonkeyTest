@@ -24,18 +24,21 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
+import javafx.scene.control.Control;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
  * Control Property Sheet.
  */
 public class ControlOptions {
-    // TODO pass the control instance
-    public static void appendTo(OptionPane op) {
+    public static void appendTo(Control control, OptionPane op) {
         op.section("Control");
         op.label("Context Menu");
         // TODO context menu
         op.label("Tooltip");
         // TODO tooltip
+
+        // region
+        RegionOptions.appendTo(control, op);
     }
 }
