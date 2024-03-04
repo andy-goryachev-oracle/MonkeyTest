@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -34,6 +34,7 @@ public class Templates {
     public static final String TWO_EMOJIS = "😊😇";
     public static final String CLUSTERS = "☝🏿☝🏿☝🏿🤦🏼‍♂️";
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
+    public static final String RIGHT_TO_LEFT = "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די";
 
     public static TextSelector promptChoice(String id, Consumer<String> client) {
         return TextSelector.fromPairs(
@@ -49,7 +50,7 @@ public class Templates {
     public static Object[] multiLineTextPairs() {
         return new Object[] {
             "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
-            "Right-to-Left", "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די",
+            "Right-to-Left", RIGHT_TO_LEFT,
             "Writing Systems", WritingSystemsDemo.getText(false),
             "Combining Chars", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ\nDouble diacritics: a\u0360b a\u0361b a\u0362b a\u035cb",
             "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",

@@ -77,6 +77,7 @@ public class TextFlowPage extends TestPaneBase {
     private String currentText;
     private static final String INLINE = "\u0000_INLINE";
     private static final String RICH_TEXT = "\u0000_RICH";
+    private static final String RICH_TEXT_COMPLEX = "\u0000_RICH2";
 
     public TextFlowPage() {
         FX.name(this, "TextFlowPage");
@@ -111,6 +112,7 @@ public class TextFlowPage extends TestPaneBase {
                 Templates.multiLineTextPairs(),
                 "Inline Nodes", INLINE,
                 "Rich Text", RICH_TEXT,
+                "Rich Text (Complex)", RICH_TEXT_COMPLEX,
                 "Accadian", Templates.AKKADIAN
             )
         );
@@ -199,6 +201,20 @@ public class TextFlowPage extends TestPaneBase {
                 t("trailing", f)
             };
         } else if (RICH_TEXT.equals(text)) {
+            return new Node[] {
+                t("Rich Text: ", f),
+                t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("italic ", f, "-fx-font-style:italic;"),
+                t("underline ", f, "-fx-underline:true;"),
+                t("The quick brown fox jumped over the lazy dog ", f),
+                t("The quick brown fox jumped over the lazy dog ", f),
+                t("The quick brown fox jumped over the lazy dog ", f),
+                t(Templates.RIGHT_TO_LEFT, f),
+                t(Templates.RIGHT_TO_LEFT, f)
+            };
+        } else if (RICH_TEXT_COMPLEX.equals(text)) {
             return new Node[] {
                 t("Rich Text: ", f),
                 t("BOLD ", f, "-fx-font-weight:bold;"),
