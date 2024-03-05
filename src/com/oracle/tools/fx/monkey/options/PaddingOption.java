@@ -24,38 +24,21 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import javafx.scene.layout.Region;
-import com.oracle.tools.fx.monkey.util.OptionPane;
+import javafx.beans.property.ObjectProperty;
+import javafx.geometry.Insets;
 
 /**
- * Region Property Sheet.
+ * Padding Option Bound to a Property.
  */
-public class RegionOptions {
-    // TODO pass the control instance
-    public static void appendTo(Region region, OptionPane op) {
-        op.section("Region");
-        op.label("Background: TODO"); // TODO
+public class PaddingOption extends ObjectOption<Insets> {
+    public PaddingOption(String name, ObjectProperty<Insets> p) {
+        super(name, p);
 
-        op.label("Border:");
-        op.option(new BorderOption("border", region.borderProperty()));
+        addChoice("0", new Insets(0));
+        addChoice("10", new Insets(10));
+        addChoice("100", new Insets(100));
+        addChoice("10, 20, 40, 80", new Insets(10, 20, 40, 80));
 
-        op.label("Set Cache Shape: TODO"); // TODO
-        op.label("Set Center Shape: TODO"); // TODO
-        op.label("Set Max Height: TODO"); // TODO
-        op.label("Set Max Width: TODO"); // TODO
-        op.label("Set Min Height: TODO"); // TODO
-        op.label("Set Min Width: TODO"); // TODO
-        op.label("Set Opaque Insets: TODO"); // TODO
-
-        op.label("Padding:");
-        op.option(new PaddingOption("padding", region.paddingProperty()));
-
-        op.label("Set Pref Height: TODO"); // TODO
-        op.label("Set Pref Width: TODO"); // TODO
-        op.label("Set Scale Shape: TODO"); // TODO
-        op.label("Set Shape: TODO"); // TODO
-        op.label("Set Snap to Pixel: TODO"); // TODO
-
-        // TODO node?  too many properties?
+        selectInitialValue();
     }
 }
