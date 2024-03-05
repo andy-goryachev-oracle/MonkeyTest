@@ -28,12 +28,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
 
 /**
- * Padding Option Bound to a Property.
+ * Insets Option Bound to a Property.
  */
-public class PaddingOption extends ObjectOption<Insets> {
-    public PaddingOption(String name, ObjectProperty<Insets> p) {
+public class InsetsOption extends ObjectOption<Insets> {
+    public InsetsOption(String name, boolean allowNull, ObjectProperty<Insets> p) {
         super(name, p);
 
+        if (allowNull) {
+            addChoice("<null>", null);
+        }
         addChoice("0", new Insets(0));
         addChoice("10", new Insets(10));
         addChoice("100", new Insets(100));

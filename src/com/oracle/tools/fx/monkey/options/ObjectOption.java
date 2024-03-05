@@ -44,10 +44,14 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
 
         // TODO add the current value to choices and select it
 
-        getSelectionModel().selectedItemProperty().addListener((s,pr,c) -> {
+        getSelectionModel().selectedItemProperty().addListener((s, pr, c) -> {
             T v = c.getValue();
             property.set(v);
         });
+    }
+
+    public void clearChoices() {
+        getItems().clear();
     }
 
     public void addChoice(String name, T item) {

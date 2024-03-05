@@ -31,7 +31,6 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Region Property Sheet.
  */
 public class RegionOptions {
-    // TODO pass the control instance
     public static void appendTo(Region region, OptionPane op) {
         op.section("Region");
         op.label("Background: TODO"); // TODO
@@ -39,22 +38,29 @@ public class RegionOptions {
         op.label("Border:");
         op.option(new BorderOption("border", region.borderProperty()));
 
-        op.label("Set Cache Shape: TODO"); // TODO
-        op.label("Set Center Shape: TODO"); // TODO
+        op.option(new BooleanOption("cacheShape", "cache shape", region.cacheShapeProperty()));
+        
+        op.option(new BooleanOption("centerShape", "center shape", region.centerShapeProperty()));
+
         op.label("Set Max Height: TODO"); // TODO
         op.label("Set Max Width: TODO"); // TODO
         op.label("Set Min Height: TODO"); // TODO
         op.label("Set Min Width: TODO"); // TODO
-        op.label("Set Opaque Insets: TODO"); // TODO
+
+        op.label("Opaque Insets:");
+        op.option(new InsetsOption("opaqueInsets", true, region.opaqueInsetsProperty()));
 
         op.label("Padding:");
-        op.option(new PaddingOption("padding", region.paddingProperty()));
+        op.option(new InsetsOption("padding", false, region.paddingProperty()));
 
         op.label("Set Pref Height: TODO"); // TODO
         op.label("Set Pref Width: TODO"); // TODO
-        op.label("Set Scale Shape: TODO"); // TODO
+
+        op.option(new BooleanOption("scaleShape", "scale shape", region.scaleShapeProperty()));
+
         op.label("Set Shape: TODO"); // TODO
-        op.label("Set Snap to Pixel: TODO"); // TODO
+
+        op.option(new BooleanOption("snapToPixel", "snap to pixel", region.snapToPixelProperty()));
 
         // TODO node?  too many properties?
     }

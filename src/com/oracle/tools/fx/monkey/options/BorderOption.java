@@ -33,7 +33,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 
 /**
- * Border Option.
+ * Border Option Bound to a Property.
  */
 public class BorderOption extends ObjectOption<Border> {
     public BorderOption(String name, ObjectProperty<Border> p) {
