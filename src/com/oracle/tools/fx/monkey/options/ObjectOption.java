@@ -26,7 +26,7 @@ package com.oracle.tools.fx.monkey.options;
 
 import java.util.List;
 import java.util.Objects;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ComboBox;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -38,7 +38,7 @@ import com.oracle.tools.fx.monkey.util.NamedValue;
 public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
     private final SimpleObjectProperty<T> property = new SimpleObjectProperty<>();
 
-    public ObjectOption(String name, ObjectProperty<T> p) {
+    public ObjectOption(String name, Property<T> p) {
         property.bindBidirectional(p);
         FX.name(this, name);
 
@@ -73,8 +73,13 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
             }
         }
 
-        items.add(new NamedValue<T>("<INITIAL>", value));
+        String text = createInitialDisplayText(value);
+        items.add(new NamedValue<T>(text, value));
         select(sz);
+    }
+
+    protected String createInitialDisplayText(T value) {
+        return "<INITIAL>";
     }
 
     /**

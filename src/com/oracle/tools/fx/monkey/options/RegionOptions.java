@@ -39,13 +39,17 @@ public class RegionOptions {
         op.option(new BorderOption("border", region.borderProperty()));
 
         op.option(new BooleanOption("cacheShape", "cache shape", region.cacheShapeProperty()));
-        
+
         op.option(new BooleanOption("centerShape", "center shape", region.centerShapeProperty()));
 
-        op.label("Set Max Height: TODO"); // TODO
-        op.label("Set Max Width: TODO"); // TODO
-        op.label("Set Min Height: TODO"); // TODO
-        op.label("Set Min Width: TODO"); // TODO
+        op.label("Max Height:");
+        op.option(DoubleOption.forRegion("maxHeight", region.maxHeightProperty()));
+        op.label("Max Width:");
+        op.option(DoubleOption.forRegion("maxWidth", region.maxWidthProperty()));
+        op.label("Min Height:");
+        op.option(DoubleOption.forRegion("minHeight", region.minHeightProperty()));
+        op.label("Min Width:");
+        op.option(DoubleOption.forRegion("minWidth", region.minWidthProperty()));
 
         op.label("Opaque Insets:");
         op.option(new InsetsOption("opaqueInsets", true, region.opaqueInsetsProperty()));
@@ -53,12 +57,14 @@ public class RegionOptions {
         op.label("Padding:");
         op.option(new InsetsOption("padding", false, region.paddingProperty()));
 
-        op.label("Set Pref Height: TODO"); // TODO
-        op.label("Set Pref Width: TODO"); // TODO
+        op.label("Pref Height:");
+        op.option(DoubleOption.forRegion("prefHeight", region.prefHeightProperty()));
+        op.label("Pref Width:");
+        op.option(DoubleOption.forRegion("prefWidth", region.prefWidthProperty()));
 
         op.option(new BooleanOption("scaleShape", "scale shape", region.scaleShapeProperty()));
 
-        op.label("Set Shape: TODO"); // TODO
+        op.label("Shape: TODO"); // TODO
 
         op.option(new BooleanOption("snapToPixel", "snap to pixel", region.snapToPixelProperty()));
 
