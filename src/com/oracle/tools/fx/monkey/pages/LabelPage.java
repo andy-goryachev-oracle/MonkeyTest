@@ -56,7 +56,7 @@ public class LabelPage extends TestPaneBase {
         setContent(control);
 
         // JDK-8092102
-//        control.truncatedProperty().addListener((s,p,c) -> {
+//        control.textTruncatedProperty().addListener((s,p,c) -> {
 //            System.err.println("truncated: " + c);
 //        });
         
