@@ -22,27 +22,20 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
-
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import com.oracle.tools.fx.monkey.util.ImageTools;
+package com.oracle.tools.fx.monkey.util;
 
 /**
- * Graphic Option.
+ * Various formatting methods.
  */
-public class GraphicOption extends ObjectOption<Node> {
-    public GraphicOption(String name, ObjectProperty<Node> p) {
-        super(name, p);
-
-        addChoice("<null>", null);
-        addChoice("1x1", ImageTools.createImageView(Color.RED, 1, 1));
-        addChoice("Small", ImageTools.createImageView(Color.ORANGE, 16, 16));
-        addChoice("Wide", ImageTools.createImageView(Color.GREEN, 128, 16));
-        addChoice("Tall", ImageTools.createImageView(Color.BLUE, 16, 128));
-        addChoice("Large", ImageTools.createImageView(Color.SALMON, 256, 256));
-
-        selectInitialValue();
+public class Formats {
+    public static String formatDouble(Number value) {
+        if (value == null) {
+            return "null";
+        }
+        double v = value.doubleValue();
+        if (v == Math.rint(v)) {
+            return String.valueOf(value.longValue());
+        }
+        return String.valueOf(v);
     }
 }

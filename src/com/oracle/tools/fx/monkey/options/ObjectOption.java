@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.options;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ComboBox;
@@ -58,6 +59,15 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
         getItems().add(new NamedValue<>(name, item));
     }
 
+    public void addChoiceSupplier(String name, Supplier<T> gen) {
+        getItems().add(new NamedValue<>(name, null) {
+            @Override
+            public T getValue() {
+                return gen.get();
+            }
+        });
+    }
+
     /**
      * Selects the property value, adding it to the list of items under "<INITIAL>" name.
      */
@@ -73,13 +83,9 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
             }
         }
 
-        String text = createInitialDisplayText(value);
+        String text = "<INITIAL " + value + ">";
         items.add(new NamedValue<T>(text, value));
         select(sz);
-    }
-
-    protected String createInitialDisplayText(T value) {
-        return "<INITIAL>";
     }
 
     /**

@@ -32,8 +32,10 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ControlOptions;
+import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
+import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
@@ -98,11 +100,13 @@ public class LabelPage extends TestPaneBase {
         op.option(fontSelector.sizeNode());
         op.label("Graphic:");
         op.option(new GraphicOption("graphic", control.graphicProperty()));
-        // TODO padding
-        // TODO line spacing
+        op.label("Padding:");
+        op.option(new InsetsOption("padding", false, control.paddingProperty()));
+        op.label("Line Spacing:");
+        op.option(DoubleOption.of("lineSpacing", control.lineSpacingProperty(), 0, 1, 2, 3.14, 10, 33.33, 100));
         op.label("Text Alignment:");
         op.option(new EnumOption<>("textAlignment", TextAlignment.class, control.textAlignmentProperty()));
-        // TODO text fill
+        op.label("Text Fill: TODO");// TODO text fill
         op.label("Text Overrun:");
         op.option(new EnumOption<>("textOverrun", OverrunStyle.class, control.textOverrunProperty()));
         op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", control.mnemonicParsingProperty()));

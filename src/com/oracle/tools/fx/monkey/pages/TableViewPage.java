@@ -57,6 +57,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.options.ControlOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -164,6 +165,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final CheckBox hideColumn;
     private final CheckBox fixedHeight;
     private final CheckBox menuButtonVisible;
+    // TODO final
     private TableView<Object> control;
 
     public TableViewPage() {
@@ -271,12 +273,16 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         // layout
 
         OptionPane op = new OptionPane();
+        op.section("TableView");
+        // TODO separate columns and data items
         op.label("Data:");
         op.option(demoSelector);
         op.option(addButton);
         op.option(clearButton);
         op.option(addColumnButton);
         op.option(removeColumnButton);
+        // TODO
+        //op.option(editable);
         op.label("Filter:");
         op.option(filterSelector);
         op.label("Cell Value:");
@@ -292,6 +298,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(fixedHeight);
         op.option(refresh);
         op.option(menuButtonVisible);
+        // control
+        // TODO ControlOptions.appendTo(control, op);
         setOptions(op);
 
         FX.selectFirst(demoSelector);

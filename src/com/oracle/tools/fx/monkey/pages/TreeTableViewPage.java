@@ -139,6 +139,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     private final CheckBox menuButtonVisible;
     private final CheckBox editable;
     private final ComboBox<Cells> cellFactorySelector;
+    // TODO final
     private TreeTableView<String> control;
     private Callback<TreeTableColumn<String, String>, TreeTableCell<String, String>> defaultCellFactory;
 
@@ -230,6 +231,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         // layout
 
         OptionPane op = new OptionPane();
+        op.section("TreeTableView");
         op.label("Data:");
         op.option(dataSelector);
         op.option(clearButton);
@@ -247,6 +249,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(menuButtonVisible);
         op.option(addGraphics);
         op.option(addSubNodes);
+        // control
+        // TODO ControlOptions.appendTo(control, op);
         setOptions(op);
 
         dataSelector.getSelectionModel().selectFirst();

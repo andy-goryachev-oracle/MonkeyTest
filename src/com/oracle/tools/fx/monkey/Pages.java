@@ -68,6 +68,7 @@ public class Pages {
             new DemoPage("TitledPane", TitledPanePage::new),
             // TODO ToggleButton
             // TODO ToolBar
+            new DemoPage("Tooltip", TooltipPage::new),
             // TODO in tables: Cell, DateCell, IndexedCell* ?
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("TreeView", TreeViewPage::new),

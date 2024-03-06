@@ -25,23 +25,23 @@
 package com.oracle.tools.fx.monkey.options;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import com.oracle.tools.fx.monkey.util.ImageTools;
+import javafx.util.Duration;
 
 /**
- * Graphic Option.
+ * Duration Option.
  */
-public class GraphicOption extends ObjectOption<Node> {
-    public GraphicOption(String name, ObjectProperty<Node> p) {
+public class DurationOption extends ObjectOption<Duration> {
+    public DurationOption(String name, ObjectProperty<Duration> p) {
         super(name, p);
 
         addChoice("<null>", null);
-        addChoice("1x1", ImageTools.createImageView(Color.RED, 1, 1));
-        addChoice("Small", ImageTools.createImageView(Color.ORANGE, 16, 16));
-        addChoice("Wide", ImageTools.createImageView(Color.GREEN, 128, 16));
-        addChoice("Tall", ImageTools.createImageView(Color.BLUE, 16, 128));
-        addChoice("Large", ImageTools.createImageView(Color.SALMON, 256, 256));
+        addChoice("0", Duration.millis(0));
+        addChoice("1 ms", Duration.millis(1));
+        addChoice("10 ms", Duration.millis(10));
+        addChoice("100 ms", Duration.millis(100));
+        addChoice("1 s", Duration.seconds(1));
+        addChoice("10 s", Duration.seconds(10));
+        addChoice("INDEFINITE", Duration.INDEFINITE);
 
         selectInitialValue();
     }

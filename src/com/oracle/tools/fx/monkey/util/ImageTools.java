@@ -22,27 +22,33 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.util;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import com.oracle.tools.fx.monkey.util.ImageTools;
 
 /**
- * Graphic Option.
+ * Image Tools.
  */
-public class GraphicOption extends ObjectOption<Node> {
-    public GraphicOption(String name, ObjectProperty<Node> p) {
-        super(name, p);
+public class ImageTools {
+    public static ImageView createImageView(Color c, int w, int h) {
+        Image im = createImage(c, w, h);
+        return new ImageView(im);
+    }
 
-        addChoice("<null>", null);
-        addChoice("1x1", ImageTools.createImageView(Color.RED, 1, 1));
-        addChoice("Small", ImageTools.createImageView(Color.ORANGE, 16, 16));
-        addChoice("Wide", ImageTools.createImageView(Color.GREEN, 128, 16));
-        addChoice("Tall", ImageTools.createImageView(Color.BLUE, 16, 128));
-        addChoice("Large", ImageTools.createImageView(Color.SALMON, 256, 256));
+    public static Image createImage(Color c, int w, int h) {
+        WritableImage im = new WritableImage(w, h);
+        PixelWriter wr = im.getPixelWriter();
 
-        selectInitialValue();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                wr.setColor(x, y, c);
+            }
+        }
+
+        return im;
     }
 }

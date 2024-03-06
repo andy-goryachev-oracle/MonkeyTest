@@ -25,8 +25,8 @@
 package com.oracle.tools.fx.monkey.options;
 
 import javafx.beans.property.Property;
-import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import com.oracle.tools.fx.monkey.util.Formats;
 
 /**
  * Double Option Bound to a Property
@@ -34,11 +34,6 @@ import javafx.scene.layout.Region;
 public class DoubleOption extends ObjectOption<Number> {
     public DoubleOption(String name, Property<Number> p) {
         super(name, p);
-    }
-
-    @Override
-    protected String createInitialDisplayText(Number value) {
-        return "<INITIAL:" + value + ">";
     }
 
     public static DoubleOption forRegion(String name, Property<Number> p) {
@@ -53,6 +48,16 @@ public class DoubleOption extends ObjectOption<Number> {
         d.addChoice("Double.MIN_VALUE", Double.MIN_VALUE);
         d.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
         d.addChoice("Double.NaN", Double.NaN);
+        d.selectInitialValue();
+        return d;
+    }
+
+    public static DoubleOption of(String name, Property<Number> p, double ... values) {
+        DoubleOption d = new DoubleOption(name, p);
+        for (double v : values) {
+            String text = Formats.formatDouble(v);
+            d.addChoice(text, v);
+        }
         d.selectInitialValue();
         return d;
     }
