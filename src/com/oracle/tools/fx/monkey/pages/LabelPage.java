@@ -34,11 +34,11 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ControlOptions;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -76,13 +76,6 @@ public class LabelPage extends TestPaneBase {
             }).show();
         });
 
-        TextOption ellipsisString = new TextOption("ellipsisString", control.ellipsisStringProperty());
-
-        // TODO different chooser
-        FontSelector fontSelector = new FontSelector("font", (v) -> {
-            control.setFont(v);
-        });
-
         OptionPane op = new OptionPane();
         op.section("Label");
         op.label("Text:");
@@ -93,11 +86,9 @@ public class LabelPage extends TestPaneBase {
         op.label("Content Display:");
         op.option(new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
         op.label("Ellipsis String:");
-        op.option(ellipsisString);
+        op.option(new TextOption("ellipsisString", control.ellipsisStringProperty()));
         op.label("Font:");
-        op.option(fontSelector.fontNode());
-        op.label("Font Size:");
-        op.option(fontSelector.sizeNode());
+        op.option(new FontOption("font", false, control.fontProperty()));
         op.label("Graphic:");
         op.option(new GraphicOption("graphic", control.graphicProperty()));
         op.label("Padding:");

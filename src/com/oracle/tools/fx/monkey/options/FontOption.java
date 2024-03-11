@@ -22,32 +22,40 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import javafx.scene.Node;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
+import com.oracle.tools.fx.monkey.util.FX;
 
 /**
- * Font Selector.
+ * Font Option Bound to a Property.
  */
-@Deprecated // FIX remove
-public class FontSelector {
+// TODO allow null? use logical fonts?
+// TODO names of families?
+// TODO filtered list
+public class FontOption extends BorderPane {
+    private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
     private final ComboBox<String> fontField = new ComboBox<>();
-    private final ComboBox<Integer> sizeField;
+    private final ComboBox<Integer> sizeField = new ComboBox<>();
 
-    public FontSelector(String id, Consumer<Font> client) {
-        FX.name(fontField, id + "_FONT");
-        fontField.getItems().setAll(collectFonts());
-        fontField.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            update(client);
+    public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
+        FX.name(this, name);
+        property.bindBidirectional(p);
+
+        FX.name(fontField, name + "_FONT");
+        fontField.getItems().setAll(collectFonts(allowNull));
+        fontField.getSelectionModel().selectedItemProperty().addListener((x) -> {
+            update();
         });
 
-        sizeField = new ComboBox<>();
-        FX.name(sizeField, id + "_SIZE");
+        FX.name(sizeField, name + "_SIZE");
         sizeField.getItems().setAll(
             1,
             6,
@@ -64,21 +72,19 @@ public class FontSelector {
             480
         );
         sizeField.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            update(client);
+            update();
         });
+
+        setCenter(fontField);
+        setRight(sizeField);
+        setMargin(sizeField, new Insets(0, 0, 0, 2));
+
+        setFont(property.get());
     }
 
-    protected void update(Consumer<Font> client) {
+    protected void update() {
         Font f = getFont();
-        client.accept(f);
-    }
-
-    public Node fontNode() {
-        return fontField;
-    }
-
-    public Node sizeNode() {
-        return sizeField;
+        property.set(f);
     }
 
     public void select(String name) {
@@ -97,9 +103,26 @@ public class FontSelector {
         return new Font(name, size);
     }
 
-    protected List<String> collectFonts() {
-        ArrayList<String> rv = new ArrayList<>(Font.getFontNames());
-        //rv.add(0, null);
+    private void setFont(Font f) {
+        String name;
+        double size;
+        if (f == null) {
+            name = null;
+            size = 12.0;
+        } else {
+            name = f.getName();
+            size = f.getSize();
+        }
+        fontField.getSelectionModel().select(null);
+        sizeField.getSelectionModel().select(null);
+    }
+
+    protected List<String> collectFonts(boolean allowNull) {
+        ArrayList<String> rv = new ArrayList<>();
+        if (allowNull) {
+            rv.add(null);
+        }
+        rv.addAll(Font.getFontNames());
         return rv;
     }
 
