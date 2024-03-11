@@ -44,6 +44,7 @@ import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.options.RegionOptions;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -152,6 +153,7 @@ public class TextFlowPage extends TestPaneBase {
         });
 
         OptionPane op = new OptionPane();
+        op.section("TextFlow");
         op.label("Text:");
         op.option(textSelector.node());
         op.option(editButton);
@@ -178,6 +180,8 @@ public class TextFlowPage extends TestPaneBase {
         op.label("TextFlow.hitTest:");
         op.option(hitInfo);
         op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
+        // region
+        RegionOptions.appendTo(op, control);
 
         setContent(control);
         setOptions(op);

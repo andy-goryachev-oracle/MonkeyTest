@@ -39,6 +39,6 @@ public class ControlOptions {
         // TODO tooltip
 
         // region
-        RegionOptions.appendTo(control, op);
+        RegionOptions.appendTo(op, control);
     }
 }

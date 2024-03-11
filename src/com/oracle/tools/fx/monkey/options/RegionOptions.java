@@ -31,7 +31,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Region Property Sheet.
  */
 public class RegionOptions {
-    public static void appendTo(Region region, OptionPane op) {
+    public static void appendTo(OptionPane op, Region region) {
         op.section("Region");
         op.label("Background: TODO"); // TODO
 
@@ -68,6 +68,6 @@ public class RegionOptions {
 
         op.option(new BooleanOption("snapToPixel", "snap to pixel", region.snapToPixelProperty()));
 
-        // TODO node?  too many properties?
+        NodeOptions.appendTo(op, region);
     }
 }
