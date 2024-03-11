@@ -49,63 +49,78 @@ import com.oracle.tools.fx.monkey.util.TextSelector;
  * Label Page
  */
 public class LabelPage extends TestPaneBase {
-    private final Label control;
+    private final Label label;
 
     public LabelPage() {
         FX.name(this, "LabelPage");
 
-        control = new Label();
-        setContent(control);
+        label = new Label();
+        setContent(label);
 
         // JDK-8092102
 //        control.textTruncatedProperty().addListener((s,p,c) -> {
 //            System.err.println("truncated: " + c);
 //        });
-        
+
+        // TODO
         TextSelector textSelector = TextSelector.fromPairs(
             "textSelector",
-            (v) -> control.setText(v),
+            (v) -> label.setText(v),
             Templates.multiLineTextPairs()
         );
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
-            String text = control.getText();
+            String text = label.getText();
             new EnterTextDialog(this, text, (v) -> {
-                control.setText(v);
+                label.setText(v);
             }).show();
         });
 
         OptionPane op = new OptionPane();
         op.section("Label");
+
         op.label("Text:");
         op.option(textSelector.node());
         op.option(editButton);
+
         op.label("Alignment:");
-        op.option(new EnumOption<>("alignment", Pos.class, control.alignmentProperty()));
+        op.option(new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
+
         op.label("Content Display:");
-        op.option(new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
+        op.option(new EnumOption<>("contentDisplay", ContentDisplay.class, label.contentDisplayProperty()));
+
         op.label("Ellipsis String:");
-        op.option(new TextOption("ellipsisString", control.ellipsisStringProperty()));
+        op.option(new TextOption("ellipsisString", label.ellipsisStringProperty()));
+
         op.label("Font:");
-        op.option(new FontOption("font", false, control.fontProperty()));
+        op.option(new FontOption("font", false, label.fontProperty()));
+
         op.label("Graphic:");
-        op.option(new GraphicOption("graphic", control.graphicProperty()));
+        op.option(new GraphicOption("graphic", label.graphicProperty()));
+
         op.label("Padding:");
-        op.option(new InsetsOption("padding", false, control.paddingProperty()));
+        op.option(new InsetsOption("padding", false, label.paddingProperty()));
+
         op.label("Line Spacing:");
-        op.option(DoubleOption.of("lineSpacing", control.lineSpacingProperty(), 0, 1, 2, 3.14, 10, 33.33, 100));
+        op.option(DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
+
         op.label("Text Alignment:");
-        op.option(new EnumOption<>("textAlignment", TextAlignment.class, control.textAlignmentProperty()));
-        op.label("Text Fill: TODO");// TODO text fill
+        op.option(new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
+
+        op.label("Text Fill: TODO"); // TODO text fill
+
         op.label("Text Overrun:");
-        op.option(new EnumOption<>("textOverrun", OverrunStyle.class, control.textOverrunProperty()));
-        op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", control.mnemonicParsingProperty()));
-        op.option(new BooleanOption("underline", "underline", control.underlineProperty()));
-        op.option(new BooleanOption("wrapText", "wrap text", control.wrapTextProperty()));
+        op.option(new EnumOption<>("textOverrun", OverrunStyle.class, label.textOverrunProperty()));
+
+        op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", label.mnemonicParsingProperty()));
+
+        op.option(new BooleanOption("underline", "underline", label.underlineProperty()));
+
+        op.option(new BooleanOption("wrapText", "wrap text", label.wrapTextProperty()));
 
         // control
-        ControlOptions.appendTo(control, op);
+        ControlOptions.appendTo(label, op);
         setOptions(op);
     }
 }

@@ -33,7 +33,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.Color;
@@ -44,14 +43,14 @@ import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.options.DoubleOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.RegionOptions;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
-import com.oracle.tools.fx.monkey.util.EnumSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
-import com.oracle.tools.fx.monkey.util.ItemSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Selectors;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -62,15 +61,12 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
+    private final TextFlow textFlow;
+
     private final TextSelector textSelector;
-    private final TextField styleField;
     private final FontSelector fontSelector;
     private final CheckBox showChars;
     private final CheckBox showCaretPath;
-    private final ItemSelector<Double> lineSpacing;
-    private final ItemSelector<Integer> tabSize;
-    private final EnumSelector<TextAlignment> textAlignment;
-    private final TextFlow control;
     private final Label pickResult;
     private final Label hitInfo;
     private final Label hitInfo2;
@@ -83,17 +79,8 @@ public class TextFlowPage extends TestPaneBase {
     public TextFlowPage() {
         FX.name(this, "TextFlowPage");
 
-        control = new TextFlow();
-        control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
-
-        styleField = new TextField();
-        styleField.setOnAction((ev) -> {
-            String s = styleField.getText();
-            if (Utils.isBlank(s)) {
-                s = null;
-            }
-            control.setStyle(s);
-        });
+        textFlow = new TextFlow();
+        textFlow.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
 
         pickResult = new Label();
 
@@ -140,37 +127,31 @@ public class TextFlowPage extends TestPaneBase {
             updateControl();
         });
 
-        lineSpacing = Selectors.lineSpacing((v) -> {
-            updateControl();
-        });
-
-        tabSize = Selectors.tabsize((v) -> {
-            updateControl();
-        });
-
-        textAlignment = new EnumSelector<>(TextAlignment.class, "textAlignment", (v) -> {
-            updateControl();
-        });
-
         OptionPane op = new OptionPane();
         op.section("TextFlow");
-        op.label("Text:");
-        op.option(textSelector.node());
-        op.option(editButton);
+        
+        op.label("Content:");
+        op.option(textSelector.node()); // TODO
+        op.option(editButton); // TODO add menu button with a number of good choices?
+        
+        // FIX remove, but allow to control individual segments via popup menu
         op.label("Font:");
         op.option(fontSelector.fontNode());
         op.label("Font Size:");
         op.option(fontSelector.sizeNode());
+        
+        // FIX update shapes upon resize
         op.option(showChars);
         op.option(showCaretPath);
-        op.label("Direct Style:");
-        op.option(styleField);
+
         op.label("Line Spacing:");
-        op.option(lineSpacing.node());
+        op.option(DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
+        
         op.label("Tab Size:");
-        op.option(tabSize.node());
+        op.option(IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
+
         op.label("Text Alignment:");
-        op.option(textAlignment.node());
+        op.option(new EnumOption<>("nodeOrientation", TextAlignment.class, textFlow.textAlignmentProperty()));
         //
         op.option(new Separator(Orientation.HORIZONTAL));
         op.label("Pick Result:");
@@ -180,10 +161,11 @@ public class TextFlowPage extends TestPaneBase {
         op.label("TextFlow.hitTest:");
         op.option(hitInfo);
         op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
-        // region
-        RegionOptions.appendTo(op, control);
 
-        setContent(control);
+        // region
+        RegionOptions.appendTo(op, textFlow);
+
+        setContent(textFlow);
         setOptions(op);
 
         fontSelector.selectSystemFont();
@@ -264,7 +246,7 @@ public class TextFlowPage extends TestPaneBase {
         }
 
         Point2D p = new Point2D(ev.getX(), ev.getY());
-        HitInfo h = control.hitTest(p);
+        HitInfo h = textFlow.hitTest(p);
         hitInfo.setText(String.valueOf(h));
 
         if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
@@ -275,15 +257,15 @@ public class TextFlowPage extends TestPaneBase {
     }
 
     private void showCaretShape(Point2D p) {
-        HitInfo h = control.hitTest(p);
+        HitInfo h = textFlow.hitTest(p);
         System.out.println("hit=" + h);
-        PathElement[] pe = control.caretShape(h.getCharIndex(), h.isLeading());
+        PathElement[] pe = textFlow.caretShape(h.getCharIndex(), h.isLeading());
         caretPath.getElements().setAll(pe);
     }
 
     private String getText() {
         StringBuilder sb = new StringBuilder();
-        for (Node n: control.getChildrenUnmodifiable()) {
+        for (Node n : textFlow.getChildrenUnmodifiable()) {
             if (n instanceof Text t) {
                 sb.append(t.getText());
             } else {
@@ -294,27 +276,24 @@ public class TextFlowPage extends TestPaneBase {
         return sb.toString();
     }
 
+    @Deprecated // FIX remove
     private void updateControl() {
-        control.setLineSpacing(lineSpacing.getValue(0.0));
-        control.setTabSize(tabSize.getValue(0));
-        control.setTextAlignment(textAlignment.getValue(TextAlignment.LEFT));
-
         Font f = fontSelector.getFont();
         Node[] ts = createTextArray(currentText, f);
-        control.getChildren().setAll(ts);
+        textFlow.getChildren().setAll(ts);
 
         caretPath.getElements().clear();
-        control.getChildren().add(caretPath);
+        textFlow.getChildren().add(caretPath);
 
         if (showChars.isSelected()) {
-            Group g = ShowCharacterRuns.createFor(control);
-            control.getChildren().add(g);
+            Group g = ShowCharacterRuns.createFor(textFlow);
+            textFlow.getChildren().add(g);
         }
 
         if (showCaretPath.isSelected()) {
-            int len = FX.getTextLength(control);
+            int len = FX.getTextLength(textFlow);
             for (int i = 0; i < len; i++) {
-                PathElement[] es = control.caretShape(i, true);
+                PathElement[] es = textFlow.caretShape(i, true);
                 caretPath.getElements().addAll(es);
             }
         }

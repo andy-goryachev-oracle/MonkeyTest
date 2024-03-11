@@ -68,7 +68,8 @@ public class NodeOptions {
 
         op.option(new BooleanOption("focusTraversable", "focus traversable", node.focusTraversableProperty()));
 
-        op.label("Id: TODO"); // TODO
+        op.label("Id:");
+        op.option(new TextOption("id", node.idProperty()));
 
         op.label("Input Method Requests: TODO"); // TODO
 
@@ -97,7 +98,8 @@ public class NodeOptions {
         op.label("Scale Y: TODO"); // TODO
         op.label("Scale Z: TODO"); // TODO
 
-        op.label("Style: TODO"); // TODO text field with an edit button
+        op.label("Style:");
+        op.option(new TextOption("style", node.styleProperty()));
 
         op.label("Translate X: TODO"); // TODO
         op.label("Translate Y: TODO"); // TODO

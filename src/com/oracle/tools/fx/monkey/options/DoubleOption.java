@@ -61,4 +61,8 @@ public class DoubleOption extends ObjectOption<Number> {
         d.selectInitialValue();
         return d;
     }
+
+    public static DoubleOption lineSpacing(String name, Property<Number> p) {
+        return of(name, p, 0, 0.5, 1, 2, 3.14, 10, 33.33, 100);
+    }
 }
