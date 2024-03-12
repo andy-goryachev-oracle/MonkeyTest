@@ -49,6 +49,13 @@ public class OptionPane extends Accordion {
         lastSection().add(n);
     }
 
+    public void option(String text, Node n) {
+        lastSection().add(new Label(text));
+        if (n != null) {
+            lastSection().add(n);
+        }
+    }
+
     public void add(Node n) {
         lastSection().add(n);
     }

@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -57,7 +58,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ControlOptions;
+import com.oracle.tools.fx.monkey.options.DoubleOption;
+import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.options.ObjectSelector;
+import com.oracle.tools.fx.monkey.util.ColumnBuilder;
+import com.oracle.tools.fx.monkey.util.DataRow;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -85,7 +92,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         ALL_MAX("all with maximum width"),
         MIN_IN_CENTER("min widths set in middle columns"),
         MAX_IN_CENTER("max widths set in middle columns"),
-        NO_NESTED("no nested columns"),
         NESTED("nested columns"),
         THOUSAND("1,000 rows"),
         MILLION("10,000,000 rows"),
@@ -95,18 +101,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         private final String text;
         Demo(String text) { this.text = text; }
         @Override public String toString() { return text; }
-    }
-
-    private enum ResizePolicy {
-        AUTO_RESIZE_FLEX_NEXT_COLUMN,
-        AUTO_RESIZE_FLEX_LAST_COLUMN,
-        AUTO_RESIZE_NEXT_COLUMN,
-        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
-        AUTO_RESIZE_LAST_COLUMN,
-        AUTO_RESIZE_ALL_COLUMNS,
-        UNCONSTRAINED_RESIZE_POLICY,
-        CONSTRAINED_RESIZE_POLICY,
-        USER_DEFINED_EQUAL_WIDTHS,
     }
 
     private enum CellValue {
@@ -158,18 +152,20 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final ComboBox<Demo> demoSelector;
     private final ComboBox<CellValue> cellValueSelector;
     private final ComboBox<Cells> cellFactorySelector;
-    private final ComboBox<ResizePolicy> policySelector;
     private final ComboBox<Selection> selectionSelector;
     private final ComboBox<Filter> filterSelector;
-    private final CheckBox nullFocusModel;
     private final CheckBox hideColumn;
-    private final CheckBox fixedHeight;
-    private final CheckBox menuButtonVisible;
-    // TODO final
-    private TableView<Object> control;
+
+    private final TableView<Object> tableView;
+    private final SimpleObjectProperty<TableColumn> currentColumn = new SimpleObjectProperty();
 
     public TableViewPage() {
         FX.name(this, "TableViewPage");
+
+        tableView = new TableView<>();
+        tableView.setPadding(new Insets(2));
+        // TODO move to "background" property
+        tableView.focusedProperty().subscribe(nv -> tableView.setBackground(Background.fill(nv ? Color.LIGHTGREEN : Color.LIGHTPINK)));
 
         demoSelector = new ComboBox<>();
         FX.name(demoSelector, "demoSelector");
@@ -195,14 +191,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             updateCellFactory();
         });
 
-        policySelector = new ComboBox<>();
-        FX.name(policySelector, "policySelector");
-        policySelector.getItems().addAll(ResizePolicy.values());
-        policySelector.setEditable(false);
-        policySelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
-        });
-
         selectionSelector = new ComboBox<>();
         FX.name(selectionSelector, "selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
@@ -219,20 +207,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             updatePane();
         });
 
-        nullFocusModel = new CheckBox("null focus model");
-        FX.name(nullFocusModel, "nullFocusModel");
-        nullFocusModel.selectedProperty().addListener((s, p, c) -> {
-            updatePane();
-        });
-
         Button addButton = new Button("Add Data Item");
         addButton.setOnAction((ev) -> {
-            control.getItems().add(newItem());
+            tableView.getItems().add(newItem());
         });
 
         Button clearButton = new Button("Clear Data Items");
         clearButton.setOnAction((ev) -> {
-            control.getItems().clear();
+            tableView.getItems().clear();
         });
 
         SplitMenuButton addColumnButton = new SplitMenuButton(
@@ -256,31 +238,36 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             hideMiddleColumn(c);
         });
 
-        fixedHeight = new CheckBox("fixed height");
-        FX.name(fixedHeight, "fixedHeight");
-        fixedHeight.selectedProperty().addListener((s, p, c) -> {
-            updatePane();
-        });
-
         Button refresh = new Button("Refresh");
         refresh.setOnAction((ev) -> {
-            control.refresh();
+            tableView.refresh();
         });
-
-        menuButtonVisible = new CheckBox("menu button visible");
-        FX.name(menuButtonVisible, "menuButton");
 
         // layout
 
         OptionPane op = new OptionPane();
         op.section("TableView");
+        
+        op.option("Columns:", createColumnsSelector("columns", tableView.getColumns()));
+        op.option(addColumnButton);
+        op.option(removeColumnButton);
+        op.option(hideColumn);
+
+        op.option("Column Resize Policy:", createColumnResizePolicy("columnResizePolicy", tableView.columnResizePolicyProperty()));
+        
+        op.option(new BooleanOption("editable", "editable", tableView.editableProperty()));
+        
+        op.option("Fixed Cell Size:", DoubleOption.of("fixedCellSize", tableView.fixedCellSizeProperty(), 0, 20, 33.4, 50, 100));
+
+        op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", tableView.tableMenuButtonVisibleProperty()));
+        
+        op.option("Focus Model:", createFocusModelOptions("focusModel", tableView.focusModelProperty()));
+            
         // TODO separate columns and data items
         op.label("Data:");
         op.option(demoSelector);
         op.option(addButton);
         op.option(clearButton);
-        op.option(addColumnButton);
-        op.option(removeColumnButton);
         // TODO
         //op.option(editable);
         op.label("Filter:");
@@ -289,23 +276,22 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(cellValueSelector);
         op.label("Cell Factory:");
         op.option(cellFactorySelector);
-        op.label("Column Resize Policy:");
-        op.option(policySelector);
         op.label("Selection Model:");
         op.option(selectionSelector);
-        op.option(nullFocusModel);
-        op.option(hideColumn);
-        op.option(fixedHeight);
         op.option(refresh);
-        op.option(menuButtonVisible);
-        // control
-        // TODO ControlOptions.appendTo(control, op);
+
+        // currently selected column option sheet
+        //TableColumnOptions.appendTo(op, currentColumn);
+
+        // control option sheet
+        ControlOptions.appendTo(tableView, op);
+
+        setContent(tableView);
         setOptions(op);
 
         FX.selectFirst(demoSelector);
         FX.selectFirst(cellValueSelector);
         FX.selectFirst(cellFactorySelector);
-        FX.selectFirst(policySelector);
         FX.select(selectionSelector, Selection.MULTIPLE_CELL);
         FX.selectFirst(filterSelector);
     }
@@ -321,7 +307,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         c.setText("C" + System.currentTimeMillis());
         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
 
-        int ct = control.getColumns().size();
+        int ct = tableView.getColumns().size();
         int ix;
         switch (where) {
         case 0:
@@ -336,14 +322,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             break;
         }
         if ((ct == 0) || (ix >= ct)) {
-            control.getColumns().add(c);
+            tableView.getColumns().add(c);
         } else {
-            control.getColumns().add(ix, c);
+            tableView.getColumns().add(ix, c);
         }
     }
 
     protected void removeColumn(int where) {
-        int ct = control.getColumns().size();
+        int ct = tableView.getColumns().size();
         int ix;
         switch (where) {
         case 0:
@@ -359,12 +345,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
 
         if ((ct >= 0) && (ix < ct)) {
-            control.getColumns().remove(ix);
+            tableView.getColumns().remove(ix);
         }
     }
 
     protected void removeAllColumns() {
-        control.getColumns().clear();
+        tableView.getColumns().clear();
     }
 
     protected Callback<ResizeFeatures, Boolean> wrap(Callback<ResizeFeatures, Boolean> policy) {
@@ -398,29 +384,425 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return sb.toString();
     }
 
-    protected Callback<ResizeFeatures, Boolean> createPolicy(ResizePolicy p) {
-        switch (p) {
-        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
-        case AUTO_RESIZE_FLEX_LAST_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
-        case AUTO_RESIZE_ALL_COLUMNS:
-            return TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS;
-        case AUTO_RESIZE_LAST_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN;
-        case AUTO_RESIZE_NEXT_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN;
-        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            return TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
-        case CONSTRAINED_RESIZE_POLICY:
-            return TableView.CONSTRAINED_RESIZE_POLICY;
-        case UNCONSTRAINED_RESIZE_POLICY:
-            return TableView.UNCONSTRAINED_RESIZE_POLICY;
-        case USER_DEFINED_EQUAL_WIDTHS:
-            return new UserDefinedResizePolicy();
-        default:
-            throw new Error("?" + p);
+    // FIX remove
+    protected void updatePane() {
+        Demo d = demoSelector.getSelectionModel().getSelectedItem();
+        Object[] spec = createSpec(d);
+
+        //Pane n = createPane(d, spec);
+        //setContent(n);
+    }
+
+    protected void combineColumns(TableView<Object> t, int ix, int count, int name) {
+        TableColumn<Object, ?> tc = new TableColumn<>();
+        tc.setText("N" + name);
+
+        for (int i = 0; i < count; i++) {
+            TableColumn<Object, ?> c = t.getColumns().remove(ix);
+            tc.getColumns().add(c);
         }
+        t.getColumns().add(ix, tc);
+    }
+
+    protected Pane createPane(Demo demo, Object[] spec) {
+        if ((demo == null) || (spec == null)) {
+            return new BorderPane();
+        }
+
+        boolean cellSelection = false;
+        boolean nullSelectionModel = false;
+        SelectionMode selectionMode = SelectionMode.SINGLE;
+        Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
+        if (sel != null) {
+            switch (sel) {
+            case MULTIPLE_CELL:
+                selectionMode = SelectionMode.MULTIPLE;
+                cellSelection = true;
+                break;
+            case MULTIPLE_ROW:
+                selectionMode = SelectionMode.MULTIPLE;
+                break;
+            case NULL:
+                nullSelectionModel = true;
+                break;
+            case SINGLE_CELL:
+                cellSelection = true;
+                break;
+            case SINGLE_ROW:
+                break;
+            default:
+                throw new Error("?" + sel);
+            }
+        }
+
+        tableView.getSelectionModel().setCellSelectionEnabled(cellSelection);
+        tableView.getSelectionModel().setSelectionMode(selectionMode);
+        if (nullSelectionModel) {
+            tableView.setSelectionModel(null);
+        }
+
+        TableColumn<Object, String> lastColumn = null;
+        int id = 1;
+
+        for (int i = 0; i < spec.length;) {
+            Object x = spec[i++];
+            if (x instanceof Cmd cmd) {
+                switch (cmd) {
+                case COL:
+                    {
+                        TableColumn<Object, String> c = new TableColumn<>();
+                        tableView.getColumns().add(c);
+                        c.setText("C" + tableView.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        lastColumn = c;
+                    }
+                    break;
+                case COL_WITH_GRAPHIC:
+                    {
+                        TableColumn<Object, String> c = new TableColumn<>();
+                        tableView.getColumns().add(c);
+                        c.setText("C" + tableView.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        c.setCellFactory((r) -> {
+                            return new TableCell<>() {
+                                @Override
+                                protected void updateItem(String item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    Text t = new Text(
+                                        "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+                                    t.wrappingWidthProperty().bind(widthProperty());
+                                    setPrefHeight(USE_COMPUTED_SIZE);
+                                    setGraphic(t);
+                                }
+                            };
+                        });
+                        lastColumn = c;
+                    }
+                    break;
+                case MAX:
+                    {
+                        int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
+                        lastColumn.setMaxWidth(w);
+                    }
+                    break;
+                case MIN:
+                    {
+                        int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
+                        lastColumn.setMinWidth(w);
+                    }
+                    break;
+                case PREF:
+                    {
+                        int w = (int)(spec[i++]);
+                        if (lastColumn == null) {
+                            throw new NullPointerException();
+                        }
+                        lastColumn.setPrefWidth(w);
+                    }
+                    break;
+                case ROWS:
+                    {
+                        int n = (int)(spec[i++]);
+                        for (int j = 0; j < n; j++) {
+                            tableView.getItems().add(newItem());
+                        }
+                    }
+                    break;
+                case COMBINE:
+                    int ix = (int)(spec[i++]);
+                    int ct = (int)(spec[i++]);
+                    combineColumns(tableView, ix, ct, id++);
+                    break;
+                default:
+                    throw new Error("?" + cmd);
+                }
+            } else {
+                throw new Error("?" + x);
+            }
+        }
+
+        updateCellValueFactory();
+        updateCellFactory();
+
+        switch (demo) {
+        case EDITABLE:
+            tableView.setEditable(true);
+            {
+                TableColumn<Object, String> c = new TableColumn<>("First Name");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).firstName);
+                tableView.getColumns().add(c);
+            }
+            {
+                TableColumn<Object, String> c = new TableColumn<>("Last Name");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).lastName);
+                c.setCellFactory(TextFieldTableCell.forTableColumn());
+                tableView.getColumns().add(c);
+            }
+            {
+                TableColumn<Object, Integer> c = new TableColumn<>("Age");
+                c.setCellValueFactory((x) -> ((Item)x.getValue()).age);
+                tableView.getColumns().add(c);
+            }
+
+            tableView.getItems().addAll(
+                new Item("John", "Doe", 55),
+                new Item("Jane", "Deer", 25),
+                new Item("A", "B", 99)
+            );
+        }
+
+        hideMiddleColumn(hideColumn.isSelected());
+
+        Filter f = filterSelector.getSelectionModel().getSelectedItem();
+        if (f == Filter.NONE) {
+            f = null;
+        }
+        if (f != null) {
+            ObservableList<Object> items = FXCollections.observableArrayList();
+            items.addAll(tableView.getItems());
+            FilteredList<Object> filteredList = new FilteredList<>(items);
+            switch(f) {
+            case SKIP1S:
+                filteredList.setPredicate((s) -> {
+                    if (s == null) {
+                        return true;
+                    }
+                    return !((String)s).contains("11");
+                });
+                break;
+            case SKIP2S:
+                filteredList.setPredicate((s) -> {
+                    if (s == null) {
+                        return true;
+                    }
+                    return !((String)s).contains("22");
+                });
+                break;
+            default:
+                throw new Error("?" + f);
+            }
+            tableView.setItems(filteredList);
+        }
+
+        BorderPane bp = new BorderPane();
+        bp.setCenter(tableView);
+        return bp;
+    }
+
+    protected void hideMiddleColumn(boolean on) {
+        if (on) {
+            int ct = tableView.getColumns().size();
+            if (ct > 0) {
+                tableView.getColumns().get(ct / 2).setVisible(false);
+            }
+        } else {
+            for (TableColumn c: tableView.getColumns()) {
+                c.setVisible(true);
+            }
+        }
+    }
+
+    protected String newItem() {
+        return SequenceNumber.next();
+    }
+
+    @Override
+    public void nullSkin() {
+        tableView.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        tableView.setSkin(new TableViewSkin<>(tableView));
+    }
+
+    private Callback<CellDataFeatures<Object, String>, ObservableValue<String>> getValueFactory(CellValue t) {
+        if (t != null) {
+            switch (t) {
+            case MIN_MAX:
+                return (f) -> {
+                    String s = describe(f.getTableColumn());
+                    return new SimpleStringProperty(s);
+                };
+            case QUOTED:
+                return (f) -> {
+                    String s = "\"" + f.getValue() + '"';
+                    return new SimpleStringProperty(s);
+                };
+            case VALUE:
+                return (f) -> {
+                    String s = String.valueOf(f.getValue());
+                    return new SimpleStringProperty(s);
+                };
+            }
+        }
+        return null;
+    }
+
+    private Node getIcon(String text) {
+        if (text.contains("0")) {
+            return icon(Color.RED);
+        } else if (text.contains("1")) {
+            return icon(Color.GREEN);
+        }
+        return null;
+    }
+
+    private Node icon(Color color) {
+        Canvas c = new Canvas(16, 16);
+        GraphicsContext g = c.getGraphicsContext2D();
+        g.setFill(color);
+        g.fillRect(0, 0, c.getWidth(), c.getHeight());
+        return c;
+    }
+
+    private Callback getCellFactory(Cells t) {
+        if (t != null) {
+            switch (t) {
+            case NULL:
+                return null;
+            case GRAPHICS:
+                return (r) -> {
+                    return new TableCell<String,String>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            if (item == null) {
+                                super.setText(null);
+                                super.setGraphic(null);
+                            } else {
+                                String s = item.toString();
+                                super.setText(s);
+                                Node n = getIcon(s);
+                                super.setGraphic(n);
+                            }
+                        }
+                    };
+                };
+            case VARIABLE:
+                return (r) -> {
+                    return new TableCell<String,String>() {
+                        @Override
+                        protected void updateItem(String item, boolean empty) {
+                            super.updateItem(item, empty);
+                            String s =
+                                "111111111111111111111111111111111111111111111" +
+                                "11111111111111111111111111111111111111111\n2\n3\n";
+                            Text t = new Text(s);
+                            t.wrappingWidthProperty().bind(widthProperty());
+                            setPrefHeight(USE_COMPUTED_SIZE);
+                            setGraphic(t);
+                        }
+                    };
+                };
+            }
+        }
+        return TableColumn.DEFAULT_CELL_FACTORY;
+    }
+
+    private void updateColumns(Consumer<TableColumn<Object, String>> handler) {
+        if (tableView != null) {
+            for (TableColumn<Object, ?> c: tableView.getColumns()) {
+                handler.accept((TableColumn<Object, String>)c);
+            }
+        }
+    }
+
+    private void updateCellValueFactory() {
+        CellValue t = cellValueSelector.getSelectionModel().getSelectedItem();
+        Callback<CellDataFeatures<Object, String>, ObservableValue<String>> f = getValueFactory(t);
+        updateColumns((c) -> {
+            c.setCellValueFactory(f);
+        });
+    }
+
+    private void updateCellFactory() {
+        Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
+        Callback<TableColumn<Object, String>, TableCell<Object, String>> f = getCellFactory(t);
+        if (f != null) {
+            updateColumns((c) -> {
+                c.setCellFactory(f);
+            });
+        }
+    }
+
+    /**
+     * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
+     * this policy simply sizes all columns equally.
+     */
+    static class UserDefinedResizePolicy
+        extends ConstrainedColumnResizeBase
+        implements Callback<TableView.ResizeFeatures, Boolean> {
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Boolean call(ResizeFeatures rf) {
+            List<? extends TableColumnBase<?, ?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
+            int sz = visibleLeafColumns.size();
+            // using added public method getContentWidth()
+            double w = rf.getContentWidth() / sz;
+            for (TableColumnBase<?, ?> c: visibleLeafColumns) {
+                // using added public method setColumnWidth()
+                rf.setColumnWidth(c, w);
+            }
+            return false;
+        }
+    }
+
+    static class Item {
+        public final SimpleStringProperty firstName = new SimpleStringProperty();
+        public final SimpleStringProperty lastName = new SimpleStringProperty();
+        public final SimpleObjectProperty<Integer> age = new SimpleObjectProperty<>();
+
+        public Item(String firstName, String lastName, int age) {
+            this.firstName.set(firstName);
+            this.lastName.set(lastName);
+            this.age.set(age);
+        }
+    }
+
+    private Node createColumnsSelector(String name, ObservableList<TableColumn<Object, ?>> columns) {
+        ObjectSelector<ObservableList<TableColumn<Object, ?>>> s = new ObjectSelector<>(name, (v) -> {
+            columns.setAll(v);
+        });
+        s.addChoice("With All Constraints", columnBuilder().
+            col("Fixed").min(70).max(70).
+            col("MinPrefMax").min(50).pref(200).max(300).
+            col("Min").min(50).
+            col("Pref").pref(200).
+            col("Max").max(150).
+            col("Std").
+            asList()
+        );
+        s.addChoiceSupplier("Many Equal Widths", () -> {
+            var cs = columnBuilder();
+            for(int i=1; i<20; i++) {
+                cs.col("C" + i);
+            }
+            return cs.asList();
+        });
+        s.addChoice("<empty>", FXCollections.observableArrayList());
+        return s;
+    }
+
+    private ColumnBuilder<TableColumn<Object,?>> columnBuilder() {
+        return new ColumnBuilder<>(() -> {
+            TableColumn<Object,?> tc = new TableColumn();
+            tc.setCellValueFactory((cdf) -> {
+                Object v = cdf.getValue();
+                if(v instanceof DataRow r) {
+                    return r.getValue(tc);
+                }
+                return new SimpleObjectProperty(v);
+            });
+            return tc;
+        });
     }
 
     protected Object[] createSpec(Demo d) {
@@ -554,19 +936,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 Cmd.COL, Cmd.MAX, 50,
                 Cmd.COL, Cmd.MAX, 50
             };
-       case NO_NESTED:
-            return new Object[] {
-                Cmd.ROWS, 3,
-                Cmd.COL, Cmd.PREF, 100,
-                Cmd.COL, Cmd.PREF, 200,
-                Cmd.COL, Cmd.PREF, 300,
-                Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
-                Cmd.COL, Cmd.PREF, 100,
-                Cmd.COL, Cmd.MIN, 100,
-                Cmd.COL, Cmd.MAX, 100,
-                Cmd.COL, Cmd.PREF, 400,
-                Cmd.COL
-            };
         case NESTED:
             return new Object[] {
                 Cmd.ROWS, 3,
@@ -649,401 +1018,28 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
     }
 
-    protected void updatePane() {
-        Demo d = demoSelector.getSelectionModel().getSelectedItem();
-        ResizePolicy p = policySelector.getSelectionModel().getSelectedItem();
-        Object[] spec = createSpec(d);
-
-        Pane n = createPane(d, p, spec);
-        setContent(n);
-    }
-
-    protected void combineColumns(TableView<Object> t, int ix, int count, int name) {
-        TableColumn<Object, ?> tc = new TableColumn<>();
-        tc.setText("N" + name);
-
-        for (int i = 0; i < count; i++) {
-            TableColumn<Object, ?> c = t.getColumns().remove(ix);
-            tc.getColumns().add(c);
-        }
-        t.getColumns().add(ix, tc);
-    }
-
-    protected Pane createPane(Demo demo, ResizePolicy policy, Object[] spec) {
-        if ((demo == null) || (spec == null) || (policy == null)) {
-            return new BorderPane();
-        }
-
-        boolean cellSelection = false;
-        boolean nullSelectionModel = false;
-        SelectionMode selectionMode = SelectionMode.SINGLE;
-        Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
-        if (sel != null) {
-            switch (sel) {
-            case MULTIPLE_CELL:
-                selectionMode = SelectionMode.MULTIPLE;
-                cellSelection = true;
-                break;
-            case MULTIPLE_ROW:
-                selectionMode = SelectionMode.MULTIPLE;
-                break;
-            case NULL:
-                nullSelectionModel = true;
-                break;
-            case SINGLE_CELL:
-                cellSelection = true;
-                break;
-            case SINGLE_ROW:
-                break;
-            default:
-                throw new Error("?" + sel);
-            }
-        }
-
-        control = new TableView<>();
-        control.setPadding(new Insets(2));
-        control.focusedProperty().subscribe(nv -> control.setBackground(Background.fill(nv ? Color.GREEN : Color.RED)));
-        control.getSelectionModel().setCellSelectionEnabled(cellSelection);
-        control.getSelectionModel().setSelectionMode(selectionMode);
-        if (nullSelectionModel) {
-            control.setSelectionModel(null);
-        }
-        if (nullFocusModel.isSelected()) {
-            control.setFocusModel(null);
-        }
-        if (fixedHeight.isSelected()) {
-            control.setFixedCellSize(20);
-        }
-
-        control.setTableMenuButtonVisible(menuButtonVisible.isSelected());
-        menuButtonVisible.selectedProperty().bindBidirectional(control.tableMenuButtonVisibleProperty());
-
-        Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
-        control.setColumnResizePolicy(p);
-
-        TableColumn<Object, String> lastColumn = null;
-        int id = 1;
-
-        for (int i = 0; i < spec.length;) {
-            Object x = spec[i++];
-            if (x instanceof Cmd cmd) {
-                switch (cmd) {
-                case COL:
-                    {
-                        TableColumn<Object, String> c = new TableColumn<>();
-                        control.getColumns().add(c);
-                        c.setText("C" + control.getColumns().size());
-                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                        lastColumn = c;
-                    }
-                    break;
-                case COL_WITH_GRAPHIC:
-                    {
-                        TableColumn<Object, String> c = new TableColumn<>();
-                        control.getColumns().add(c);
-                        c.setText("C" + control.getColumns().size());
-                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                        c.setCellFactory((r) -> {
-                            return new TableCell<>() {
-                                @Override
-                                protected void updateItem(String item, boolean empty) {
-                                    super.updateItem(item, empty);
-                                    Text t = new Text(
-                                        "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
-                                    t.wrappingWidthProperty().bind(widthProperty());
-                                    setPrefHeight(USE_COMPUTED_SIZE);
-                                    setGraphic(t);
-                                }
-                            };
-                        });
-                        lastColumn = c;
-                    }
-                    break;
-                case MAX:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setMaxWidth(w);
-                    }
-                    break;
-                case MIN:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setMinWidth(w);
-                    }
-                    break;
-                case PREF:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setPrefWidth(w);
-                    }
-                    break;
-                case ROWS:
-                    {
-                        int n = (int)(spec[i++]);
-                        for (int j = 0; j < n; j++) {
-                            control.getItems().add(newItem());
-                        }
-                    }
-                    break;
-                case COMBINE:
-                    int ix = (int)(spec[i++]);
-                    int ct = (int)(spec[i++]);
-                    combineColumns(control, ix, ct, id++);
-                    break;
-                default:
-                    throw new Error("?" + cmd);
-                }
-            } else {
-                throw new Error("?" + x);
-            }
-        }
-
-        updateCellValueFactory();
-        updateCellFactory();
-
-        switch (demo) {
-        case EDITABLE:
-            control.setEditable(true);
-            {
-                TableColumn<Object, String> c = new TableColumn<>("First Name");
-                c.setCellValueFactory((x) -> ((Item)x.getValue()).firstName);
-                control.getColumns().add(c);
-            }
-            {
-                TableColumn<Object, String> c = new TableColumn<>("Last Name");
-                c.setCellValueFactory((x) -> ((Item)x.getValue()).lastName);
-                c.setCellFactory(TextFieldTableCell.forTableColumn());
-                control.getColumns().add(c);
-            }
-            {
-                TableColumn<Object, Integer> c = new TableColumn<>("Age");
-                c.setCellValueFactory((x) -> ((Item)x.getValue()).age);
-                control.getColumns().add(c);
-            }
-
-            control.getItems().addAll(
-                new Item("John", "Doe", 55),
-                new Item("Jane", "Deer", 25),
-                new Item("A", "B", 99)
-            );
-        }
-
-        hideMiddleColumn(hideColumn.isSelected());
-
-        Filter f = filterSelector.getSelectionModel().getSelectedItem();
-        if (f == Filter.NONE) {
-            f = null;
-        }
-        if (f != null) {
-            ObservableList<Object> items = FXCollections.observableArrayList();
-            items.addAll(control.getItems());
-            FilteredList<Object> filteredList = new FilteredList<>(items);
-            switch(f) {
-            case SKIP1S:
-                filteredList.setPredicate((s) -> {
-                    if (s == null) {
-                        return true;
-                    }
-                    return !((String)s).contains("11");
-                });
-                break;
-            case SKIP2S:
-                filteredList.setPredicate((s) -> {
-                    if (s == null) {
-                        return true;
-                    }
-                    return !((String)s).contains("22");
-                });
-                break;
-            default:
-                throw new Error("?" + f);
-            }
-            control.setItems(filteredList);
-        }
-
-        BorderPane bp = new BorderPane();
-        bp.setCenter(control);
-        return bp;
-    }
-
-    protected void hideMiddleColumn(boolean on) {
-        if (on) {
-            int ct = control.getColumns().size();
-            if (ct > 0) {
-                control.getColumns().get(ct / 2).setVisible(false);
-            }
-        } else {
-            for (TableColumn c: control.getColumns()) {
-                c.setVisible(true);
-            }
-        }
-    }
-
-    protected String newItem() {
-        return SequenceNumber.next();
-    }
-
-    @Override
-    public void nullSkin() {
-        control.setSkin(null);
-    }
-
-    @Override
-    public void newSkin() {
-        control.setSkin(new TableViewSkin<>(control));
-    }
-
-    private Callback<CellDataFeatures<Object, String>, ObservableValue<String>> getValueFactory(CellValue t) {
-        if (t != null) {
-            switch (t) {
-            case MIN_MAX:
-                return (f) -> {
-                    String s = describe(f.getTableColumn());
-                    return new SimpleStringProperty(s);
-                };
-            case QUOTED:
-                return (f) -> {
-                    String s = "\"" + f.getValue() + '"';
-                    return new SimpleStringProperty(s);
-                };
-            case VALUE:
-                return (f) -> {
-                    String s = String.valueOf(f.getValue());
-                    return new SimpleStringProperty(s);
-                };
-            }
-        }
+    private ObservableList<TableColumn<Object, ?>> createColumns() {
         return null;
     }
 
-    private Node getIcon(String text) {
-        if (text.contains("0")) {
-            return icon(Color.RED);
-        } else if (text.contains("1")) {
-            return icon(Color.GREEN);
-        }
-        return null;
+    private Node createColumnResizePolicy(String name, ObjectProperty<Callback<ResizeFeatures, Boolean>> p) {
+        ObjectOption<Callback<ResizeFeatures, Boolean>> s = new ObjectOption<>(name, p);
+        s.addChoice("AUTO_RESIZE_FLEX_NEXT_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
+        s.addChoice("AUTO_RESIZE_FLEX_LAST_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        s.addChoice("AUTO_RESIZE_ALL_COLUMNS", TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        s.addChoice("AUTO_RESIZE_LAST_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN);
+        s.addChoice("AUTO_RESIZE_NEXT_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN);
+        s.addChoice("AUTO_RESIZE_SUBSEQUENT_COLUMNS", TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+        //s.addChoice("CONSTRAINED_RESIZE_POLICY", TableView.CONSTRAINED_RESIZE_POLICY);
+        s.addChoice("UNCONSTRAINED_RESIZE_POLICY", TableView.UNCONSTRAINED_RESIZE_POLICY);
+        s.addChoice("user defined, equal width", new UserDefinedResizePolicy());
+        return s;
     }
 
-    private Node icon(Color color) {
-        Canvas c = new Canvas(16, 16);
-        GraphicsContext g = c.getGraphicsContext2D();
-        g.setFill(color);
-        g.fillRect(0, 0, c.getWidth(), c.getHeight());
-        return c;
-    }
-
-    private Callback getCellFactory(Cells t) {
-        if (t != null) {
-            switch (t) {
-            case NULL:
-                return null;
-            case GRAPHICS:
-                return (r) -> {
-                    return new TableCell<String,String>() {
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (item == null) {
-                                super.setText(null);
-                                super.setGraphic(null);
-                            } else {
-                                String s = item.toString();
-                                super.setText(s);
-                                Node n = getIcon(s);
-                                super.setGraphic(n);
-                            }
-                        }
-                    };
-                };
-            case VARIABLE:
-                return (r) -> {
-                    return new TableCell<String,String>() {
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            String s =
-                                "111111111111111111111111111111111111111111111" +
-                                "11111111111111111111111111111111111111111\n2\n3\n";
-                            Text t = new Text(s);
-                            t.wrappingWidthProperty().bind(widthProperty());
-                            setPrefHeight(USE_COMPUTED_SIZE);
-                            setGraphic(t);
-                        }
-                    };
-                };
-            }
-        }
-        return TableColumn.DEFAULT_CELL_FACTORY;
-    }
-
-    private void updateColumns(Consumer<TableColumn<Object, String>> handler) {
-        if (control != null) {
-            for (TableColumn<Object, ?> c: control.getColumns()) {
-                handler.accept((TableColumn<Object, String>)c);
-            }
-        }
-    }
-
-    private void updateCellValueFactory() {
-        CellValue t = cellValueSelector.getSelectionModel().getSelectedItem();
-        Callback<CellDataFeatures<Object, String>, ObservableValue<String>> f = getValueFactory(t);
-        updateColumns((c) -> {
-            c.setCellValueFactory(f);
-        });
-    }
-
-    private void updateCellFactory() {
-        Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
-        Callback<TableColumn<Object, String>, TableCell<Object, String>> f = getCellFactory(t);
-        if (f != null) {
-            updateColumns((c) -> {
-                c.setCellFactory(f);
-            });
-        }
-    }
-
-    /**
-     * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
-     * this policy simply sizes all columns equally.
-     */
-    static class UserDefinedResizePolicy
-        extends ConstrainedColumnResizeBase
-        implements Callback<TableView.ResizeFeatures, Boolean> {
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Boolean call(ResizeFeatures rf) {
-            List<? extends TableColumnBase<?, ?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
-            int sz = visibleLeafColumns.size();
-            // using added public method getContentWidth()
-            double w = rf.getContentWidth() / sz;
-            for (TableColumnBase<?, ?> c: visibleLeafColumns) {
-                // using added public method setColumnWidth()
-                rf.setColumnWidth(c, w);
-            }
-            return false;
-        }
-    }
-    
-    static class Item {
-        public final SimpleStringProperty firstName = new SimpleStringProperty();
-        public final SimpleStringProperty lastName = new SimpleStringProperty();
-        public final SimpleObjectProperty<Integer> age = new SimpleObjectProperty<>();
-
-        public Item(String firstName, String lastName, int age) {
-            this.firstName.set(firstName);
-            this.lastName.set(lastName);
-            this.age.set(age);
-        }
+    private Node createFocusModelOptions(String name, ObjectProperty<TableView.TableViewFocusModel<Object>> p) {
+        ObjectOption<TableView.TableViewFocusModel<Object>> s = new ObjectOption<>(name, p);
+        s.addChoiceSupplier("<default>", () -> new TableView.TableViewFocusModel(tableView));
+        s.addChoice("<null>", null);
+        return s;
     }
 }

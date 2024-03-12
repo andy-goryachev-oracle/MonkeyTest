@@ -24,30 +24,26 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ComboBox;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.NamedValue;
 
 /**
- * Object Selector Bound to a Property.
+ * Unidirectional Object Selector.
  */
-public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
-    private final SimpleObjectProperty<T> property = new SimpleObjectProperty<>();
-
-    public ObjectOption(String name, Property<T> p) {
-        property.bindBidirectional(p);
+public class ObjectSelector<T> extends ComboBox<NamedValue<T>> {
+    public ObjectSelector(String name, Consumer<T> client) {
         FX.name(this, name);
-
-        // TODO add the current value to choices and select it
 
         getSelectionModel().selectedItemProperty().addListener((s, pr, c) -> {
             T v = c.getValue();
-            property.set(v);
+            try {
+                client.accept(v);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -68,30 +64,6 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
         });
     }
 
-    /**
-     * Selects the property value, adding it to the list of items under "<INITIAL>" name.
-     */
-    public void selectInitialValue() {
-        T value = property.get();
-        List<NamedValue<T>> items = getItems();
-        int sz = items.size();
-        for (int i = 0; i < sz; i++) {
-            NamedValue<T> item = items.get(i);
-            if (Objects.equals(value, item.getValue())) {
-                select(i);
-                return;
-            }
-        }
-
-        String text = "<INITIAL " + value + ">";
-        items.add(new NamedValue<T>(text, value));
-        select(sz);
-    }
-
-    /**
-     * Selects the given index.  Does nothing if the index is outside of the valid range.
-     * @param ix
-     */
     public void select(int ix) {
         if ((ix >= 0) && (ix < getItems().size())) {
             getSelectionModel().select(ix);

@@ -35,6 +35,7 @@ import javafx.util.StringConverter;
 /**
  * This selector selects from a list of pairs { display, value }[]
  */
+@Deprecated // FIX use ObjectSelector
 public class PairSelector<T> {
     private static record Pair(String display, Object value) { }
 
