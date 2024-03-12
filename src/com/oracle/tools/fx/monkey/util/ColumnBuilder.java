@@ -32,11 +32,12 @@ import javafx.scene.control.TableColumnBase;
 /**
  * Column Builder.
  */
-public class ColumnBuilder<T extends TableColumnBase<DataRow,?>> {
+public class ColumnBuilder<T extends TableColumnBase<DataRow, ?>> {
     private final Supplier<TableColumnBase> generator;
     private final ArrayList<T> columns = new ArrayList<>();
     private T last;
-    
+    private int id;
+
     public ColumnBuilder(Supplier<TableColumnBase> generator) {
         this.generator = generator;
     }
@@ -47,19 +48,37 @@ public class ColumnBuilder<T extends TableColumnBase<DataRow,?>> {
         columns.add(last);
         return this;
     }
-    
+
     public ColumnBuilder<T> min(double width) {
         last.setMinWidth(width);
         return this;
     }
-    
+
     public ColumnBuilder<T> max(double width) {
         last.setMaxWidth(width);
         return this;
     }
-    
+
     public ColumnBuilder<T> pref(double width) {
         last.setPrefWidth(width);
+        return this;
+    }
+
+    public ColumnBuilder<T> fixed(double width) {
+        last.setMinWidth(width);
+        last.setMaxWidth(width);
+        return this;
+    }
+
+    public ColumnBuilder<T> combine(int index, int count) {
+        var tc = generator.get();
+        tc.setText("N" + (++id));
+
+        for (int i = 0; i < count; i++) {
+            T c = columns.remove(index);
+            tc.getColumns().add(c);
+        }
+        columns.add(index, (T)tc);
         return this;
     }
 
