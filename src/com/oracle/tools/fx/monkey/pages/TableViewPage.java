@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
@@ -50,6 +51,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.Background;
@@ -68,19 +70,18 @@ import com.oracle.tools.fx.monkey.util.DataRow;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TableView page
+ * @param <originalSelectionModel>
  */
-public class TableViewPage extends TestPaneBase implements HasSkinnable {
+public class TableViewPage<originalSelectionModel> extends TestPaneBase implements HasSkinnable {
     private enum Demo {
         ALL("all set: min, pref, max"),
         EDITABLE("editable"),
         PREF("pref only"),
         VARIABLE("variable cell height"),
-        EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
         MIN_WIDTH2("min width (middle)"),
@@ -117,18 +118,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         NULL,
     }
 
-    private enum Selection {
-        SINGLE_ROW("single row selection"),
-        MULTIPLE_ROW("multiple row selection"),
-        SINGLE_CELL("single cell selection"),
-        MULTIPLE_CELL("multiple cell selection"),
-        NULL("null selection model");
-
-        private final String text;
-        Selection(String text) { this.text = text; }
-        @Override public String toString() { return text; }
-    }
-
     private enum Filter {
         NONE("<NONE>"),
         SKIP1S("skip 11s"),
@@ -149,14 +138,13 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         COL_WITH_GRAPHIC
     }
 
-    private final ComboBox<Demo> demoSelector;
     private final ComboBox<CellValue> cellValueSelector;
     private final ComboBox<Cells> cellFactorySelector;
-    private final ComboBox<Selection> selectionSelector;
     private final ComboBox<Filter> filterSelector;
-    private final CheckBox hideColumn;
+    private final CheckBox hideMiddleColumn;
 
-    private final TableView<Object> tableView;
+    private final TableView<DataRow> tableView;
+    private final TableViewSelectionModel<DataRow> originalSelectionModel;
     private final SimpleObjectProperty<TableColumn> currentColumn = new SimpleObjectProperty();
 
     public TableViewPage() {
@@ -166,14 +154,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         tableView.setPadding(new Insets(2));
         // TODO move to "background" property
         tableView.focusedProperty().subscribe(nv -> tableView.setBackground(Background.fill(nv ? Color.LIGHTGREEN : Color.LIGHTPINK)));
-
-        demoSelector = new ComboBox<>();
-        FX.name(demoSelector, "demoSelector");
-        demoSelector.getItems().addAll(Demo.values());
-        demoSelector.setEditable(false);
-        demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
-        });
+        originalSelectionModel = tableView.getSelectionModel();
 
         cellValueSelector = new ComboBox<>();
         FX.name(cellValueSelector, "cellValueSelector");
@@ -191,29 +172,21 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             updateCellFactory();
         });
 
-        selectionSelector = new ComboBox<>();
-        FX.name(selectionSelector, "selectionSelector");
-        selectionSelector.getItems().addAll(Selection.values());
-        selectionSelector.setEditable(false);
-        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
-        });
-
         filterSelector = new ComboBox<>();
         FX.name(filterSelector, "filterSelector");
         filterSelector.getItems().addAll(Filter.values());
         filterSelector.setEditable(false);
         filterSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            updatePane();
+            // FIX updatePane();
         });
 
-        Button addButton = new Button("Add Data Item");
-        addButton.setOnAction((ev) -> {
-            tableView.getItems().add(newItem());
+        Button addDataItemButton = new Button("Add Data Item");
+        addDataItemButton.setOnAction((ev) -> {
+            tableView.getItems().add(new DataRow());
         });
 
-        Button clearButton = new Button("Clear Data Items");
-        clearButton.setOnAction((ev) -> {
+        Button clearDataItemsButton = new Button("Clear Data Items");
+        clearDataItemsButton.setOnAction((ev) -> {
             tableView.getItems().clear();
         });
 
@@ -232,9 +205,9 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         );
         removeColumnButton.setText("Remove Column");
 
-        hideColumn = new CheckBox("hide middle column");
-        FX.name(hideColumn, "hideColumn");
-        hideColumn.selectedProperty().addListener((s, p, c) -> {
+        hideMiddleColumn = new CheckBox("hide middle column");
+        FX.name(hideMiddleColumn, "hideColumn");
+        hideMiddleColumn.selectedProperty().addListener((s, p, c) -> {
             hideMiddleColumn(c);
         });
 
@@ -247,38 +220,45 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
         OptionPane op = new OptionPane();
         op.section("TableView");
-        
+
         op.option("Columns:", createColumnsSelector("columns", tableView.getColumns()));
         op.option(addColumnButton);
         op.option(removeColumnButton);
-        op.option(hideColumn);
 
         op.option("Column Resize Policy:", createColumnResizePolicy("columnResizePolicy", tableView.columnResizePolicyProperty()));
-        
+
         op.option(new BooleanOption("editable", "editable", tableView.editableProperty()));
-        
+
         op.option("Fixed Cell Size:", DoubleOption.of("fixedCellSize", tableView.fixedCellSizeProperty(), 0, 20, 33.4, 50, 100));
 
-        op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", tableView.tableMenuButtonVisibleProperty()));
-        
         op.option("Focus Model:", createFocusModelOptions("focusModel", tableView.focusModelProperty()));
-            
-        // TODO separate columns and data items
-        op.label("Data:");
-        op.option(demoSelector);
-        op.option(addButton);
-        op.option(clearButton);
+
+        op.option("Items:", createItemsOptions("items", tableView.getItems()));
+        op.option(addDataItemButton);
+        op.option(clearDataItemsButton);
+
+        op.option("Placeholder: TODO", null); // TODO
+
+        op.option("Row Factory: TODO", null); // TODO
+
+        op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
+
+        op.option("Sort Policy: TODO", null); // TODO
+
+        op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", tableView.tableMenuButtonVisibleProperty()));
+
         // TODO
-        //op.option(editable);
-        op.label("Filter:");
-        op.option(filterSelector);
-        op.label("Cell Value:");
-        op.option(cellValueSelector);
-        op.label("Cell Factory:");
-        op.option(cellFactorySelector);
-        op.label("Selection Model:");
-        op.option(selectionSelector);
+//        op.label("Filter:");
+//        op.option(filterSelector);
+//        op.label("Cell Value:");
+//        op.option(cellValueSelector);
+//        op.label("Cell Factory:");
+//        op.option(cellFactorySelector);
+//        op.label("Selection Model:");
+//        op.option(selectionSelector);
+
         op.option(refresh);
+        op.option(hideMiddleColumn);
 
         // currently selected column option sheet
         //TableColumnOptions.appendTo(op, currentColumn);
@@ -289,10 +269,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         setContent(tableView);
         setOptions(op);
 
-        FX.selectFirst(demoSelector);
         FX.selectFirst(cellValueSelector);
         FX.selectFirst(cellFactorySelector);
-        FX.select(selectionSelector, Selection.MULTIPLE_CELL);
         FX.selectFirst(filterSelector);
     }
 
@@ -303,9 +281,9 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     }
 
     protected void addColumn(int where) {
-        TableColumn<Object, String> c = new TableColumn<>();
+        TableColumn<DataRow, Object> c = newColumn();
         c.setText("C" + System.currentTimeMillis());
-        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+        //c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
 
         int ct = tableView.getColumns().size();
         int ix;
@@ -353,23 +331,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         tableView.getColumns().clear();
     }
 
-    protected Callback<ResizeFeatures, Boolean> wrap(Callback<ResizeFeatures, Boolean> policy) {
-        return new Callback<ResizeFeatures, Boolean>() {
-            @Override
-            public Boolean call(ResizeFeatures f) {
-                Boolean rv = policy.call(f);
-                int ix = f.getTable().getColumns().indexOf(f.getColumn());
-                System.out.println(
-                    "col=" + (ix < 0 ? f.getColumn() : ix) +
-                    " delta=" + f.getDelta() +
-                    " w=" + f.getTable().getWidth() +
-                    " rv=" + rv
-                );
-                return rv;
-            }
-        };
-    }
-
     protected String describe(TableColumn c) {
         StringBuilder sb = new StringBuilder();
         if (c.getMinWidth() != 10.0) {
@@ -384,21 +345,12 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return sb.toString();
     }
 
-    // FIX remove
-    protected void updatePane() {
-        Demo d = demoSelector.getSelectionModel().getSelectedItem();
-        Object[] spec = createSpec(d);
-
-        //Pane n = createPane(d, spec);
-        //setContent(n);
-    }
-
-    protected void combineColumns(TableView<Object> t, int ix, int count, int name) {
-        TableColumn<Object, ?> tc = new TableColumn<>();
+    protected void combineColumns(TableView<DataRow> t, int ix, int count, int name) {
+        TableColumn<DataRow, Object> tc = new TableColumn<>();
         tc.setText("N" + name);
 
         for (int i = 0; i < count; i++) {
-            TableColumn<Object, ?> c = t.getColumns().remove(ix);
+            TableColumn<DataRow, ?> c = t.getColumns().remove(ix);
             tc.getColumns().add(c);
         }
         t.getColumns().add(ix, tc);
@@ -407,38 +359,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     protected Pane createPane(Demo demo, Object[] spec) {
         if ((demo == null) || (spec == null)) {
             return new BorderPane();
-        }
-
-        boolean cellSelection = false;
-        boolean nullSelectionModel = false;
-        SelectionMode selectionMode = SelectionMode.SINGLE;
-        Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
-        if (sel != null) {
-            switch (sel) {
-            case MULTIPLE_CELL:
-                selectionMode = SelectionMode.MULTIPLE;
-                cellSelection = true;
-                break;
-            case MULTIPLE_ROW:
-                selectionMode = SelectionMode.MULTIPLE;
-                break;
-            case NULL:
-                nullSelectionModel = true;
-                break;
-            case SINGLE_CELL:
-                cellSelection = true;
-                break;
-            case SINGLE_ROW:
-                break;
-            default:
-                throw new Error("?" + sel);
-            }
-        }
-
-        tableView.getSelectionModel().setCellSelectionEnabled(cellSelection);
-        tableView.getSelectionModel().setSelectionMode(selectionMode);
-        if (nullSelectionModel) {
-            tableView.setSelectionModel(null);
         }
 
         TableColumn<Object, String> lastColumn = null;
@@ -451,7 +371,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 case COL:
                     {
                         TableColumn<Object, String> c = new TableColumn<>();
-                        tableView.getColumns().add(c);
+//                        tableView.getColumns().add(c);
                         c.setText("C" + tableView.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                         lastColumn = c;
@@ -460,7 +380,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 case COL_WITH_GRAPHIC:
                     {
                         TableColumn<Object, String> c = new TableColumn<>();
-                        tableView.getColumns().add(c);
+//                        tableView.getColumns().add(c);
                         c.setText("C" + tableView.getColumns().size());
                         c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                         c.setCellFactory((r) -> {
@@ -477,41 +397,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                             };
                         });
                         lastColumn = c;
-                    }
-                    break;
-                case MAX:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setMaxWidth(w);
-                    }
-                    break;
-                case MIN:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setMinWidth(w);
-                    }
-                    break;
-                case PREF:
-                    {
-                        int w = (int)(spec[i++]);
-                        if (lastColumn == null) {
-                            throw new NullPointerException();
-                        }
-                        lastColumn.setPrefWidth(w);
-                    }
-                    break;
-                case ROWS:
-                    {
-                        int n = (int)(spec[i++]);
-                        for (int j = 0; j < n; j++) {
-                            tableView.getItems().add(newItem());
-                        }
                     }
                     break;
                 case COMBINE:
@@ -536,28 +421,28 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             {
                 TableColumn<Object, String> c = new TableColumn<>("First Name");
                 c.setCellValueFactory((x) -> ((Item)x.getValue()).firstName);
-                tableView.getColumns().add(c);
+                //tableView.getColumns().add(c);
             }
             {
                 TableColumn<Object, String> c = new TableColumn<>("Last Name");
                 c.setCellValueFactory((x) -> ((Item)x.getValue()).lastName);
                 c.setCellFactory(TextFieldTableCell.forTableColumn());
-                tableView.getColumns().add(c);
+                //tableView.getColumns().add(c);
             }
             {
                 TableColumn<Object, Integer> c = new TableColumn<>("Age");
                 c.setCellValueFactory((x) -> ((Item)x.getValue()).age);
-                tableView.getColumns().add(c);
+                //tableView.getColumns().add(c);
             }
 
-            tableView.getItems().addAll(
-                new Item("John", "Doe", 55),
-                new Item("Jane", "Deer", 25),
-                new Item("A", "B", 99)
-            );
+//            tableView.getItems().addAll(
+//                new Item("John", "Doe", 55),
+//                new Item("Jane", "Deer", 25),
+//                new Item("A", "B", 99)
+//            );
         }
 
-        hideMiddleColumn(hideColumn.isSelected());
+        hideMiddleColumn(hideMiddleColumn.isSelected());
 
         Filter f = filterSelector.getSelectionModel().getSelectedItem();
         if (f == Filter.NONE) {
@@ -587,7 +472,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             default:
                 throw new Error("?" + f);
             }
-            tableView.setItems(filteredList);
+            //tableView.setItems(filteredList);
         }
 
         BorderPane bp = new BorderPane();
@@ -606,10 +491,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 c.setVisible(true);
             }
         }
-    }
-
-    protected String newItem() {
-        return SequenceNumber.next();
     }
 
     @Override
@@ -706,10 +587,11 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return TableColumn.DEFAULT_CELL_FACTORY;
     }
 
+    // FIX
     private void updateColumns(Consumer<TableColumn<Object, String>> handler) {
         if (tableView != null) {
-            for (TableColumn<Object, ?> c: tableView.getColumns()) {
-                handler.accept((TableColumn<Object, String>)c);
+            for (TableColumn<DataRow, ?> c: tableView.getColumns()) {
+                //handler.accept((TableColumn<DataRow, String>)c);
             }
         }
     }
@@ -767,8 +649,8 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
     }
 
-    private Node createColumnsSelector(String name, ObservableList<TableColumn<Object, ?>> columns) {
-        ObjectSelector<ObservableList<TableColumn<Object, ?>>> s = new ObjectSelector<>(name, (v) -> {
+    private Node createColumnsSelector(String name, ObservableList<TableColumn<DataRow, ?>> columns) {
+        ObjectSelector<List<TableColumn<DataRow, ?>>> s = new ObjectSelector<>(name, (v) -> {
             columns.setAll(v);
         });
         s.addChoice("With All Constraints", columnBuilder().
@@ -791,18 +673,21 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return s;
     }
 
-    private ColumnBuilder<TableColumn<Object,?>> columnBuilder() {
-        return new ColumnBuilder<>(() -> {
-            TableColumn<Object,?> tc = new TableColumn();
-            tc.setCellValueFactory((cdf) -> {
-                Object v = cdf.getValue();
-                if(v instanceof DataRow r) {
-                    return r.getValue(tc);
-                }
-                return new SimpleObjectProperty(v);
-            });
-            return tc;
+    private ColumnBuilder<TableColumn<DataRow,?>> columnBuilder() {
+        return new ColumnBuilder<>(this::newColumn);
+    }
+
+    private TableColumn<DataRow,Object> newColumn() {
+        TableColumn<DataRow,Object> tc = new TableColumn();
+        tc.setCellFactory(TextFieldTableCell.<DataRow,Object>forTableColumn(DataRow.converter()));
+        tc.setCellValueFactory((cdf) -> {
+            Object v = cdf.getValue();
+            if(v instanceof DataRow r) {
+                return r.getValue(tc);
+            }
+            return new SimpleObjectProperty(v);
         });
+        return tc;
     }
 
     protected Object[] createSpec(Demo d) {
@@ -833,12 +718,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                 Cmd.COL_WITH_GRAPHIC,
                 Cmd.COL_WITH_GRAPHIC,
                 Cmd.COL_WITH_GRAPHIC
-            };
-        case EMPTY:
-            return new Object[] {
-                Cmd.COL, Cmd.PREF, 100,
-                Cmd.COL, Cmd.PREF, 200,
-                Cmd.COL, Cmd.PREF, 300
             };
         case MIN_WIDTH:
             return new Object[] {
@@ -1018,10 +897,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         }
     }
 
-    private ObservableList<TableColumn<Object, ?>> createColumns() {
-        return null;
-    }
-
     private Node createColumnResizePolicy(String name, ObjectProperty<Callback<ResizeFeatures, Boolean>> p) {
         ObjectOption<Callback<ResizeFeatures, Boolean>> s = new ObjectOption<>(name, p);
         s.addChoice("AUTO_RESIZE_FLEX_NEXT_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
@@ -1036,10 +911,47 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return s;
     }
 
-    private Node createFocusModelOptions(String name, ObjectProperty<TableView.TableViewFocusModel<Object>> p) {
-        ObjectOption<TableView.TableViewFocusModel<Object>> s = new ObjectOption<>(name, p);
+    private Node createFocusModelOptions(String name, ObjectProperty<TableView.TableViewFocusModel<DataRow>> p) {
+        ObjectOption<TableView.TableViewFocusModel<DataRow>> s = new ObjectOption<>(name, p);
         s.addChoiceSupplier("<default>", () -> new TableView.TableViewFocusModel(tableView));
         s.addChoice("<null>", null);
+        return s;
+    }
+
+    private static record SelectionChoice(boolean isNull, boolean isMultiple, boolean isCells) { } 
+
+    private Node createSelectionModelOptions(String name) {
+        ObjectSelector<SelectionChoice> s = new ObjectSelector<>(name, (v) -> {
+            tableView.setSelectionModel(v.isNull() ? null : originalSelectionModel);
+            originalSelectionModel.setSelectionMode(v.isMultiple() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+            originalSelectionModel.setCellSelectionEnabled(v.isCells());
+        });
+        s.addChoice("Single Row", new SelectionChoice(false, false, false));
+        s.addChoice("Multiple Rows", new SelectionChoice(false, true, false));
+        s.addChoice("Single Cell", new SelectionChoice(false, false, true));
+        s.addChoice("Multiple Cells", new SelectionChoice(false, true, true));
+        s.addChoice("<null>", new SelectionChoice(true, false, false));
+        return s;
+    }
+
+    private List<DataRow> createRows(int count) {
+        ArrayList<DataRow> rv = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            rv.add(new DataRow());
+        }
+        return rv;
+    }
+
+    private Node createItemsOptions(String name, ObservableList<DataRow> items) {
+        ObjectSelector<List<DataRow>> s = new ObjectSelector<>(name, (v) -> {
+            items.setAll(v);
+        });
+        s.addChoiceSupplier("1 Row", () -> createRows(1));
+        s.addChoiceSupplier("10 Rows", () -> createRows(10));
+        s.addChoiceSupplier("100 Rows", () -> createRows(100));
+        s.addChoiceSupplier("1,000 Rows", () -> createRows(1000));
+        s.addChoiceSupplier("10,000 Rows", () -> createRows(10_000));
+        s.addChoiceSupplier("<empty>", () -> createRows(0));
         return s;
     }
 }

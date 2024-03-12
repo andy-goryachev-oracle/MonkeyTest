@@ -28,12 +28,14 @@ import java.util.HashMap;
 import java.util.Random;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.util.StringConverter;
 
 /**
  * Elastic Data Row (With Randomly Generated Values)
  */
 public class DataRow {
     private final HashMap<Object, ObjectProperty> values = new HashMap();
+    private static StringConverter<Object> converter;
 
     public DataRow() {
     }
@@ -51,5 +53,22 @@ public class DataRow {
     private Object createValue() {
         // TODO doubles, longs, strings, integers, boolean
         return String.valueOf(new Random().nextInt());
+    }
+
+    public static StringConverter<Object> converter() {
+        if (converter == null) {
+            converter = new StringConverter<>() {
+                @Override
+                public String toString(Object x) {
+                    return x == null ? null : x.toString();
+                }
+
+                @Override
+                public Object fromString(String s) {
+                    return s;
+                }
+            };
+        }
+        return converter;
     }
 }

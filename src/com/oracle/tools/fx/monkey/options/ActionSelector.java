@@ -22,48 +22,44 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.ComboBox;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.NamedValue;
 
 /**
- * Column Builder.
+ * Action Selector Executes Simple Actions (Runnable's).
  */
-public class ColumnBuilder<T extends TableColumnBase<DataRow,?>> {
-    private final Supplier<TableColumnBase> generator;
-    private final ArrayList<T> columns = new ArrayList<>();
-    private T last;
-    
-    public ColumnBuilder(Supplier<TableColumnBase> generator) {
-        this.generator = generator;
+public class ActionSelector extends ComboBox<NamedValue<Runnable>> {
+    public ActionSelector(String name) {
+        FX.name(this, name);
+
+        getSelectionModel().selectedItemProperty().addListener((s, pr, c) -> {
+            Runnable r = c.getValue();
+            try {
+                r.run();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    public ColumnBuilder<T> col(String name) {
-        last = (T)generator.get();
-        last.setText(name);
-        columns.add(last);
-        return this;
-    }
-    
-    public ColumnBuilder<T> min(double width) {
-        last.setMinWidth(width);
-        return this;
-    }
-    
-    public ColumnBuilder<T> max(double width) {
-        last.setMaxWidth(width);
-        return this;
-    }
-    
-    public ColumnBuilder<T> pref(double width) {
-        last.setPrefWidth(width);
-        return this;
+    public void clearChoices() {
+        getItems().clear();
     }
 
-    public List<T> asList() {
-        return columns;
+    public void addChoice(String name, Runnable item) {
+        getItems().add(new NamedValue<>(name, item));
+    }
+
+    public void select(int ix) {
+        if ((ix >= 0) && (ix < getItems().size())) {
+            getSelectionModel().select(ix);
+        }
+    }
+
+    public void selectFirst() {
+        select(0);
     }
 }
