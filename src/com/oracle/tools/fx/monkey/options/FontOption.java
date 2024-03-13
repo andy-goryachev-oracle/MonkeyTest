@@ -43,7 +43,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 public class FontOption extends BorderPane {
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
     private final ComboBox<String> fontField = new ComboBox<>();
-    private final ComboBox<Integer> sizeField = new ComboBox<>();
+    private final ComboBox<Double> sizeField = new ComboBox<>();
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
         FX.name(this, name);
@@ -57,19 +57,19 @@ public class FontOption extends BorderPane {
 
         FX.name(sizeField, name + "_SIZE");
         sizeField.getItems().setAll(
-            1,
-            6,
-            8,
-            10,
-            11,
-            12,
-            16,
-            24,
-            32,
-            48,
-            72,
-            144,
-            480
+            1.0,
+            6.0,
+            8.0,
+            10.0,
+            11.0,
+            12.0,
+            16.0,
+            24.0,
+            32.0,
+            48.0,
+            72.0,
+            144.0,
+            480.0
         );
         sizeField.getSelectionModel().selectedItemProperty().addListener((x) -> {
             update();
@@ -96,9 +96,9 @@ public class FontOption extends BorderPane {
         if (name == null) {
             return null;
         }
-        Integer size = sizeField.getSelectionModel().getSelectedItem();
+        Double size = sizeField.getSelectionModel().getSelectedItem();
         if (size == null) {
-            size = 12;
+            size = 12.0;
         }
         return new Font(name, size);
     }
@@ -113,8 +113,8 @@ public class FontOption extends BorderPane {
             name = f.getName();
             size = f.getSize();
         }
-        fontField.getSelectionModel().select(null);
-        sizeField.getSelectionModel().select(null);
+        fontField.getSelectionModel().select(name);
+        sizeField.getSelectionModel().select(size);
     }
 
     protected List<String> collectFonts(boolean allowNull) {
@@ -128,6 +128,6 @@ public class FontOption extends BorderPane {
 
     public void selectSystemFont() {
         FX.select(fontField, "System Regular"); // windows?
-        FX.select(sizeField, 12);
+        FX.select(sizeField, 12.0);
     }
 }

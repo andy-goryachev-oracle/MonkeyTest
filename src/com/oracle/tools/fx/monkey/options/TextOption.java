@@ -30,6 +30,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 
 /**
@@ -38,24 +39,34 @@ import com.oracle.tools.fx.monkey.util.FX;
  */
 // TODO combo box for history?
 // TODO highlight special characters?
-// TODO commit on ENTER instead of binding?
 public class TextOption extends BorderPane {
     private final SimpleStringProperty property = new SimpleStringProperty();
     private final TextField textField;
-    private final Button editButton;
 
     public TextOption(String name, StringProperty p) {
         FX.name(this, name);
         property.bindBidirectional(p);
 
         textField = new TextField();
-        textField.textProperty().bindBidirectional(property);
+        textField.setMaxWidth(Double.MAX_VALUE);
+        textField.setOnAction((ev) -> {
+            String v = textField.getText();
+            property.set(v);
+        });
 
-        editButton = new Button("Edit");
-        editButton.setDisable(true); // TODO
+        Button editButton = new Button("Edit");
+        editButton.setOnAction((ev) -> editValue());
 
         setCenter(textField);
         setRight(editButton);
         setMargin(editButton, new Insets(0, 0, 0, 2));
+        setMaxWidth(Double.MAX_VALUE);
+    }
+
+    private void editValue() {
+        String text = property.get();
+        new EnterTextDialog(this, text, (v) -> {
+            property.set(v);
+        }).show();
     }
 }

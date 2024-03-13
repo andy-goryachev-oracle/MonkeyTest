@@ -22,36 +22,39 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.util;
+package com.oracle.tools.fx.monkey.options;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.OverrunStyle;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeType;
+import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
- * Editable Text Option Editor Bound to a StringProperty.
+ * Shape Properties Sheet
  */
-public class TextOption extends MenuButton {
-    private final SimpleStringProperty prop = new SimpleStringProperty();
+public class ShapeOptions {
+    public static void appendTo(OptionPane op, Shape shape) {
+        op.section("Shape");
 
-    public TextOption(String name, StringProperty prop) {
-        this.prop.bindBidirectional(prop);
+        op.option("Fill: TODO", null); // TODO paint
 
-        setTextOverrun(OverrunStyle.ELLIPSIS);
-        textProperty().bindBidirectional(prop);
+        op.option(new BooleanOption("smooth", "smooth", shape.smoothProperty()));
 
-        MenuItem edit = new MenuItem("<Edit>");
-        edit.setOnAction((ev) -> editValue());
+        op.option("Stroke: TODO", null); // TODO paint
 
-        getItems().add(edit);
-    }
+        op.option("Stroke Dash Offset: TODO", null); // TODO double
 
-    private void editValue() {
-        String text = prop.get();
-        new EnterTextDialog(this, text, (v) -> {
-            prop.set(v);
-        }).show();
+        op.option("Stroke Line Cap:", new EnumOption<>("strokeLineCap", StrokeLineCap.class, shape.strokeLineCapProperty()));
+
+        op.option("Stroke Line Join:", new EnumOption<>("strokeLineJoin", StrokeLineJoin.class, shape.strokeLineJoinProperty()));
+
+        op.option("Stroke Miter Limit: TODO", null); // TODO double
+
+        op.option("Stroke Type:", new EnumOption<>("strokeType", StrokeType.class, shape.strokeTypeProperty()));
+
+        op.option("Stroke width: TODO", null); // TODO double
+
+        NodeOptions.appendTo(op, shape);
     }
 }

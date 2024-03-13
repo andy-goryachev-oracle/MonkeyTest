@@ -144,14 +144,11 @@ public class TextFlowPage extends TestPaneBase {
         op.option(showChars);
         op.option(showCaretPath);
 
-        op.label("Line Spacing:");
-        op.option(DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
+        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         
-        op.label("Tab Size:");
-        op.option(IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
+        op.option("Tab Size:", IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
 
-        op.label("Text Alignment:");
-        op.option(new EnumOption<>("nodeOrientation", TextAlignment.class, textFlow.textAlignmentProperty()));
+        op.option("Text Alignment:", new EnumOption<>("nodeOrientation", TextAlignment.class, textFlow.textAlignmentProperty()));
         //
         op.option(new Separator(Orientation.HORIZONTAL));
         op.label("Pick Result:");

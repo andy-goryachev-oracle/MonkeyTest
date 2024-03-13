@@ -47,6 +47,7 @@ public class Templates {
         );
     }
 
+    @Deprecated // FIX remove
     public static Object[] multiLineTextPairs() {
         return new Object[] {
             "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
@@ -63,6 +64,22 @@ public class Templates {
             "Empty", "",
             "null", null,
        };
+    }
+
+    public static void addMultiLineTextChoices(TextChoiceOption op) {
+        op.addChoice("Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>");
+        op.addChoice("Right-to-Left", RIGHT_TO_LEFT);
+        op.addChoice("Writing Systems", WritingSystemsDemo.getText(false));
+        op.addChoice("Combining Chars", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ\nDouble diacritics: a\u0360b a\u0361b a\u0362b a\u035cb");
+        op.addChoice("Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629");
+        op.addChoice("Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).");
+        op.addChoice("Emojis", "[🇺🇦❤️🇺🇸🦋🏁🔥\n😀😃😄😁😆😅🤣😂\n🙂🙃😉😊😇]");
+        op.addChoice("Tabs", "0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
+        op.addChoice("Newlines", "\n1\n2\n\n3\n\n\n4\n\n\n\n5\n");
+        op.addChoice("Long CJK", createLongCJK());
+        op.addChoice("Short", "yo");
+        op.addChoice("<empty>", "");
+        op.addChoice("<null>", null);
     }
 
     public static Object[] singleLineTextPairs() {

@@ -39,6 +39,8 @@ public class IntOption extends Spinner<Integer> {
         super(min, max, p.get());
 
         FX.name(this, name);
+        setEditable(true);
+
         property.bindBidirectional(p);
     }
 

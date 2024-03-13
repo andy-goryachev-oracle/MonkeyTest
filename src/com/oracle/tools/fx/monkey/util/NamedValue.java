@@ -50,6 +50,10 @@ public class NamedValue<V> {
         return display;
     }
 
+    public String getDisplay() {
+        return display;
+    }
+
     public V getValue() {
         return value;
     }

@@ -40,27 +40,23 @@ public class NodeOptions {
 
         op.label("Accessible Help: TODO"); // TODO
 
-        op.label("Accessible Role:");
-        op.option(new EnumOption<>("accessibleRole", AccessibleRole.class, node.accessibleRoleProperty()));
+        op.option("Accessible Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, node.accessibleRoleProperty()));
 
         op.label("Accessible Role Description: TODO"); // TODO
 
         op.label("Accessible Text: TODO"); // TODO
 
-        op.label("Blend Mode:");
-        op.option(new EnumOption<>("blendMode", BlendMode.class, node.blendModeProperty()));
+        op.option("Blend Mode:", new EnumOption<>("blendMode", BlendMode.class, node.blendModeProperty()));
 
         op.option(new BooleanOption("cache", "cache", node.cacheProperty()));
 
-        op.label("Cache Hint:");
-        op.option(new EnumOption<>("cacheHint", CacheHint.class, node.cacheHintProperty()));
+        op.option("Cache Hint:", new EnumOption<>("cacheHint", CacheHint.class, node.cacheHintProperty()));
 
         op.label("Clip: TODO"); // TODO
 
         op.label("Cursor: TODO"); // TODO
 
-        op.label("Depth Test:");
-        op.option(new EnumOption<>("depthText", CacheHint.class, node.cacheHintProperty()));
+        op.option("Depth Test:", new EnumOption<>("depthText", CacheHint.class, node.cacheHintProperty()));
 
         op.option(new BooleanOption("disable", "disable", node.disableProperty()));
 
@@ -68,8 +64,7 @@ public class NodeOptions {
 
         op.option(new BooleanOption("focusTraversable", "focus traversable", node.focusTraversableProperty()));
 
-        op.label("Id:");
-        op.option(new TextOption("id", node.idProperty()));
+        op.option("Id:", new TextOption("id", node.idProperty()));
 
         op.label("Input Method Requests: TODO"); // TODO
 
@@ -81,8 +76,7 @@ public class NodeOptions {
 
         op.option(new BooleanOption("mouseTransparent", "mouse transparent", node.mouseTransparentProperty()));
 
-        op.label("Node Orientation:");
-        op.option(new EnumOption<>("nodeOrientation", NodeOrientation.class, node.nodeOrientationProperty()));
+        op.option("Node Orientation:", new EnumOption<>("nodeOrientation", NodeOrientation.class, node.nodeOrientationProperty()));
 
         op.label("On Various Events: TODO"); // TODO own section?
 
@@ -98,8 +92,7 @@ public class NodeOptions {
         op.label("Scale Y: TODO"); // TODO
         op.label("Scale Z: TODO"); // TODO
 
-        op.label("Style:");
-        op.option(new TextOption("style", node.styleProperty()));
+        op.option("Style:", new TextOption("style", node.styleProperty()));
 
         op.label("Translate X: TODO"); // TODO
         op.label("Translate Y: TODO"); // TODO
