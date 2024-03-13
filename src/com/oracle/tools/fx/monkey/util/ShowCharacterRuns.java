@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -52,7 +53,7 @@ public class ShowCharacterRuns extends Group {
      */
     public static void createFor(Text owner) {
         Platform.runLater(() -> {
-            Group group = getGroup(owner);
+            List<Node> cs = getChildren(owner);
             ShowCharacterRuns r = new ShowCharacterRuns();
             int len = owner.getText().length();
             for (int i = 0; i < len; i++) {
@@ -68,14 +69,14 @@ public class ShowCharacterRuns extends Group {
                 double x = caretBounds.getMaxX();
                 double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
                 HitInfo hit = owner.hitTest(new Point2D(x, y));
-                Path cs = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+                Path p = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
                 //System.err.println(i + " " + cs); // FIX
                 Color c = color(i);
-                cs.setFill(c);
-                cs.setStroke(c);
-                r.getChildren().add(cs);
+                p.setFill(c);
+                p.setStroke(c);
+                r.getChildren().add(p);
             }
-            group.getChildren().add(r);
+            cs.add(r);
         });
     }
 
@@ -86,9 +87,8 @@ public class ShowCharacterRuns extends Group {
      */
     public static void createFor(TextFlow owner) {
         Platform.runLater(() -> {
-            Group group = getGroup(owner);
             ShowCharacterRuns r = new ShowCharacterRuns();
-            int len = getTextLength(owner);
+            int len = FX.getTextLength(owner);
             for (int i = 0; i < len; i++) {
                 PathElement[] caret = owner.caretShape(i, true);
                 if (caret.length == 4) {
@@ -109,26 +109,29 @@ public class ShowCharacterRuns extends Group {
                 cs.setStroke(c);
                 r.getChildren().add(cs);
             }
-            group.getChildren().add(r);
+            owner.getChildren().add(r);
         });
     }
 
     public static void remove(Node owner) {
-        Group group = getGroup(owner);
-        for (Node ch : group.getChildren()) {
+        List<Node> cs = getChildren(owner);
+        for (Node ch : cs) {
             if (ch instanceof ShowCharacterRuns r) {
-                group.getChildren().remove(r);
+                cs.remove(r);
                 return;
             }
         }
     }
 
-    private static Group getGroup(Node n) {
-        Parent p = n.getParent();
-        if(p instanceof Group g) {
-            return g;
+    private static List<Node> getChildren(Node n) {
+        if (n instanceof TextFlow f) {
+            return f.getChildren();
         }
-        throw new IllegalArgumentException("node must be a child of a Group");
+        Parent p = n.getParent();
+        if (p instanceof Group g) {
+            return g.getChildren();
+        }
+        return null;
     }
 
     private static Color color(int i) {
@@ -140,18 +143,5 @@ public class ShowCharacterRuns extends Group {
         default:
             return Color.rgb(0, 0, 255, 0.5);
         }
-    }
-
-    /** TextFlow.getTextLength() */
-    private static int getTextLength(TextFlow f) {
-        int len = 0;
-        for (Node n: f.getChildrenUnmodifiable()) {
-            if (n instanceof Text t) {
-                len += t.getText().length();
-            } else {
-                len++;
-            }
-        }
-        return len;
     }
 }

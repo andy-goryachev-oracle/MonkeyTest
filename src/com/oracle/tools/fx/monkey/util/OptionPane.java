@@ -26,9 +26,11 @@ package com.oracle.tools.fx.monkey.util;
 
 import java.util.List;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 
@@ -58,6 +60,10 @@ public class OptionPane extends Accordion {
 
     public void add(Node n) {
         lastSection().add(n);
+    }
+
+    public void separator() {
+        lastSection().add(new Separator(Orientation.HORIZONTAL));
     }
 
     public void section(String name) {

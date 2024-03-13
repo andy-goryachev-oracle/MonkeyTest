@@ -32,9 +32,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
@@ -62,11 +59,8 @@ public class TextPage extends TestPaneBase {
     private final CheckBoxSelector showChars;
     private final ScrollPane scroll;
     private final CheckBoxSelector wrap;
-    private final Path caretPath;
     private final Label hitInfo;
     private final Text text;
-    private final Group group;
-    private String currentText;
 
     public TextPage() {
         FX.name(this, "TextPage");
@@ -75,11 +69,6 @@ public class TextPage extends TestPaneBase {
         text.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
 
         hitInfo = new Label();
-
-        caretPath = new Path();
-        caretPath.setStrokeWidth(1);
-        caretPath.setStroke(Color.RED);
-        caretPath.setManaged(false);
 
         textOption = new TextChoiceOption("textSelector", true, text.textProperty());
         Templates.addMultiLineTextChoices(textOption);
@@ -121,21 +110,20 @@ public class TextPage extends TestPaneBase {
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
 
         op.option(wrap.node());
+
+        op.separator();
         op.option(showChars.node());
         op.label("Text.hitTest:");
         op.option(hitInfo);
-        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
 
         ShapeOptions.appendTo(op, text);
-
-        group = new Group(text, caretPath);
 
         scroll = new ScrollPane();
         scroll.setBorder(Border.EMPTY);
         scroll.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         scroll.setFitToWidth(false);
-        scroll.setContent(group);
+        scroll.setContent(new Group(text));
 
         setContent(scroll);
         setOptions(op);
@@ -162,22 +150,9 @@ public class TextPage extends TestPaneBase {
         }
     }
 
-    private void showCaretShape(Point2D p) {
-        HitInfo h = text.hitTest(p);
-        System.out.println("hit=" + h);
-        PathElement[] pe = text.caretShape(h.getCharIndex(), h.isLeading());
-        caretPath.getElements().setAll(pe);
-    }
-
     private void handleMouseEvent(MouseEvent ev) {
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = text.hitTest(p);
         hitInfo.setText(String.valueOf(h));
-
-        if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
-            if (ev.isShortcutDown()) {
-                showCaretShape(new Point2D(ev.getX(), ev.getY()));
-            }
-        }
     }
 }

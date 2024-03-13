@@ -29,14 +29,10 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
@@ -51,6 +47,7 @@ import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -61,20 +58,18 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
-    private final TextFlow textFlow;
-
     private final TextSelector textSelector;
     private final FontSelector fontSelector;
     private final CheckBoxSelector showChars;
-    private final CheckBox showCaretPath;
+    private final CheckBoxSelector showCaretPaths;
     private final Label pickResult;
     private final Label hitInfo;
     private final Label hitInfo2;
-    private final Path caretPath;
     private String currentText;
     private static final String INLINE = "\u0000_INLINE";
     private static final String RICH_TEXT = "\u0000_RICH";
     private static final String RICH_TEXT_COMPLEX = "\u0000_RICH2";
+    private final TextFlow textFlow;
 
     public TextFlowPage() {
         FX.name(this, "TextFlowPage");
@@ -87,11 +82,6 @@ public class TextFlowPage extends TestPaneBase {
         hitInfo = new Label();
 
         hitInfo2 = new Label();
-
-        caretPath = new Path();
-        caretPath.setStrokeWidth(1);
-        caretPath.setStroke(Color.RED);
-        caretPath.setManaged(false);
 
         textSelector = TextSelector.fromPairs(
             "textSelector",
@@ -117,11 +107,7 @@ public class TextFlowPage extends TestPaneBase {
 
         showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
-        showCaretPath = new CheckBox("show caret path");
-        FX.name(showCaretPath, "showCaretPath");
-        showCaretPath.selectedProperty().addListener((p) -> {
-            updateControl();
-        });
+        showCaretPaths = new CheckBoxSelector("showCaretPaths", "show caret paths", (v) -> updateShowCaretPaths());
 
         OptionPane op = new OptionPane();
         op.section("TextFlow");
@@ -136,23 +122,19 @@ public class TextFlowPage extends TestPaneBase {
         op.label("Font Size:");
         op.option(fontSelector.sizeNode());
         
-        op.option(showChars.node());
-        op.option(showCaretPath);
-
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         
         op.option("Tab Size:", IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
 
         op.option("Text Alignment:", new EnumOption<>("nodeOrientation", TextAlignment.class, textFlow.textAlignmentProperty()));
         //
-        op.option(new Separator(Orientation.HORIZONTAL));
-        op.label("Pick Result:");
-        op.option(pickResult);
-        op.label("Text.hitTest:");
-        op.option(hitInfo2);
-        op.label("TextFlow.hitTest:");
-        op.option(hitInfo);
-        op.label("Note: " + (FX.isMac() ? "⌘" : "ctrl") + "-click for caret shape");
+        op.separator();
+        op.option(showChars.node());
+        op.option(showCaretPaths.node());
+        op.separator();
+        op.option("Pick Result:", pickResult);
+        op.option("Text.hitTest:", hitInfo2);
+        op.option("TextFlow.hitTest:", hitInfo);
 
         // region
         RegionOptions.appendTo(op, textFlow);
@@ -240,19 +222,6 @@ public class TextFlowPage extends TestPaneBase {
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = textFlow.hitTest(p);
         hitInfo.setText(String.valueOf(h));
-
-        if (ev.getEventType() == MouseEvent.MOUSE_CLICKED) {
-            if (ev.isShortcutDown()) {
-                showCaretShape(new Point2D(ev.getX(), ev.getY()));
-            }
-        }
-    }
-
-    private void showCaretShape(Point2D p) {
-        HitInfo h = textFlow.hitTest(p);
-        System.out.println("hit=" + h);
-        PathElement[] pe = textFlow.caretShape(h.getCharIndex(), h.isLeading());
-        caretPath.getElements().setAll(pe);
     }
 
     private String getText() {
@@ -273,16 +242,13 @@ public class TextFlowPage extends TestPaneBase {
         Font f = fontSelector.getFont();
         Node[] ts = createTextArray(currentText, f);
         textFlow.getChildren().setAll(ts);
+    }
 
-        caretPath.getElements().clear();
-        textFlow.getChildren().add(caretPath);
-
-        if (showCaretPath.isSelected()) {
-            int len = FX.getTextLength(textFlow);
-            for (int i = 0; i < len; i++) {
-                PathElement[] es = textFlow.caretShape(i, true);
-                caretPath.getElements().addAll(es);
-            }
+    private void updateShowCaretPaths() {
+        if (showCaretPaths.getValue()) {
+            ShowCaretPaths.createFor(textFlow);
+        } else {
+            ShowCaretPaths.remove(textFlow);
         }
     }
 
