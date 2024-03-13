@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -47,6 +46,7 @@ import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.RegionOptions;
+import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.FontSelector;
@@ -65,7 +65,7 @@ public class TextFlowPage extends TestPaneBase {
 
     private final TextSelector textSelector;
     private final FontSelector fontSelector;
-    private final CheckBox showChars;
+    private final CheckBoxSelector showChars;
     private final CheckBox showCaretPath;
     private final Label pickResult;
     private final Label hitInfo;
@@ -115,11 +115,7 @@ public class TextFlowPage extends TestPaneBase {
             }).show();
         });
 
-        showChars = new CheckBox("show characters");
-        FX.name(showChars, "showChars");
-        showChars.selectedProperty().addListener((p) -> {
-            updateControl();
-        });
+        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
         showCaretPath = new CheckBox("show caret path");
         FX.name(showCaretPath, "showCaretPath");
@@ -140,8 +136,7 @@ public class TextFlowPage extends TestPaneBase {
         op.label("Font Size:");
         op.option(fontSelector.sizeNode());
         
-        // FIX update shapes upon resize
-        op.option(showChars);
+        op.option(showChars.node());
         op.option(showCaretPath);
 
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
@@ -282,17 +277,20 @@ public class TextFlowPage extends TestPaneBase {
         caretPath.getElements().clear();
         textFlow.getChildren().add(caretPath);
 
-        if (showChars.isSelected()) {
-            Group g = ShowCharacterRuns.createFor(textFlow);
-            textFlow.getChildren().add(g);
-        }
-
         if (showCaretPath.isSelected()) {
             int len = FX.getTextLength(textFlow);
             for (int i = 0; i < len; i++) {
                 PathElement[] es = textFlow.caretShape(i, true);
                 caretPath.getElements().addAll(es);
             }
+        }
+    }
+
+    private void updateShowCharacters() {
+        if (showChars.getValue()) {
+            ShowCharacterRuns.createFor(textFlow);
+        } else {
+            ShowCharacterRuns.remove(textFlow);
         }
     }
 }

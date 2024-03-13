@@ -70,7 +70,7 @@ public class TextPage extends TestPaneBase {
 
     public TextPage() {
         FX.name(this, "TextPage");
-        
+
         text = new Text();
         text.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
 
@@ -84,44 +84,42 @@ public class TextPage extends TestPaneBase {
         textOption = new TextChoiceOption("textSelector", true, text.textProperty());
         Templates.addMultiLineTextChoices(textOption);
 
-        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateControl());
+        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
-        wrap = new CheckBoxSelector("wrap", "wrap width", (v) -> updateWrap(v)); // TODO
+        wrap = new CheckBoxSelector("wrap", "wrap width", (v) -> updateWrap());
 
         OptionPane op = new OptionPane();
         op.section("Text");
 
         op.option("Bounds Type:", new EnumOption<>("boundsType", TextBoundsType.class, text.boundsTypeProperty()));
-        
+
         op.option(new BooleanOption("caretBias", "caret bias (leading)", text.caretBiasProperty()));
-        
+
         op.option("Caret Position:", new IntOption("caretPosition", -1, Integer.MAX_VALUE, text.caretPositionProperty()));
-            
+
         op.option("Font:", new FontOption("font", false, text.fontProperty()));
 
         op.option("Font Smoothing:", new EnumOption<>("fontSmoothing", FontSmoothingType.class, text.fontSmoothingTypeProperty()));
-        
+
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", text.lineSpacingProperty()));
-        
+
         op.option("Selection Start:", new IntOption("selectionStart", -1, Integer.MAX_VALUE, text.selectionStartProperty()));
         op.option("Selection End:", new IntOption("selectionEnd", -1, Integer.MAX_VALUE, text.selectionEndProperty()));
-        
+
         op.option("Selection Fill: TODO", null); // TODO
-        
-        // TODO selection fill
-        
+
         op.option(new BooleanOption("strikeThrough", "strike through", text.strikethroughProperty()));
-        
+
         op.option("Tab Size:", IntOption.tabSize("tabSize", text.tabSizeProperty()));
-        
+
         op.option("Text:", textOption);
 
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, text.textAlignmentProperty()));
-        
+
         op.option("Text Origin:", new EnumOption<VPos>("textOrigin", VPos.class, text.textOriginProperty()));
-        
+
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
-        
+
         op.option(wrap.node());
         op.option(showChars.node());
         op.label("Text.hitTest:");
@@ -142,21 +140,21 @@ public class TextPage extends TestPaneBase {
         setContent(scroll);
         setOptions(op);
 
+        updateWrap();
+        updateShowCharacters();
         textOption.selectFirst();
     }
 
-    // FIX remove
-    private void updateControl() {
-        updateWrap(wrap.getValue());
-
+    private void updateShowCharacters() {
         if (showChars.getValue()) {
-            Group g = ShowCharacterRuns.createFor(text);
-            group.getChildren().add(g);
+            ShowCharacterRuns.createFor(text);
+        } else {
+            ShowCharacterRuns.remove(text);
         }
     }
 
-    private void updateWrap(boolean on) {
-        if (on) {
+    private void updateWrap() {
+        if (wrap.getValue()) {
             text.wrappingWidthProperty().bind(scroll.viewportBoundsProperty().map((b) -> b.getWidth()));
         } else {
             text.wrappingWidthProperty().unbind();

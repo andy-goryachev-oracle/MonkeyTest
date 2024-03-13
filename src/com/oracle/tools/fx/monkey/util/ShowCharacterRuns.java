@@ -24,10 +24,12 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
@@ -43,56 +45,90 @@ public class ShowCharacterRuns extends Group {
         setManaged(false);
     }
 
-    public static Group createFor(Text textNode) {
-        ShowCharacterRuns r = new ShowCharacterRuns();
-        int len = textNode.getText().length();
-        for (int i = 0; i < len; i++) {
-            PathElement[] caret = textNode.caretShape(i, true);
-            if (caret.length == 4) {
-                caret = new PathElement[] {
-                    caret[0],
-                    caret[1]
-                };
+    /**
+     * Creates ShowCharacterRuns Node for the given Text node.
+     * The Text node must be a child of a Group.
+     * @param owner the Text node to show character runs for
+     */
+    public static void createFor(Text owner) {
+        Platform.runLater(() -> {
+            Group group = getGroup(owner);
+            ShowCharacterRuns r = new ShowCharacterRuns();
+            int len = owner.getText().length();
+            for (int i = 0; i < len; i++) {
+                PathElement[] caret = owner.caretShape(i, true);
+                if (caret.length == 4) {
+                    caret = new PathElement[] {
+                        caret[0],
+                        caret[1]
+                    };
+                }
+    
+                Bounds caretBounds = new Path(caret).getLayoutBounds();
+                double x = caretBounds.getMaxX();
+                double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
+                HitInfo hit = owner.hitTest(new Point2D(x, y));
+                Path cs = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+                //System.err.println(i + " " + cs); // FIX
+                Color c = color(i);
+                cs.setFill(c);
+                cs.setStroke(c);
+                r.getChildren().add(cs);
             }
-
-            Bounds caretBounds = new Path(caret).getLayoutBounds();
-            double x = caretBounds.getMaxX();
-            double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-            HitInfo hit = textNode.hitTest(new Point2D(x, y));
-            Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
-            //System.err.println(i + " " + cs); // FIX
-            Color c = color(i);
-            cs.setFill(c);
-            cs.setStroke(c);
-            r.getChildren().add(cs);
-        }
-        return r;
+            group.getChildren().add(r);
+        });
     }
 
-    public static Group createFor(TextFlow textNode) {
-        ShowCharacterRuns r = new ShowCharacterRuns();
-        int len = getTextLength(textNode);
-        for (int i = 0; i < len; i++) {
-            PathElement[] caret = textNode.caretShape(i, true);
-            if (caret.length == 4) {
-                caret = new PathElement[] {
-                    caret[0],
-                    caret[1]
-                };
+    /**
+     * Creates ShowCharacterRuns Node for the given TextFlow node.
+     * The Text node must be a child of a Group.
+     * @param owner the Text node to show character runs for
+     */
+    public static void createFor(TextFlow owner) {
+        Platform.runLater(() -> {
+            Group group = getGroup(owner);
+            ShowCharacterRuns r = new ShowCharacterRuns();
+            int len = getTextLength(owner);
+            for (int i = 0; i < len; i++) {
+                PathElement[] caret = owner.caretShape(i, true);
+                if (caret.length == 4) {
+                    caret = new PathElement[] {
+                        caret[0],
+                        caret[1]
+                    };
+                }
+    
+                Bounds caretBounds = new Path(caret).getLayoutBounds();
+                double x = caretBounds.getMaxX();
+                double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
+                HitInfo hit = owner.hitTest(new Point2D(x, y));
+                Path cs = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+                //System.err.println(i + " " + cs); // FIX
+                Color c = color(i);
+                cs.setFill(c);
+                cs.setStroke(c);
+                r.getChildren().add(cs);
             }
+            group.getChildren().add(r);
+        });
+    }
 
-            Bounds caretBounds = new Path(caret).getLayoutBounds();
-            double x = caretBounds.getMaxX();
-            double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-            HitInfo hit = textNode.hitTest(new Point2D(x, y));
-            Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
-            System.err.println(i + " " + cs); // FIX
-            Color c = color(i);
-            cs.setFill(c);
-            cs.setStroke(c);
-            r.getChildren().add(cs);
+    public static void remove(Node owner) {
+        Group group = getGroup(owner);
+        for (Node ch : group.getChildren()) {
+            if (ch instanceof ShowCharacterRuns r) {
+                group.getChildren().remove(r);
+                return;
+            }
         }
-        return r;
+    }
+
+    private static Group getGroup(Node n) {
+        Parent p = n.getParent();
+        if(p instanceof Group g) {
+            return g;
+        }
+        throw new IllegalArgumentException("node must be a child of a Group");
     }
 
     private static Color color(int i) {
@@ -112,6 +148,8 @@ public class ShowCharacterRuns extends Group {
         for (Node n: f.getChildrenUnmodifiable()) {
             if (n instanceof Text t) {
                 len += t.getText().length();
+            } else {
+                len++;
             }
         }
         return len;
