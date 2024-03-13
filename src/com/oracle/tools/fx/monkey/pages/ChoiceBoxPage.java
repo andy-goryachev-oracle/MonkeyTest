@@ -24,9 +24,11 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
+import com.oracle.tools.fx.monkey.options.ControlOptions;
+import com.oracle.tools.fx.monkey.options.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -34,30 +36,34 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ChoiceBox Page
  */
 public class ChoiceBoxPage extends TestPaneBase {
-    private ChoiceBox<String> control;
+    private ChoiceBox<String> choiceBox;
 
     public ChoiceBoxPage() {
         FX.name(this, "ChoiceBoxPage");
 
-        control = new ChoiceBox();
+        choiceBox = new ChoiceBox();
 
-        PairSelector<String[]> itemSelector = new PairSelector<>(
-            "itemSelector",
-            (t) -> control.getItems().setAll(t),
-            "0", mk(0),
-            "1", mk(1),
-            "2", mk(2),
-            "5", mk(5),
-            "100", mk(100),
-            "1_000", mk(1_000));
+        ObjectSelector<String[]> itemsOption = new ObjectSelector<>("items", (v) -> {
+            choiceBox.setItems(FXCollections.observableArrayList(v));
+        });
+        itemsOption.addChoice("0", mk(0));
+        itemsOption.addChoice("1", mk(1));
+        itemsOption.addChoice("2", mk(2));
+        itemsOption.addChoice("5", mk(5));
+        itemsOption.addChoice("100", mk(100));
+        itemsOption.addChoice("1_000", mk(1_000));
 
-        // TODO converter
+        OptionPane op = new OptionPane();
+        op.section("ChoiceBox");
+        op.option("Converter: TODO", null); // TODO
+        op.option("Items:", itemsOption);
+        op.option("Selection Model: TODO", null); // TODO
+        op.option("Value: TODO", null); // TODO
 
-        OptionPane p = new OptionPane();
-        p.option("Items:", itemSelector.node());
+        ControlOptions.appendTo(op, choiceBox);
 
-        setContent(control);
-        setOptions(p);
+        setContent(choiceBox);
+        setOptions(op);
     }
 
     private static String[] mk(int size) {
