@@ -69,16 +69,12 @@ public class TextAreaPage extends TestPaneBase {
         promptChoice.addPair("Multiline", "1\n2\n3\n4");
 
         OptionPane op = new OptionPane();
-        op.label("Text:");
-        op.option(textSelector.node());
-        op.label("Font:");
-        op.option(fontSelector.fontNode());
-        op.label("Font Size:");
-        op.option(fontSelector.sizeNode());
+        op.option("Text:", textSelector.node());
+        op.option("Font:", fontSelector.fontNode());
+        op.option("Font Size:", fontSelector.sizeNode());
         op.option(wrap);
         op.option(editable);
-        op.label("Prompt:");
-        op.option(promptChoice.node());
+        op.option("Prompt:", promptChoice.node());
         op.option(new TextField());
 
         setContent(control);

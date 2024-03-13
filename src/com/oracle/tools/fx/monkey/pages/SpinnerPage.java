@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -86,11 +86,9 @@ public class SpinnerPage extends TestPaneBase {
         });
 
         OptionPane p = new OptionPane();
-        p.label("Mode:");
-        p.option(modeChoice);
+        p.option("Mode:", modeChoice);
         p.option(editable);
-        p.label("Converter:");
-        p.option(converterChoice);
+        p.option("Converter:", converterChoice);
 
         setOptions(p);
         updateControl();

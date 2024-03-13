@@ -33,9 +33,9 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 public class ControlOptions {
     public static void appendTo(Control control, OptionPane op) {
         op.section("Control");
-        op.label("Context Menu");
+        op.option("Context Menu: TODO", null);
         // TODO context menu
-        op.label("Tooltip");
+        op.option("Tooltip: TODO", null);
         // TODO tooltip
 
         // region

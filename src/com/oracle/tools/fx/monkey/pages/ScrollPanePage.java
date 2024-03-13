@@ -62,8 +62,7 @@ public class ScrollPanePage extends TestPaneBase {
         });
 
         OptionPane p = new OptionPane();
-        p.label("Preferred size:");
-        p.option(prefSize);
+        p.option("Preferred size:", prefSize);
 
         setContent(scroll);
         setOptions(p);

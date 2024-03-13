@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,13 +24,13 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.VBox;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * ScrollBar Page
@@ -80,14 +80,10 @@ public class ScrollBarPage extends TestPaneBase {
         });
 
         OptionPane p = new OptionPane();
-        p.label("Min:");
-        p.option(min);
-        p.label("Value:");
-        p.option(val);
-        p.label("Visible:");
-        p.option(visible);
-        p.label("Max:");
-        p.option(max);
+        p.option("Min:", min);
+        p.option("Value:", val);
+        p.option("Visible:", visible);
+        p.option("Max:", max);
 
         status = new Label();
 

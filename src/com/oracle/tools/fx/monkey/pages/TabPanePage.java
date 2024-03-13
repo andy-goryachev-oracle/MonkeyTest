@@ -61,7 +61,7 @@ public class TabPanePage extends TestPaneBase {
         control.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         OptionPane p = new OptionPane();
-        p.label("TODO");
+        p.option("TODO", null);
         //p.option(promptChoice.node());
 
         setContent(control);

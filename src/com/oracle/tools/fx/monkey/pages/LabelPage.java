@@ -84,34 +84,25 @@ public class LabelPage extends TestPaneBase {
         op.option(textSelector.node());
         op.option(editButton);
 
-        op.label("Alignment:");
-        op.option(new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
+        op.option("Alignment:", new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
 
-        op.label("Content Display:");
-        op.option(new EnumOption<>("contentDisplay", ContentDisplay.class, label.contentDisplayProperty()));
+        op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, label.contentDisplayProperty()));
 
-        op.label("Ellipsis String:");
-        op.option(new TextOption("ellipsisString", label.ellipsisStringProperty()));
+        op.option("Ellipsis String:", new TextOption("ellipsisString", label.ellipsisStringProperty()));
 
-        op.label("Font:");
-        op.option(new FontOption("font", false, label.fontProperty()));
+        op.option("Font:", new FontOption("font", false, label.fontProperty()));
 
-        op.label("Graphic:");
-        op.option(new GraphicOption("graphic", label.graphicProperty()));
+        op.option("Graphic:", new GraphicOption("graphic", label.graphicProperty()));
 
-        op.label("Padding:");
-        op.option(new InsetsOption("padding", false, label.paddingProperty()));
+        op.option("Padding:", new InsetsOption("padding", false, label.paddingProperty()));
 
-        op.label("Line Spacing:");
-        op.option(DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
+        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
 
-        op.label("Text Alignment:");
-        op.option(new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
+        op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
 
-        op.label("Text Fill: TODO"); // TODO text fill
+        op.option("Text Fill: TODO", null); // TODO text fill
 
-        op.label("Text Overrun:");
-        op.option(new EnumOption<>("textOverrun", OverrunStyle.class, label.textOverrunProperty()));
+        op.option("Text Overrun:", new EnumOption<>("textOverrun", OverrunStyle.class, label.textOverrunProperty()));
 
         op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", label.mnemonicParsingProperty()));
 

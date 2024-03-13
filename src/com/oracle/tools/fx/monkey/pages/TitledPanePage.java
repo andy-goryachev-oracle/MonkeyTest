@@ -76,10 +76,8 @@ public class TitledPanePage extends TestPaneBase {
         snap.selectedProperty().bindBidirectional(control.snapToPixelProperty());
 
         OptionPane op = new OptionPane();
-        op.label("Text:");
-        op.option(textSelector.node());
-        op.label("Content:");
-        op.option(contentSelector.node());
+        op.option("Text:", textSelector.node());
+        op.option("Content:", contentSelector.node());
         op.option(snap);
 
         setContent(control);

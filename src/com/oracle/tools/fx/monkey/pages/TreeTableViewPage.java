@@ -48,8 +48,8 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
-import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -232,19 +232,14 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
         OptionPane op = new OptionPane();
         op.section("TreeTableView");
-        op.label("Data:");
-        op.option(dataSelector);
+        op.option("Data:", dataSelector);
         op.option(clearButton);
         op.option(editable);
-        op.label("Column Resize Policy:");
-        op.option(policySelector);
-        op.label("Selection Model:");
-        op.option(selectionSelector);
+        op.option("Column Resize Policy:", policySelector);
+        op.option("Selection Model:", selectionSelector);
         op.option(nullFocusModel);
-        op.label("Fixed Cell Size:");
-        op.option(fixedSize.node());
-        op.label("Cell Factory:");
-        op.option(cellFactorySelector);
+        op.option("Fixed Cell Size:", fixedSize.node());
+        op.option("Cell Factory:", cellFactorySelector);
         op.option(refresh);
         op.option(menuButtonVisible);
         op.option(addGraphics);

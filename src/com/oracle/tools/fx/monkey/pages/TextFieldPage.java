@@ -94,19 +94,15 @@ public class TextFieldPage extends TestPaneBase {
         inScroll.setOnAction((ev) -> updateScroll());
 
         OptionPane op = new OptionPane();
-        op.label("Text:");
-        op.option(textSelector.node());
+        op.option("Text:", textSelector.node());
         op.option(editable);
         op.label("Font:");
         op.option(fontSelector.fontNode());
         op.label("Size:");
         op.option(fontSelector.sizeNode());
-        op.label("Alignment:");
-        op.option(posSelector.node());
-        op.label("Prompt:");
-        op.option(promptChoice.node());
-        op.label("Preferred Column Count:");
-        op.option(prefColumnCount);
+        op.option("Alignment:", posSelector.node());
+        op.option("Prompt:", promptChoice.node());
+        op.option("Preferred Column Count:", prefColumnCount);
         op.option(inScroll);
         op.option(new TextField());
 

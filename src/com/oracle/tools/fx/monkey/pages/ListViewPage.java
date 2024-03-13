@@ -187,10 +187,8 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         op.option(addButton);
         op.option(clearButton);
         op.option(editable);
-        op.label("Cell Factory:");
-        op.option(cellFactorySelector);
-        op.label("Selection Model:");
-        op.option(selectionSelector);
+        op.option("Cell Factory:", cellFactorySelector);
+        op.option("Selection Model:", selectionSelector);
         op.option(nullFocusModel);
         op.option(jumpButton);
         op.option(refresh);

@@ -66,24 +66,18 @@ public class TooltipPage extends TestPaneBase {
 
         OptionPane op = new OptionPane();
         op.section("Tooltip");
-        op.label("Content Display:");
-        op.option(new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
-        op.label("Font: TODO"); // TODO font
-        op.label("Graphic:");
-        op.option(graphic);
-        op.label("Graphic Text Gap: TODO"); // TODO graphic text gap
-        op.label("Hide Delay:");
-        op.option(new DurationOption("hideDelay", control.hideDelayProperty()));
-        op.label("Show Delay:");
-        op.option(new DurationOption("showDelay", control.showDelayProperty()));
-        op.label("Show Duration:");
-        op.option(new DurationOption("showDuration", control.showDurationProperty()));
-        op.label("Text: TODO"); // TODO text
-        op.label("Text Alignment:");
-        op.option(new EnumOption<>("textAlignment", TextAlignment.class, control.textAlignmentProperty()));
-        op.label("Text Overrun:");
-        op.option(new EnumOption<>("textOverrun", OverrunStyle.class, control.textOverrunProperty()));
+        op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
+        op.option("Font: TODO", null); // TODO font
+        op.option("Graphic:", graphic);
+        op.option("Graphic Text Gap: TODO", null); // TODO graphic text gap
+        op.option("Hide Delay:", new DurationOption("hideDelay", control.hideDelayProperty()));
+        op.option("Show Delay:", new DurationOption("showDelay", control.showDelayProperty()));
+        op.option("Show Duration:", new DurationOption("showDuration", control.showDurationProperty()));
+        op.option("Text: TODO", null); // TODO text
+        op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, control.textAlignmentProperty()));
+        op.option("Text Overrun:", new EnumOption<>("textOverrun", OverrunStyle.class, control.textOverrunProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", control.wrapTextProperty()));
+
         // TODO popup window
 
         setContent(new BorderPane(content));

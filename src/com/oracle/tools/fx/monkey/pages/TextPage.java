@@ -113,8 +113,7 @@ public class TextPage extends TestPaneBase {
 
         op.separator();
         op.option(showChars.node());
-        op.label("Text.hitTest:");
-        op.option(hitInfo);
+        op.option("Text.hitTest:", hitInfo);
 
         ShapeOptions.appendTo(op, text);
 

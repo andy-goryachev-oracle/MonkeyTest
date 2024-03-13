@@ -38,13 +38,13 @@ public class NodeOptions {
     public static void appendTo(OptionPane op, Node node) {
         op.section("Node");
 
-        op.label("Accessible Help: TODO"); // TODO
+        op.option("Accessible Help: TODO", null); // TODO
 
         op.option("Accessible Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, node.accessibleRoleProperty()));
 
-        op.label("Accessible Role Description: TODO"); // TODO
+        op.option("Accessible Role Description: TODO", null); // TODO
 
-        op.label("Accessible Text: TODO"); // TODO
+        op.option("Accessible Text: TODO", null); // TODO
 
         op.option("Blend Mode:", new EnumOption<>("blendMode", BlendMode.class, node.blendModeProperty()));
 
@@ -52,25 +52,25 @@ public class NodeOptions {
 
         op.option("Cache Hint:", new EnumOption<>("cacheHint", CacheHint.class, node.cacheHintProperty()));
 
-        op.label("Clip: TODO"); // TODO
+        op.option("Clip: TODO", null); // TODO
 
-        op.label("Cursor: TODO"); // TODO
+        op.option("Cursor: TODO", null); // TODO
 
         op.option("Depth Test:", new EnumOption<>("depthText", CacheHint.class, node.cacheHintProperty()));
 
         op.option(new BooleanOption("disable", "disable", node.disableProperty()));
 
-        op.label("Effect: TODO"); // TODO
+        op.option("Effect: TODO", null); // TODO
 
         op.option(new BooleanOption("focusTraversable", "focus traversable", node.focusTraversableProperty()));
 
         op.option("Id:", new TextOption("id", node.idProperty()));
 
-        op.label("Input Method Requests: TODO"); // TODO
+        op.option("Input Method Requests: TODO", null); // TODO
 
-        op.label("Layout X: TODO"); // TODO
+        op.option("Layout X: TODO", null); // TODO
 
-        op.label("Layout Y: TODO"); // TODO
+        op.option("Layout Y: TODO", null); // TODO
 
         op.option(new BooleanOption("managed", "managed", node.managedProperty()));
 
@@ -78,29 +78,29 @@ public class NodeOptions {
 
         op.option("Node Orientation:", new EnumOption<>("nodeOrientation", NodeOrientation.class, node.nodeOrientationProperty()));
 
-        op.label("On Various Events: TODO"); // TODO own section?
+        op.option("On Various Events: TODO", null); // TODO own section?
 
-        op.label("Opacity: TODO"); // TODO
+        op.option("Opacity: TODO", null); // TODO
 
         op.option(new BooleanOption("pickOnBounds", "pick on bounds", node.pickOnBoundsProperty()));
 
-        op.label("Rotate: TODO"); // TODO
+        op.option("Rotate: TODO", null); // TODO
 
-        op.label("Rotation Axis: TODO"); // TODO
+        op.option("Rotation Axis: TODO", null); // TODO
 
-        op.label("Scale X: TODO"); // TODO
-        op.label("Scale Y: TODO"); // TODO
-        op.label("Scale Z: TODO"); // TODO
+        op.option("Scale X: TODO", null); // TODO
+        op.option("Scale Y: TODO", null); // TODO
+        op.option("Scale Z: TODO", null); // TODO
 
         op.option("Style:", new TextOption("style", node.styleProperty()));
 
-        op.label("Translate X: TODO"); // TODO
-        op.label("Translate Y: TODO"); // TODO
-        op.label("Translate Z: TODO"); // TODO
+        op.option("Translate X: TODO", null); // TODO
+        op.option("Translate Y: TODO", null); // TODO
+        op.option("Translate Z: TODO", null); // TODO
 
-        op.label("User Data: TODO"); // TODO
+        op.option("User Data: TODO", null); // TODO
 
-        op.label("View Order: TODO"); // TODO
+        op.option("View Order: TODO", null); // TODO
 
         op.option(new BooleanOption("visible", "visible", node.visibleProperty()));
     }
