@@ -153,7 +153,7 @@ public class TableViewPage<originalSelectionModel> extends TestPaneBase implemen
         //TableColumnOptions.appendTo(op, currentColumn);
 
         // control option sheet
-        ControlOptions.appendTo(tableView, op);
+        ControlOptions.appendTo(op, tableView);
 
         setContent(tableView);
         setOptions(op);

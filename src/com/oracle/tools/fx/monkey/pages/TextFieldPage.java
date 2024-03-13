@@ -26,99 +26,53 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import com.oracle.tools.fx.monkey.util.EnumSelector;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.options.TextInputControlOptions;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
 
 /**
  * TextField Page
  */
 public class TextFieldPage extends TestPaneBase {
-    private final TextField control;
-    private final TextSelector textSelector;
+    private final TextField textField;
     private final CheckBox inScroll;
 
     public TextFieldPage() {
         this(new TextField(), "TextFieldPage");
     }
 
-    protected TextFieldPage(TextField control, String name) {
+    protected TextFieldPage(TextField f, String name) {
+        this.textField = f;
+
         FX.name(this, "TextFieldPage");
 
-        this.control = control;
-        control.setAlignment(Pos.CENTER_LEFT);
-
-        textSelector = TextSelector.fromPairs(
-            "textSelector",
-            (t) -> {
-                control.setText(t);
-            },
-            Templates.singleLineTextPairs()
-        );
-
-        FontSelector fontSelector = new FontSelector("font", control::setFont);
-
-        EnumSelector<Pos> posSelector = new EnumSelector<>(Pos.class, "posSelector", control::setAlignment);
-
-        TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
-
-        ComboBox<Integer> prefColumnCount = new ComboBox<>();
-        FX.name(prefColumnCount, "prefColumnCount");
-        prefColumnCount.getItems().setAll(
-            null,
-            1,
-            5,
-            10,
-            100,
-            1000
-        );
-        prefColumnCount.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
-            Integer ct = prefColumnCount.getSelectionModel().getSelectedItem();
-            int count = ct == null ? TextField.DEFAULT_PREF_COLUMN_COUNT : ct;
-            control.setPrefColumnCount(count);
-        });
-
-        CheckBox editable = new CheckBox("editable");
-        FX.name(editable, "editable");
-        editable.selectedProperty().bindBidirectional(control.editableProperty());
-
         inScroll = new CheckBox("in scroll pane");
-        FX.name(inScroll, "scroll");
+        FX.name(inScroll, "inScrollPane");
         inScroll.setOnAction((ev) -> updateScroll());
 
         OptionPane op = new OptionPane();
-        op.option("Text:", textSelector.node());
-        op.option(editable);
-        op.label("Font:");
-        op.option(fontSelector.fontNode());
-        op.label("Size:");
-        op.option(fontSelector.sizeNode());
-        op.option("Alignment:", posSelector.node());
-        op.option("Prompt:", promptChoice.node());
-        op.option("Preferred Column Count:", prefColumnCount);
+        op.option("Alignment:", new EnumOption<>("alignment", false, Pos.class, textField.alignmentProperty()));
+        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, textField.prefColumnCountProperty()));
+        op.separator();
         op.option(inScroll);
-        op.option(new TextField());
+        
+        TextInputControlOptions.appendTo(op, textField);
 
-        setContent(control);
+        setContent(textField);
         setOptions(op);
-
-        posSelector.select(Pos.BASELINE_RIGHT);
-        fontSelector.selectSystemFont();
     }
 
     private void updateScroll() {
         if(inScroll.isSelected()) {
-            ScrollPane sp = new ScrollPane(control);
+            ScrollPane sp = new ScrollPane(textField);
             setContent(sp);
         } else {
-            setContent(control);
+            setContent(textField);
         }
     }
 }

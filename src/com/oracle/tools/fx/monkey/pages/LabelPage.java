@@ -111,7 +111,7 @@ public class LabelPage extends TestPaneBase {
         op.option(new BooleanOption("wrapText", "wrap text", label.wrapTextProperty()));
 
         // control
-        ControlOptions.appendTo(label, op);
+        ControlOptions.appendTo(op, label);
         setOptions(op);
     }
 }

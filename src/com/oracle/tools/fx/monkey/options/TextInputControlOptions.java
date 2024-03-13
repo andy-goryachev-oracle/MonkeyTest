@@ -24,36 +24,32 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import javafx.beans.property.ObjectProperty;
+import javafx.scene.control.TextInputControl;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TextChoiceOption;
+import com.oracle.tools.fx.monkey.util.TextSelector;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * Enum Option Bound to a Property.
+ *
  */
-public class EnumOption<T extends Enum> extends ObjectOption<T> {
-    public EnumOption(String name, boolean allowNull, Class<T> type, ObjectProperty<T> p) {
-        super(name, p);
+public class TextInputControlOptions {
+    public static void appendTo(OptionPane op, TextInputControl control) {
+        TextChoiceOption promptTextOption = new TextChoiceOption("promptText", true, control.promptTextProperty());
+        Utils.fromPairs(Templates.singleLineTextPairs(), (k,v) -> promptTextOption.addChoice(k, v));
+        
+        TextChoiceOption textOption = new TextChoiceOption("text", true, control.textProperty());
+        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> textOption.addChoice(k, v));
 
-        T[] values = type.getEnumConstants();
-        Arrays.sort(values, new Comparator<T>() {
-            @Override
-            public int compare(T a, T b) {
-                return a.toString().compareTo(b.toString());
-            }
-        });
+        op.section("TextInputControl");
 
-        if (allowNull) {
-            addChoice("<null>", null);
-        }
-        for (T v : values) {
-            addChoice(v.toString(), v);
-        }
+        op.option(new BooleanOption("editable", "editable", control.editableProperty()));
+        op.option("Font:", new FontOption("font", false, control.fontProperty()));
+        op.option("Prompt Text:", promptTextOption);
+        op.option("Text:", textOption);
+        op.option("Text Formatter: TODO", null); // TODO
 
-        selectInitialValue();
-    }
-
-    public EnumOption(String name, Class<T> type, ObjectProperty<T> p) {
-        this(name, true, type, p);
+        ControlOptions.appendTo(op, control);
     }
 }

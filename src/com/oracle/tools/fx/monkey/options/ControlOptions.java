@@ -31,7 +31,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Control Property Sheet.
  */
 public class ControlOptions {
-    public static void appendTo(Control control, OptionPane op) {
+    public static void appendTo(OptionPane op, Control control) {
         op.section("Control");
         op.option("Context Menu: TODO", null);
         // TODO context menu

@@ -36,6 +36,8 @@ public class Templates {
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
     public static final String RIGHT_TO_LEFT = "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די";
 
+    // FIX remove
+    @Deprecated
     public static TextSelector promptChoice(String id, Consumer<String> client) {
         return TextSelector.fromPairs(
             id,
@@ -59,27 +61,27 @@ public class Templates {
             "Tabs", "0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n",
             "Newlines", "\n1\n2\n\n3\n\n\n4\n\n\n\n5\n",
             "Long CJK",  createLongCJK(),
+            "Single Newline", "\n",
             "Short", "yo",
-            "Empty", "",
-            "null", null,
+            "<empty>", "",
+            "<null>", null,
        };
     }
 
     public static Object[] singleLineTextPairs() {
         return new Object[] {
             "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
-            "Short", "yo",
-            "Empty", "",
-            "null", null,
             "Right-to-Left", "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די",
             "Tibetan", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ",
             "Double diacritics", "a\u0360b a\u0361b a\u0362b a\u035cb",
             "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).",
             "Newlines and Tabs", "1\t\n2\r3\r\n4",
-            "Single Newline", "\n",
             "Single Tab", "\t",
             "Emojis", "[🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]",
+            "Short", "yo",
+            "<empty>", "",
+            "<null>", null,
         };
     }
 

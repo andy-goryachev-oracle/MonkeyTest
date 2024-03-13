@@ -51,7 +51,7 @@ public class MenuButtonPage extends TestPaneBase {
         // TODO all button base properties
 
         // control
-        ControlOptions.appendTo(control, op);
+        ControlOptions.appendTo(op, control);
         setOptions(op);
     }
 }
