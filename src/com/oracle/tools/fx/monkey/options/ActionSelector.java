@@ -24,18 +24,27 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.BorderPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.NamedValue;
 
 /**
  * Action Selector Executes Simple Actions (Runnable's).
  */
-public class ActionSelector extends ComboBox<NamedValue<Runnable>> {
+public class ActionSelector extends BorderPane {
+    private final ComboBox<NamedValue<Runnable>> field;
+
     public ActionSelector(String name) {
         FX.name(this, name);
 
-        getSelectionModel().selectedItemProperty().addListener((s, pr, c) -> {
+        field = new ComboBox<>();
+        field.setMaxWidth(Double.MAX_VALUE);
+        FX.name(field, "value");
+
+        field.getSelectionModel().selectedItemProperty().addListener((s, pr, c) -> {
             Runnable r = c.getValue();
             try {
                 r.run();
@@ -43,23 +52,37 @@ public class ActionSelector extends ComboBox<NamedValue<Runnable>> {
                 e.printStackTrace();
             }
         });
+
+        setCenter(field);
+    }
+
+    public Runnable getValue() {
+        NamedValue<Runnable> v = field.getSelectionModel().getSelectedItem();
+        return v == null ? null : v.getValue();
     }
 
     public void clearChoices() {
-        getItems().clear();
+        field.getItems().clear();
     }
 
     public void addChoice(String name, Runnable item) {
-        getItems().add(new NamedValue<>(name, item));
+        field.getItems().add(new NamedValue<>(name, item));
     }
 
     public void select(int ix) {
-        if ((ix >= 0) && (ix < getItems().size())) {
-            getSelectionModel().select(ix);
+        if ((ix >= 0) && (ix < field.getItems().size())) {
+            field.getSelectionModel().select(ix);
         }
     }
 
     public void selectFirst() {
         select(0);
+    }
+
+    public void addButton(String text, Runnable r) {
+        Button b = new Button(text);
+        b.setOnAction((ev) -> r.run());
+        setRight(b);
+        setMargin(b, new Insets(0, 0, 0, 2));
     }
 }

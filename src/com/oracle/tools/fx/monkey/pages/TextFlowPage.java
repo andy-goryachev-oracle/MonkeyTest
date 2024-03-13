@@ -24,13 +24,11 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.text.Font;
@@ -38,6 +36,7 @@ import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
@@ -51,24 +50,19 @@ import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
-    private final TextSelector textSelector;
+    private final ActionSelector contentOption;
     private final FontSelector fontSelector;
     private final CheckBoxSelector showChars;
     private final CheckBoxSelector showCaretPaths;
     private final Label pickResult;
     private final Label hitInfo;
     private final Label hitInfo2;
-    private String currentText;
-    private static final String INLINE = "\u0000_INLINE";
-    private static final String RICH_TEXT = "\u0000_RICH";
-    private static final String RICH_TEXT_COMPLEX = "\u0000_RICH2";
     private final TextFlow textFlow;
 
     public TextFlowPage() {
@@ -83,25 +77,21 @@ public class TextFlowPage extends TestPaneBase {
 
         hitInfo2 = new Label();
 
-        textSelector = TextSelector.fromPairs(
-            "textSelector",
-            (t) -> updateText(),
-            Utils.combine(
-                Templates.multiLineTextPairs(),
-                "Inline Nodes", INLINE,
-                "Rich Text", RICH_TEXT,
-                "Rich Text (Complex)", RICH_TEXT_COMPLEX,
-                "Accadian", Templates.AKKADIAN
-            )
-        );
+        contentOption = new ActionSelector("content");
+        contentOption.addButton("Edit", this::openEditDialog);
+        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> contentOption.addChoice(k, () -> setContent(v)));
+        contentOption.addChoice("Inline Nodes", () -> setContent(mkInlineNodes()));
+        contentOption.addChoice("Rich Text", () -> setContent(createRichText()));
+        contentOption.addChoice("Rich Text (Complex)", () -> setContent(createRichTextComplex()));
+        contentOption.addChoice("Accadian", () -> setContent(Templates.AKKADIAN));
 
-        fontSelector = new FontSelector("font", (f) -> updateControl());
+        // FIX inline button, or use the FontOption with local or null property
+        fontSelector = new FontSelector("font", (f) -> updateText());
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
             new EnterTextDialog(this, getText(), (s) -> {
-                currentText = s;
-                updateControl();
+                updateText();
             }).show();
         });
 
@@ -112,11 +102,8 @@ public class TextFlowPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.section("TextFlow");
         
-        op.label("Content:");
-        op.option(textSelector.node()); // TODO
-        op.option(editButton); // TODO add menu button with a number of good choices?
+        op.option("Content:", contentOption);
         
-        // FIX remove, but allow to control individual segments via popup menu
         op.label("Font:");
         op.option(fontSelector.fontNode());
         op.label("Font Size:");
@@ -126,7 +113,7 @@ public class TextFlowPage extends TestPaneBase {
         
         op.option("Tab Size:", IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
 
-        op.option("Text Alignment:", new EnumOption<>("nodeOrientation", TextAlignment.class, textFlow.textAlignmentProperty()));
+        op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         //
         op.separator();
         op.option(showChars.node());
@@ -143,51 +130,68 @@ public class TextFlowPage extends TestPaneBase {
         setOptions(op);
 
         fontSelector.selectSystemFont();
-        textSelector.selectFirst();
     }
 
     private void updateText() {
-        currentText = textSelector.getSelectedText();
-        updateControl();
+        Runnable r = contentOption.getValue();
+        if (r != null) {
+            r.run();
+        }
     }
 
-    private Node[] createTextArray(String text, Font f) {
-        if (INLINE.equals(text)) {
-            return new Node[] {
-                t("Inline Nodes:", f),
-                new Button("Left"),
-                t(" ", f),
-                new Button("Right"),
-                t("trailing", f)
-            };
-        } else if (RICH_TEXT.equals(text)) {
-            return new Node[] {
-                t("Rich Text: ", f),
-                t("BOLD ", f, "-fx-font-weight:bold;"),
-                t("BOLD ", f, "-fx-font-weight:bold;"),
-                t("BOLD ", f, "-fx-font-weight:bold;"),
-                t("italic ", f, "-fx-font-style:italic;"),
-                t("underline ", f, "-fx-underline:true;"),
-                t("The quick brown fox jumped over the lazy dog ", f),
-                t("The quick brown fox jumped over the lazy dog ", f),
-                t("The quick brown fox jumped over the lazy dog ", f),
-                t(Templates.RIGHT_TO_LEFT, f),
-                t(Templates.RIGHT_TO_LEFT, f)
-            };
-        } else if (RICH_TEXT_COMPLEX.equals(text)) {
-            return new Node[] {
-                t("Rich Text: ", f),
-                t("BOLD ", f, "-fx-font-weight:bold;"),
-                t("BOLD ", f, "-fx-font-weight:100; -fx-scale-x:200%;"),
-                t("BOLD ", f, "-fx-font-weight:900;"),
-                t("italic ", f, "-fx-font-style:italic;"),
-                t("underline ", f, "-fx-underline:true;"),
-                t(Templates.TWO_EMOJIS, f),
-                t(Templates.CLUSTERS, f)
-            };
-        } else {
-            return new Node[] { t(text, f) };
-        }
+    private void setContent(String text) {
+        Font f = getFont();
+        textFlow.getChildren().setAll(t(text, f));
+    }
+
+    private void setContent(Node[] content) {
+        textFlow.getChildren().setAll(content);
+    }
+
+    private Font getFont() {
+        return fontSelector.getFont();
+    }
+
+    private Node[] mkInlineNodes() {
+        Font f = getFont();
+        return new Node[] {
+            t("Inline Nodes:", f),
+            new Button("Left"),
+            t(" ", f),
+            new Button("Right"),
+            t("trailing", f)
+        };
+    }
+    
+    private Node[] createRichText() {
+        Font f = getFont();
+        return new Node[] {
+            t("Rich Text: ", f),
+            t("BOLD ", f, "-fx-font-weight:bold;"),
+            t("BOLD ", f, "-fx-font-weight:bold;"),
+            t("BOLD ", f, "-fx-font-weight:bold;"),
+            t("italic ", f, "-fx-font-style:italic;"),
+            t("underline ", f, "-fx-underline:true;"),
+            t("The quick brown fox jumped over the lazy dog ", f),
+            t("The quick brown fox jumped over the lazy dog ", f),
+            t("The quick brown fox jumped over the lazy dog ", f),
+            t(Templates.RIGHT_TO_LEFT, f),
+            t(Templates.RIGHT_TO_LEFT, f)
+        };
+    }
+    
+    private Node[] createRichTextComplex() {
+        Font f = getFont();
+        return new Node[] {
+            t("Rich Text: ", f),
+            t("BOLD ", f, "-fx-font-weight:bold;"),
+            t("BOLD ", f, "-fx-font-weight:100; -fx-scale-x:200%;"),
+            t("BOLD ", f, "-fx-font-weight:900;"),
+            t("italic ", f, "-fx-font-style:italic;"),
+            t("underline ", f, "-fx-underline:true;"),
+            t(Templates.TWO_EMOJIS, f),
+            t(Templates.CLUSTERS, f)
+        };
     }
 
     private static Text t(String text, Font f) {
@@ -237,13 +241,6 @@ public class TextFlowPage extends TestPaneBase {
         return sb.toString();
     }
 
-    @Deprecated // FIX remove
-    private void updateControl() {
-        Font f = fontSelector.getFont();
-        Node[] ts = createTextArray(currentText, f);
-        textFlow.getChildren().setAll(ts);
-    }
-
     private void updateShowCaretPaths() {
         if (showCaretPaths.getValue()) {
             ShowCaretPaths.createFor(textFlow);
@@ -258,5 +255,11 @@ public class TextFlowPage extends TestPaneBase {
         } else {
             ShowCharacterRuns.remove(textFlow);
         }
+    }
+
+    private void openEditDialog() {
+        new EnterTextDialog(this, getText(), (s) -> {
+            // TODO update text
+        }).show();
     }
 }

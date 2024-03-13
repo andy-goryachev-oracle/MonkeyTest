@@ -24,6 +24,8 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.util.function.BiConsumer;
+
 /**
  * Monkey Tester Utilities
  */
@@ -41,5 +43,13 @@ public class Utils {
             return true;
         }
         return (x.toString().trim().length() == 0);
+    }
+
+    public static void fromPairs(Object[] pairs, BiConsumer<String,String> client) {
+        for(int i=0; i<pairs.length; ) {
+            String k = (String)pairs[i++];
+            String v = (String)pairs[i++];
+            client.accept(k, v);
+        }
     }
 }

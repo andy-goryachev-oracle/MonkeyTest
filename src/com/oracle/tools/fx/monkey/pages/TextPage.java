@@ -50,6 +50,7 @@ import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextChoiceOption;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Text Page
@@ -71,7 +72,7 @@ public class TextPage extends TestPaneBase {
         hitInfo = new Label();
 
         textOption = new TextChoiceOption("textSelector", true, text.textProperty());
-        Templates.addMultiLineTextChoices(textOption);
+        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> textOption.addChoice(k, v));
 
         showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
