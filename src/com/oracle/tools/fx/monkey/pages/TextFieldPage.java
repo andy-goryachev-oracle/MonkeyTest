@@ -61,7 +61,7 @@ public class TextFieldPage extends TestPaneBase {
         op.separator();
         op.option(inScroll);
         
-        TextInputControlOptions.appendTo(op, textField);
+        TextInputControlOptions.appendTo(op, false, textField);
 
         setContent(textField);
         setOptions(op);

@@ -35,12 +35,15 @@ import com.oracle.tools.fx.monkey.util.Utils;
  *
  */
 public class TextInputControlOptions {
-    public static void appendTo(OptionPane op, TextInputControl control) {
+    public static void appendTo(OptionPane op, boolean multiline, TextInputControl control) {
         TextChoiceOption promptTextOption = new TextChoiceOption("promptText", true, control.promptTextProperty());
         Utils.fromPairs(Templates.singleLineTextPairs(), (k,v) -> promptTextOption.addChoice(k, v));
         
         TextChoiceOption textOption = new TextChoiceOption("text", true, control.textProperty());
-        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> textOption.addChoice(k, v));
+        Utils.fromPairs(
+            multiline ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs(),
+            (k,v) -> textOption.addChoice(k, v)
+        );
 
         op.section("TextInputControl");
 

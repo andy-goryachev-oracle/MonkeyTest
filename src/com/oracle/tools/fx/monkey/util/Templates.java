@@ -25,7 +25,6 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.Random;
-import java.util.function.Consumer;
 
 /**
  * Text Templates
@@ -35,19 +34,6 @@ public class Templates {
     public static final String CLUSTERS = "☝🏿☝🏿☝🏿🤦🏼‍♂️";
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
     public static final String RIGHT_TO_LEFT = "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די";
-
-    // FIX remove
-    @Deprecated
-    public static TextSelector promptChoice(String id, Consumer<String> client) {
-        return TextSelector.fromPairs(
-            id,
-            client,
-            "null", null,
-            "Short", "yo",
-            "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
-            "RTL", "العربية"
-        );
-    }
 
     public static Object[] multiLineTextPairs() {
         return new Object[] {

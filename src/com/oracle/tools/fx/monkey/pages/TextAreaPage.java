@@ -24,64 +24,35 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.options.TextInputControlOptions;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
 
 /**
  * TextArea Page
  */
 public class TextAreaPage extends TestPaneBase {
-    private final TextArea control;
-    private final TextSelector textSelector;
+    private final TextArea textArea;
 
     public TextAreaPage() {
         FX.name(this, "TextAreaPage");
 
-        control = new TextArea();
-        control.setPromptText("<prompt>");
-
-        textSelector = TextSelector.fromPairs(
-            "textSelector",
-            (t) -> control.setText(t),
-            Templates.multiLineTextPairs()
-        );
-
-        FontSelector fontSelector = new FontSelector("font", control::setFont);
-
-        CheckBox wrap = new CheckBox("wrap text");
-        FX.name(wrap, "wrapText");
-        wrap.selectedProperty().addListener((s, p, on) -> {
-            control.setWrapText(on);
-        });
-
-        CheckBox editable = new CheckBox("editable");
-        FX.name(editable, "editable");
-        editable.selectedProperty().bindBidirectional(control.editableProperty());
-
-        TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
-        promptChoice.addPair("Multiline", "1\n2\n3\n4");
+        textArea = new TextArea();
 
         OptionPane op = new OptionPane();
-        op.option("Text:", textSelector.node());
-        op.option("Font:", fontSelector.fontNode());
-        op.option("Font Size:", fontSelector.sizeNode());
-        op.option(wrap);
-        op.option(editable);
-        op.option("Prompt:", promptChoice.node());
-        op.option(new TextField());
+        op.section("TextArea");
+        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, textArea.prefColumnCountProperty()));
+        op.option("Preferred Row Count:", new IntOption("prefRowCount", -1, Integer.MAX_VALUE, textArea.prefRowCountProperty()));
+        op.option("Scroll Left: TODO", null); // TODO
+        op.option("Scroll Top: TODO", null); // TODO
+        op.option(new BooleanOption("wrapText", "wrap text", textArea.wrapTextProperty()));
+        TextInputControlOptions.appendTo(op, true, textArea);
 
-        setContent(control);
+        setContent(textArea);
         setOptions(op);
-
-        textSelector.selectFirst();
-        fontSelector.selectSystemFont();
-        promptChoice.select(null);
     }
 }
