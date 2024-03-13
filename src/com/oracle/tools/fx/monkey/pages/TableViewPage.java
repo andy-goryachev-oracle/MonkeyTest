@@ -39,6 +39,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.TableView.TableViewSelectionModel;
@@ -129,7 +130,7 @@ public class TableViewPage<originalSelectionModel> extends TestPaneBase implemen
 
         op.option("Placeholder: TODO", null); // TODO
 
-        op.option("Row Factory: TODO", null); // TODO
+        op.option("Row Factory:", createRowFactoryOptions("rowFactory", tableView.rowFactoryProperty()));
 
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
 
@@ -147,6 +148,7 @@ public class TableViewPage<originalSelectionModel> extends TestPaneBase implemen
 //        op.label("Selection Model:");
 //        op.option(selectionSelector);
 
+        op.separator();
         op.option(refresh);
 
         // currently selected column option sheet
@@ -536,6 +538,24 @@ public class TableViewPage<originalSelectionModel> extends TestPaneBase implemen
         s.addChoiceSupplier("1,000 Rows", () -> createRows(1000));
         s.addChoiceSupplier("10,000 Rows", () -> createRows(10_000));
         s.addChoiceSupplier("<empty>", () -> createRows(0));
+        return s;
+    }
+
+    private Callback<TableView<DataRow>, TableRow<DataRow>> createRowFactory(Color c) {
+        return (v) -> {
+            TableRow<DataRow> row = new TableRow<>();
+            row.setBackground(Background.fill(c));
+            return row;
+        };
+    }
+
+    private Node createRowFactoryOptions(String name, ObjectProperty<Callback<TableView<DataRow>, TableRow<DataRow>>> p) {
+        Callback<TableView<DataRow>, TableRow<DataRow>> defaultValue = p.get();
+        ObjectOption<Callback<TableView<DataRow>, TableRow<DataRow>>> s = new ObjectOption<>(name, p);
+        s.addChoice("<default>", defaultValue);
+        s.addChoice("Red Background", createRowFactory(Color.RED));
+        s.addChoice("Green Background", createRowFactory(Color.GREEN));
+        s.addChoice("<null>", null);
         return s;
     }
 }
