@@ -37,9 +37,27 @@ public class BooleanOption extends CheckBox {
 
     public BooleanOption(String name, String text, Property<Boolean> p) {
         FX.name(this, name);
-        property.bindBidirectional(p);
+        if (p != null) {
+            property.bindBidirectional(p);
+        }
 
         setText(text);
         selectedProperty().bindBidirectional(property);
+    }
+
+    public BooleanOption(String name, String text, Runnable onChange) {
+        this(name, text, (Property)null);
+
+        property.addListener((src, prev, cur) -> {
+            try {
+                onChange.run();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public boolean getValue() {
+        return property.get();
     }
 }

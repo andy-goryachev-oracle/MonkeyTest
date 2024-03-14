@@ -37,12 +37,12 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import com.oracle.tools.fx.monkey.options.ActionSelector;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.RegionOptions;
-import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -58,8 +58,8 @@ import com.oracle.tools.fx.monkey.util.Utils;
 public class TextFlowPage extends TestPaneBase {
     private final ActionSelector contentOption;
     private final FontOption fontOption;
-    private final CheckBoxSelector showChars;
-    private final CheckBoxSelector showCaretPaths;
+    private final BooleanOption showChars;
+    private final BooleanOption showCaretPaths;
     private final Label pickResult;
     private final Label hitInfo;
     private final Label hitInfo2;
@@ -95,9 +95,9 @@ public class TextFlowPage extends TestPaneBase {
             }).show();
         });
 
-        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
+        showChars = new BooleanOption("showChars", "show characters", () -> updateShowCharacters());
 
-        showCaretPaths = new CheckBoxSelector("showCaretPaths", "show caret paths", (v) -> updateShowCaretPaths());
+        showCaretPaths = new BooleanOption("showCaretPaths", "show caret paths", () -> updateShowCaretPaths());
 
         OptionPane op = new OptionPane();
         op.section("TextFlow");
@@ -113,8 +113,8 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         //
         op.separator();
-        op.option(showChars.node());
-        op.option(showCaretPaths.node());
+        op.option(showChars);
+        op.option(showCaretPaths);
         op.separator();
         op.option("Pick Result:", pickResult);
         op.option("Text.hitTest:", hitInfo2);

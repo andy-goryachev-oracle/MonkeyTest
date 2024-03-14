@@ -44,7 +44,6 @@ import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.ShapeOptions;
-import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -56,8 +55,8 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 public class TextPage extends TestPaneBase {
     private final Text text;
     private final ScrollPane scroll;
-    private final CheckBoxSelector showChars;
-    private final CheckBoxSelector wrap;
+    private final BooleanOption showChars;
+    private final BooleanOption wrap;
     private final Label hitInfo;
 
     public TextPage() {
@@ -68,9 +67,9 @@ public class TextPage extends TestPaneBase {
 
         hitInfo = new Label();
 
-        showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
+        showChars = new BooleanOption("showChars", "show characters", () -> updateShowCharacters());
 
-        wrap = new CheckBoxSelector("wrap", "wrap width", (v) -> updateWrap());
+        wrap = new BooleanOption("wrap", "wrap width", () -> updateWrap());
 
         OptionPane op = new OptionPane();
         op.section("Text");
@@ -89,10 +88,10 @@ public class TextPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, text.textAlignmentProperty()));
         op.option("Text Origin:", new EnumOption<VPos>("textOrigin", VPos.class, text.textOriginProperty()));
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
-        op.option(wrap.node());
 
         op.separator();
-        op.option(showChars.node());
+        op.option(wrap);
+        op.option(showChars);
         op.option("Text.hitTest:", hitInfo);
 
         ShapeOptions.appendTo(op, text);
