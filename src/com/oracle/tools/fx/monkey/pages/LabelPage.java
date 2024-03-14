@@ -25,7 +25,6 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
@@ -36,14 +35,13 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
+import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.sheets.ControlOptions;
-import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
 
 /**
  * Label Page
@@ -62,27 +60,10 @@ public class LabelPage extends TestPaneBase {
 //            System.err.println("truncated: " + c);
 //        });
 
-        // TODO
-        TextSelector textSelector = TextSelector.fromPairs(
-            "textSelector",
-            (v) -> label.setText(v),
-            Templates.multiLineTextPairs()
-        );
-
-        Button editButton = new Button("Enter Text");
-        editButton.setOnAction((ev) -> {
-            String text = label.getText();
-            new EnterTextDialog(this, text, (v) -> {
-                label.setText(v);
-            }).show();
-        });
+        TextChoiceOption textOption = Options.multiLineTextOption("text", true, label.textProperty());
 
         OptionPane op = new OptionPane();
         op.section("Label");
-
-        op.label("Text:");
-        op.option(textSelector.node());
-        op.option(editButton);
 
         op.option("Alignment:", new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
 
@@ -97,6 +78,8 @@ public class LabelPage extends TestPaneBase {
         op.option("Padding:", new InsetsOption("padding", false, label.paddingProperty()));
 
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
+
+        op.option("Text:", textOption);
 
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
 
@@ -113,5 +96,7 @@ public class LabelPage extends TestPaneBase {
         // control
         ControlOptions.appendTo(op, label);
         setOptions(op);
+
+        textOption.selectFirst();
     }
 }

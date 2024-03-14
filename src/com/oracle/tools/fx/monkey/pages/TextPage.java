@@ -43,25 +43,23 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.ShapeOptions;
 import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
-import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Text Page
  */
 public class TextPage extends TestPaneBase {
-    private final TextChoiceOption textOption;
-    private final CheckBoxSelector showChars;
+    private final Text text;
     private final ScrollPane scroll;
+    private final CheckBoxSelector showChars;
     private final CheckBoxSelector wrap;
     private final Label hitInfo;
-    private final Text text;
 
     public TextPage() {
         FX.name(this, "TextPage");
@@ -71,8 +69,7 @@ public class TextPage extends TestPaneBase {
 
         hitInfo = new Label();
 
-        textOption = new TextChoiceOption("textSelector", true, text.textProperty());
-        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> textOption.addChoice(k, v));
+        TextChoiceOption textOption = Options.multiLineTextOption("textSelector", true, text.textProperty());
 
         showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
