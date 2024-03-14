@@ -28,28 +28,18 @@ import javafx.scene.control.TextInputControl;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.PromptTextOption;
-import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Text Input Control Property Sheet.
  */
 public class TextInputControlOptions {
-    public static void appendTo(OptionPane op, boolean multiline, TextInputControl control) {
-        TextChoiceOption textOption = new TextChoiceOption("text", true, control.textProperty());
-        Utils.fromPairs(
-            multiline ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs(),
-            (k,v) -> textOption.addChoice(k, v)
-        );
-
+    public static void appendTo(OptionPane op, boolean multiLine, TextInputControl control) {
         op.section("TextInputControl");
-
         op.option(new BooleanOption("editable", "editable", control.editableProperty()));
         op.option("Font:", new FontOption("font", false, control.fontProperty()));
         op.option("Prompt Text:", new PromptTextOption("promptText", true, control.promptTextProperty()));
-        op.option("Text:", textOption);
+        op.option("Text:", Options.textOption("text", multiLine, true, control.textProperty()));
         op.option("Text Formatter: TODO", null); // TODO
 
         ControlOptions.appendTo(op, control);

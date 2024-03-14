@@ -33,9 +33,19 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * Convenience Methods.
  */
 public class Options {
-    public static TextChoiceOption multiLineTextOption(String name, boolean allowEditButton, StringProperty prop) {
+    /**
+     * Returns the text choice option initialized with common single- or multi-line strings.
+     * @param name
+     * @param multiLine
+     * @param allowEditButton
+     * @param prop
+     * @return
+     */
+    public static TextChoiceOption textOption(String name, boolean multiLine, boolean allowEditButton, StringProperty prop) {
         TextChoiceOption op = new TextChoiceOption(name, true, prop);
-        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> op.addChoice(k, v));
+        Object[] pairs = multiLine ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs();
+        Utils.fromPairs(pairs, (k,v) -> op.addChoice(k, v));
+        op.selectFirst();
         return op;
     }
 }

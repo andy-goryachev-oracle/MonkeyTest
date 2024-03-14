@@ -24,21 +24,8 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.geometry.Pos;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.text.TextAlignment;
-import com.oracle.tools.fx.monkey.options.BooleanOption;
-import com.oracle.tools.fx.monkey.options.DoubleOption;
-import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.options.FontOption;
-import com.oracle.tools.fx.monkey.options.GraphicOption;
-import com.oracle.tools.fx.monkey.options.InsetsOption;
-import com.oracle.tools.fx.monkey.options.TextChoiceOption;
-import com.oracle.tools.fx.monkey.options.TextOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
-import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -60,43 +47,9 @@ public class LabelPage extends TestPaneBase {
 //            System.err.println("truncated: " + c);
 //        });
 
-        TextChoiceOption textOption = Options.multiLineTextOption("text", true, label.textProperty());
-
         OptionPane op = new OptionPane();
         op.section("Label");
-
-        op.option("Alignment:", new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
-
-        op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, label.contentDisplayProperty()));
-
-        op.option("Ellipsis String:", new TextOption("ellipsisString", label.ellipsisStringProperty()));
-
-        op.option("Font:", new FontOption("font", false, label.fontProperty()));
-
-        op.option("Graphic:", new GraphicOption("graphic", label.graphicProperty()));
-
-        op.option("Padding:", new InsetsOption("padding", false, label.paddingProperty()));
-
-        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
-
-        op.option("Text:", textOption);
-
-        op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
-
-        op.option("Text Fill: TODO", null); // TODO text fill
-
-        op.option("Text Overrun:", new EnumOption<>("textOverrun", OverrunStyle.class, label.textOverrunProperty()));
-
-        op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", label.mnemonicParsingProperty()));
-
-        op.option(new BooleanOption("underline", "underline", label.underlineProperty()));
-
-        op.option(new BooleanOption("wrapText", "wrap text", label.wrapTextProperty()));
-
-        // control
-        ControlOptions.appendTo(op, label);
+        LabeledOptions.appendTo(op, true, label);
         setOptions(op);
-
-        textOption.selectFirst();
     }
 }

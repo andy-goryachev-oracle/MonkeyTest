@@ -24,78 +24,53 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import java.util.function.Supplier;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.PairSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextSelector;
 
 /**
  * TitledPane Page
  */
 public class TitledPanePage extends TestPaneBase {
-    private final TextSelector textSelector;
-    private final PairSelector<Supplier<Node>> contentSelector;
-    private final CheckBox snap;
-    private final TitledPane control;
+    private final TitledPane titledPane;
 
     public TitledPanePage() {
         FX.name(this, "TitledPane");
 
-        textSelector = TextSelector.fromPairs(
-            "textSelector",
-            (t) -> update(),
-            Templates.multiLineTextPairs()
-        );
-        textSelector.removeChoice("Writing Systems");
+        titledPane = new TitledPane();
 
-        contentSelector = new PairSelector<Supplier<Node>>(
-            "contentSelector",
-            (g) -> update(),
-            new Object[] {
-                "null", null,
-                "AnchorPane", mk(() -> makeAnchorPane()),
-                "Label", mk(() -> new Label("Label"))
-            }
-        );
+//        TextChoiceOption textOption = Options.singleLineTextOption("text", true, titledPane.textProperty());
+//        textOption.removeChoice("Writing Systems");
 
-        snap = new CheckBox("snap");
-        FX.name(snap, "snap");
-
-        control = new TitledPane();
-
-        snap.selectedProperty().bindBidirectional(control.snapToPixelProperty());
+        ObjectOption<Node> contentOption = new ObjectOption<>("content", titledPane.contentProperty());
+        contentOption.addChoiceSupplier("Label", () -> new Label("Label"));
+        contentOption.addChoiceSupplier("AnchorPane", () -> makeAnchorPane());
+        contentOption.addChoiceSupplier("<null>", () -> null);
 
         OptionPane op = new OptionPane();
-        op.option("Text:", textSelector.node());
-        op.option("Content:", contentSelector.node());
-        op.option(snap);
+        op.section("TitledPane");
+        op.option(new BooleanOption("animated", "animated", titledPane.animatedProperty()));
+        op.option(new BooleanOption("collapsible", "collapsible", titledPane.collapsibleProperty()));
+//        op.option("Text:", textOption);
+        op.option("Content:", contentOption);
+        op.option(new BooleanOption("expanded", "expanded", titledPane.expandedProperty()));
 
-        setContent(control);
+        op.section("Labeled");
+        LabeledOptions.appendTo(op, false, titledPane);
+
+        setContent(titledPane);
         setOptions(op);
 
-        update();
-    }
-
-    protected void update() {
-        Supplier<Node> gen = contentSelector.getSelectedItem();
-        Node n = (gen == null) ? null : gen.get();
-
-        control.setText(textSelector.getSelectedText());
-        control.setContent(n);
-    }
-
-    protected Supplier<Node> mk(Supplier<Node> gen) {
-        return gen;
+        contentOption.selectFirst();
     }
 
     protected Node makeAnchorPane() {

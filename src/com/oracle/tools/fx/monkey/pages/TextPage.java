@@ -42,7 +42,6 @@ import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
-import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.ShapeOptions;
 import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
@@ -69,44 +68,27 @@ public class TextPage extends TestPaneBase {
 
         hitInfo = new Label();
 
-        TextChoiceOption textOption = Options.multiLineTextOption("textSelector", true, text.textProperty());
-
         showChars = new CheckBoxSelector("showChars", "show characters", (v) -> updateShowCharacters());
 
         wrap = new CheckBoxSelector("wrap", "wrap width", (v) -> updateWrap());
 
         OptionPane op = new OptionPane();
         op.section("Text");
-
         op.option("Bounds Type:", new EnumOption<>("boundsType", TextBoundsType.class, text.boundsTypeProperty()));
-
         op.option(new BooleanOption("caretBias", "caret bias (leading)", text.caretBiasProperty()));
-
         op.option("Caret Position:", new IntOption("caretPosition", -1, Integer.MAX_VALUE, text.caretPositionProperty()));
-
         op.option("Font:", new FontOption("font", false, text.fontProperty()));
-
         op.option("Font Smoothing:", new EnumOption<>("fontSmoothing", FontSmoothingType.class, text.fontSmoothingTypeProperty()));
-
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", text.lineSpacingProperty()));
-
         op.option("Selection Start:", new IntOption("selectionStart", -1, Integer.MAX_VALUE, text.selectionStartProperty()));
         op.option("Selection End:", new IntOption("selectionEnd", -1, Integer.MAX_VALUE, text.selectionEndProperty()));
-
         op.option("Selection Fill: TODO", null); // TODO
-
         op.option(new BooleanOption("strikeThrough", "strike through", text.strikethroughProperty()));
-
         op.option("Tab Size:", IntOption.tabSize("tabSize", text.tabSizeProperty()));
-
-        op.option("Text:", textOption);
-
+        op.option("Text:", Options.textOption("textSelector", true, true, text.textProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, text.textAlignmentProperty()));
-
         op.option("Text Origin:", new EnumOption<VPos>("textOrigin", VPos.class, text.textOriginProperty()));
-
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
-
         op.option(wrap.node());
 
         op.separator();
@@ -127,7 +109,6 @@ public class TextPage extends TestPaneBase {
 
         updateWrap();
         updateShowCharacters();
-        textOption.selectFirst();
     }
 
     private void updateShowCharacters() {
