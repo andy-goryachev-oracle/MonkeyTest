@@ -26,8 +26,8 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
-import com.oracle.tools.fx.monkey.options.ControlOptions;
 import com.oracle.tools.fx.monkey.options.ObjectSelector;
+import com.oracle.tools.fx.monkey.sheets.ControlOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;

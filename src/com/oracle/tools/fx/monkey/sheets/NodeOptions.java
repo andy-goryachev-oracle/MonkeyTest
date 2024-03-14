@@ -22,13 +22,16 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.sheets;
 
 import javafx.geometry.NodeOrientation;
 import javafx.scene.AccessibleRole;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.effect.BlendMode;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**

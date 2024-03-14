@@ -22,21 +22,23 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.scene.control.ComboBoxBase;
+import javafx.scene.control.Control;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
- *
+ * Control Property Sheet.
  */
-public class ComboBoxBaseOptions {
-    public static void appendTo(OptionPane op, ComboBoxBase<?> cb) {
-        op.section("ComboBoxBase");
-        op.option(new BooleanOption("editable", "editable", cb.editableProperty()));
-        op.option("Prompt Text:", new PromptTextOption("promptText", true, cb.promptTextProperty()));
-        op.option("Value: TODO", null); // TODO
+public class ControlOptions {
+    public static void appendTo(OptionPane op, Control control) {
+        op.section("Control");
+        op.option("Context Menu: TODO", null);
+        // TODO context menu
+        op.option("Tooltip: TODO", null);
+        // TODO tooltip
 
-        ControlOptions.appendTo(op, cb);
+        // region
+        RegionOptions.appendTo(op, control);
     }
 }

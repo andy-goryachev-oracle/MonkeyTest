@@ -27,7 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.TextArea;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
-import com.oracle.tools.fx.monkey.options.TextInputControlOptions;
+import com.oracle.tools.fx.monkey.sheets.TextInputControlOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;

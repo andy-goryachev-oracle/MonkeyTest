@@ -22,12 +22,15 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.sheets;
 
 import javafx.scene.control.TextInputControl;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.FontOption;
+import com.oracle.tools.fx.monkey.options.PromptTextOption;
+import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.Templates;
-import com.oracle.tools.fx.monkey.util.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**

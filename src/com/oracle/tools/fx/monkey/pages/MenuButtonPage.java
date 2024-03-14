@@ -26,7 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import com.oracle.tools.fx.monkey.options.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlOptions;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 

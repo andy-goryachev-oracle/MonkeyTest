@@ -40,7 +40,7 @@ import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
-import com.oracle.tools.fx.monkey.options.RegionOptions;
+import com.oracle.tools.fx.monkey.sheets.RegionOptions;
 import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;

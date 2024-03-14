@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.sheets;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.TableColumn;

@@ -26,7 +26,6 @@ package com.oracle.tools.fx.monkey.options;
 
 import javafx.beans.property.StringProperty;
 import com.oracle.tools.fx.monkey.util.Templates;
-import com.oracle.tools.fx.monkey.util.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
