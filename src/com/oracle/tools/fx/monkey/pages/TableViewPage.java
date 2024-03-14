@@ -62,9 +62,8 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TableView page
- * @param <originalSelectionModel>
  */
-public class TableViewPage<originalSelectionModel> extends TestPaneBase implements HasSkinnable {
+public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final TableView<DataRow> tableView;
     private final TableViewSelectionModel<DataRow> originalSelectionModel;
 

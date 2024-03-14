@@ -24,31 +24,18 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import javafx.scene.control.TextInputControl;
-import com.oracle.tools.fx.monkey.util.OptionPane;
+import javafx.beans.property.StringProperty;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- *
+ * Prompt Text Option Bound to a Property.
  */
-public class TextInputControlOptions {
-    public static void appendTo(OptionPane op, boolean multiline, TextInputControl control) {
-        TextChoiceOption textOption = new TextChoiceOption("text", true, control.textProperty());
-        Utils.fromPairs(
-            multiline ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs(),
-            (k,v) -> textOption.addChoice(k, v)
-        );
-
-        op.section("TextInputControl");
-
-        op.option(new BooleanOption("editable", "editable", control.editableProperty()));
-        op.option("Font:", new FontOption("font", false, control.fontProperty()));
-        op.option("Prompt Text:", new PromptTextOption("promptText", true, control.promptTextProperty()));
-        op.option("Text:", textOption);
-        op.option("Text Formatter: TODO", null); // TODO
-
-        ControlOptions.appendTo(op, control);
+public class PromptTextOption extends TextChoiceOption {
+    // TOOD or move it under some kind of template?
+    public PromptTextOption(String name, boolean allowEditButton, StringProperty p) {
+        super(name, allowEditButton, p);
+        Utils.fromPairs(Templates.singleLineTextPairs(), (k, v) -> addChoice(k, v));
     }
 }

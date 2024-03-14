@@ -24,31 +24,19 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ComboBoxBase;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.Templates;
-import com.oracle.tools.fx.monkey.util.TextChoiceOption;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  *
  */
-public class TextInputControlOptions {
-    public static void appendTo(OptionPane op, boolean multiline, TextInputControl control) {
-        TextChoiceOption textOption = new TextChoiceOption("text", true, control.textProperty());
-        Utils.fromPairs(
-            multiline ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs(),
-            (k,v) -> textOption.addChoice(k, v)
-        );
+public class ComboBoxBaseOptions {
+    public static void appendTo(OptionPane op, ComboBoxBase<?> cb) {
+        op.section("ComboBoxBase");
+        op.option(new BooleanOption("editable", "editable", cb.editableProperty()));
+        op.option("Prompt Text:", new PromptTextOption("promptText", true, cb.promptTextProperty()));
+        op.option("Value: TODO", null); // TODO
 
-        op.section("TextInputControl");
-
-        op.option(new BooleanOption("editable", "editable", control.editableProperty()));
-        op.option("Font:", new FontOption("font", false, control.fontProperty()));
-        op.option("Prompt Text:", new PromptTextOption("promptText", true, control.promptTextProperty()));
-        op.option("Text:", textOption);
-        op.option("Text Formatter: TODO", null); // TODO
-
-        ControlOptions.appendTo(op, control);
+        ControlOptions.appendTo(op, cb);
     }
 }

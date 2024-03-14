@@ -34,6 +34,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import com.oracle.tools.fx.monkey.options.ComboBoxBaseOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -42,7 +43,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ComboBox Page
  */
 public class ComboBoxPage extends TestPaneBase {
-    private final ComboBox<String> control;
+    private final ComboBox<String> comboBox;
     private final Label itemCountField;
 
     public ComboBoxPage() {
@@ -50,15 +51,15 @@ public class ComboBoxPage extends TestPaneBase {
 
         itemCountField = new Label("<default>");
 
-        control = new ComboBox<>();
-        control.getItems().setAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        comboBox = new ComboBox<>();
+        comboBox.getItems().setAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 
         VBox b = new VBox();
-        b.getChildren().add(control);
+        b.getChildren().add(comboBox);
 
         Button setConverterButton = new Button("Set Converter");
         setConverterButton.setOnAction((ev) -> {
-            control.setConverter(new StringConverter() {
+            comboBox.setConverter(new StringConverter() {
                 @Override
                 public String toString(Object t) {
                     return "toString-" + t;
@@ -88,22 +89,30 @@ public class ComboBoxPage extends TestPaneBase {
 
         CheckBox editable = new CheckBox("editable");
         FX.name(editable, "editable");
-        editable.selectedProperty().bindBidirectional(control.editableProperty());
+        editable.selectedProperty().bindBidirectional(comboBox.editableProperty());
 
         OptionPane op = new OptionPane();
+        op.section("ComboBox");
+        op.option("Button Cell: TODO", null); // TODO
+        op.option("Cell Factory: TODO", null); // TODO
+        op.option("Converter: TODO", null); // TODO
+        op.option("Items: TODO", null); // TODO
+        op.option("Placeholder: TODO", null); // TODO node
+        op.option("Selection Model: TODO", null); // TODO
         // TODO data?
         op.option(editable);
         // TODO converter selector
         op.option(setConverterButton);
-        op.option("Visible Row Count:", itemCountField);
+        op.option("Visible Row Count:", itemCountField); // TODO
         op.option(changeCountButton);
+        ComboBoxBaseOptions.appendTo(op, comboBox);
 
         setContent(b);
         setOptions(op);
     }
 
     protected void changeItemCount(int x) {
-        control.setVisibleRowCount(x);
+        comboBox.setVisibleRowCount(x);
         itemCountField.setText(String.valueOf(x));
     }
 }
