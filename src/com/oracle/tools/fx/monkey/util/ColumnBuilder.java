@@ -32,7 +32,7 @@ import javafx.scene.control.TableColumnBase;
 /**
  * Column Builder.
  */
-public class ColumnBuilder<T extends TableColumnBase<DataRow, ?>> {
+public class ColumnBuilder<T extends TableColumnBase<?, ?>> {
     private final Supplier<TableColumnBase> generator;
     private final ArrayList<T> columns = new ArrayList<>();
     private T last;

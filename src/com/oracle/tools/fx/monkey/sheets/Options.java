@@ -24,7 +24,9 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
+import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.Templates;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -47,5 +49,9 @@ public class Options {
         Utils.fromPairs(pairs, (k,v) -> op.addChoice(k, v));
         op.selectFirst();
         return op;
+    }
+
+    public static DoubleOption fixedSizeOption(String name, DoubleProperty p) {
+        return DoubleOption.of(name, p, 0, 20, 33.4, 50, 100);
     }
 }
