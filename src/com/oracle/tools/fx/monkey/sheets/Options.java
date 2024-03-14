@@ -54,4 +54,8 @@ public class Options {
     public static DoubleOption fixedSizeOption(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 20, 33.4, 50, 100);
     }
+
+    public static DoubleOption spacing(String name, DoubleProperty p) {
+        return DoubleOption.of(name, p, 0, 0.333, 0.5, 1, 2, 10, 20, 33.4, 50, 100);
+    }
 }
