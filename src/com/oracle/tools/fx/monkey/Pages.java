@@ -35,7 +35,7 @@ public class Pages {
             new DemoPage("Accordion", AccordionPage::new),
             // TODO Button
             // TODO ButtonBar
-            new DemoPage("Canvas", CanvasPage::new),
+            // TODO new DemoPage("Canvas", CanvasPage::new),
             // TODO CheckBox
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),

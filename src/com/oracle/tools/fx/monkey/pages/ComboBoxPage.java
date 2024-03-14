@@ -105,6 +105,8 @@ public class ComboBoxPage extends TestPaneBase {
         op.option(setConverterButton);
         op.option("Visible Row Count:", itemCountField); // TODO
         op.option(changeCountButton);
+
+        op.section("ComboBoxBase");
         ComboBoxBaseOptions.appendTo(op, comboBox);
 
         setContent(b);

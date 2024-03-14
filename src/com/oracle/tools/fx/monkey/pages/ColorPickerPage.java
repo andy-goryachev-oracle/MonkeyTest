@@ -24,13 +24,9 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.geometry.Point2D;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
-import javafx.stage.StageStyle;
+import com.oracle.tools.fx.monkey.sheets.ComboBoxBaseOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -39,46 +35,22 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ColorPicker Page
  */
 public class ColorPickerPage extends TestPaneBase {
-    private final Button button;
-    private ColorPicker picker1;
-    private ColorPicker picker2;
-    private Alert dialog;
+    private ColorPicker control;
 
     public ColorPickerPage() {
         FX.name(this, "ColorPickerPage");
 
-        button = new Button("Show in Alert");
-
-        picker1 = new ColorPicker(Color.BLUE);
-        picker1.valueProperty().addListener(event -> {
-            dialog.close();
-        });
-
-        button.setOnAction(event -> {
-            Point2D p = button.localToScreen(0, button.getHeight());
-
-            dialog = new Alert(AlertType.INFORMATION);
-            dialog.initStyle(StageStyle.UNDECORATED);
-            dialog.initOwner(getWindow());
-            dialog.getDialogPane().setContent(picker1);
-            dialog.setX(p.getX());
-            dialog.setY(p.getY());
-            dialog.show();
-
-            Object v = picker1.getValue();
+        control = new ColorPicker(Color.YELLOW);
+        control.setOnAction((ev) -> {
+            Object v = control.getValue();
             System.out.println(v);
         });
 
-        picker2 = new ColorPicker(Color.YELLOW);
-        picker2.setOnAction((ev) -> {
-            Object v = picker2.getValue();
-            System.out.println(v);
-        });
+        OptionPane op = new OptionPane();
+        op.section("ColorPicker");
+        ComboBoxBaseOptions.appendTo(op, control);
 
-        OptionPane p = new OptionPane();
-        p.option(button);
-
-        setContent(picker2);
-        setOptions(p);
+        setContent(control);
+        setOptions(op);
     }
 }

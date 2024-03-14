@@ -34,7 +34,6 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  */
 public class ComboBoxBaseOptions {
     public static void appendTo(OptionPane op, ComboBoxBase<?> cb) {
-        op.section("ComboBoxBase");
         op.option(new BooleanOption("editable", "editable", cb.editableProperty()));
         op.option("Prompt Text:", new PromptTextOption("promptText", true, cb.promptTextProperty()));
         op.option("Value: TODO", null); // TODO
