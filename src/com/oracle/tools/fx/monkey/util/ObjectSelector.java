@@ -22,13 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.util;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javafx.scene.control.ComboBox;
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.NamedValue;
 
 /**
  * Unidirectional Object Selector.

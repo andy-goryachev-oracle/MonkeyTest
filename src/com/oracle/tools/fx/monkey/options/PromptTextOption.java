@@ -25,7 +25,7 @@
 package com.oracle.tools.fx.monkey.options;
 
 import javafx.beans.property.StringProperty;
-import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
@@ -35,6 +35,6 @@ public class PromptTextOption extends TextChoiceOption {
     // TOOD or move it under some kind of template?
     public PromptTextOption(String name, boolean allowEditButton, StringProperty p) {
         super(name, allowEditButton, p);
-        Utils.fromPairs(Templates.singleLineTextPairs(), (k, v) -> addChoice(k, v));
+        Utils.fromPairs(TextTemplates.singleLineTextPairs(), (k, v) -> addChoice(k, v));
     }
 }

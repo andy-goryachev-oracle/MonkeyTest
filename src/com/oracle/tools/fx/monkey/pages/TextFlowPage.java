@@ -48,7 +48,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
-import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
@@ -79,11 +79,11 @@ public class TextFlowPage extends TestPaneBase {
 
         contentOption = new ActionSelector("content");
         contentOption.addButton("Edit", this::openEditDialog);
-        Utils.fromPairs(Templates.multiLineTextPairs(), (k,v) -> contentOption.addChoice(k, () -> setContent(v)));
+        Utils.fromPairs(TextTemplates.multiLineTextPairs(), (k,v) -> contentOption.addChoice(k, () -> setContent(v)));
         contentOption.addChoice("Inline Nodes", () -> setContent(mkInlineNodes()));
         contentOption.addChoice("Rich Text", () -> setContent(createRichText()));
         contentOption.addChoice("Rich Text (Complex)", () -> setContent(createRichTextComplex()));
-        contentOption.addChoice("Accadian", () -> setContent(Templates.AKKADIAN));
+        contentOption.addChoice("Accadian", () -> setContent(TextTemplates.AKKADIAN));
 
         fontOption = new FontOption("font", false, null);
         fontOption.getProperty().addListener((s,p,v) -> updateText());
@@ -172,8 +172,8 @@ public class TextFlowPage extends TestPaneBase {
             t("The quick brown fox jumped over the lazy dog ", f),
             t("The quick brown fox jumped over the lazy dog ", f),
             t("The quick brown fox jumped over the lazy dog ", f),
-            t(Templates.RIGHT_TO_LEFT, f),
-            t(Templates.RIGHT_TO_LEFT, f)
+            t(TextTemplates.RIGHT_TO_LEFT, f),
+            t(TextTemplates.RIGHT_TO_LEFT, f)
         };
     }
     
@@ -186,8 +186,8 @@ public class TextFlowPage extends TestPaneBase {
             t("BOLD ", f, "-fx-font-weight:900;"),
             t("italic ", f, "-fx-font-style:italic;"),
             t("underline ", f, "-fx-underline:true;"),
-            t(Templates.TWO_EMOJIS, f),
-            t(Templates.CLUSTERS, f)
+            t(TextTemplates.TWO_EMOJIS, f),
+            t(TextTemplates.CLUSTERS, f)
         };
     }
 

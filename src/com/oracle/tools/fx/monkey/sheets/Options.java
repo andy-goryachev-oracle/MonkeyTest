@@ -28,7 +28,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
-import com.oracle.tools.fx.monkey.util.Templates;
+import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
@@ -45,7 +45,7 @@ public class Options {
      */
     public static TextChoiceOption textOption(String name, boolean multiLine, boolean allowEditButton, StringProperty prop) {
         TextChoiceOption op = new TextChoiceOption(name, true, prop);
-        Object[] pairs = multiLine ? Templates.multiLineTextPairs() : Templates.singleLineTextPairs();
+        Object[] pairs = multiLine ? TextTemplates.multiLineTextPairs() : TextTemplates.singleLineTextPairs();
         Utils.fromPairs(pairs, (k,v) -> op.addChoice(k, v));
         op.selectFirst();
         return op;

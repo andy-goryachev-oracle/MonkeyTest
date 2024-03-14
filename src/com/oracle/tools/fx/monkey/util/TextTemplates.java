@@ -29,7 +29,7 @@ import java.util.Random;
 /**
  * Text Templates
  */
-public class Templates {
+public class TextTemplates {
     public static final String TWO_EMOJIS = "😊😇";
     public static final String CLUSTERS = "☝🏿☝🏿☝🏿🤦🏼‍♂️";
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
