@@ -47,7 +47,9 @@ public class FontOption extends BorderPane {
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
         FX.name(this, name);
-        property.bindBidirectional(p);
+        if (p != null) {
+            property.bindBidirectional(p);
+        }
 
         FX.name(fontField, name + "_FONT");
         fontField.getItems().setAll(collectFonts(allowNull));
@@ -58,6 +60,7 @@ public class FontOption extends BorderPane {
         FX.name(sizeField, name + "_SIZE");
         sizeField.getItems().setAll(
             1.0,
+            2.5,
             6.0,
             8.0,
             10.0,
@@ -80,6 +83,10 @@ public class FontOption extends BorderPane {
         setMargin(sizeField, new Insets(0, 0, 0, 2));
 
         setFont(property.get());
+    }
+
+    public SimpleObjectProperty<Font> getProperty() {
+        return property;
     }
 
     protected void update() {

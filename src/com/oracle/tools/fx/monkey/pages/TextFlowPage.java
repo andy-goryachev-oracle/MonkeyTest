@@ -39,12 +39,12 @@ import javafx.scene.text.TextFlow;
 import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.RegionOptions;
 import com.oracle.tools.fx.monkey.util.CheckBoxSelector;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.FontSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -57,7 +57,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class TextFlowPage extends TestPaneBase {
     private final ActionSelector contentOption;
-    private final FontSelector fontSelector;
+    private final FontOption fontOption;
     private final CheckBoxSelector showChars;
     private final CheckBoxSelector showCaretPaths;
     private final Label pickResult;
@@ -85,8 +85,8 @@ public class TextFlowPage extends TestPaneBase {
         contentOption.addChoice("Rich Text (Complex)", () -> setContent(createRichTextComplex()));
         contentOption.addChoice("Accadian", () -> setContent(Templates.AKKADIAN));
 
-        // FIX inline button, or use the FontOption with local or null property
-        fontSelector = new FontSelector("font", (f) -> updateText());
+        fontOption = new FontOption("font", false, null);
+        fontOption.getProperty().addListener((s,p,v) -> updateText());
 
         Button editButton = new Button("Enter Text");
         editButton.setOnAction((ev) -> {
@@ -104,10 +104,7 @@ public class TextFlowPage extends TestPaneBase {
         
         op.option("Content:", contentOption);
         
-        op.label("Font:");
-        op.option(fontSelector.fontNode());
-        op.label("Font Size:");
-        op.option(fontSelector.sizeNode());
+        op.option("Font:", fontOption);
         
         op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         
@@ -129,7 +126,7 @@ public class TextFlowPage extends TestPaneBase {
         setContent(textFlow);
         setOptions(op);
 
-        fontSelector.selectSystemFont();
+        fontOption.selectSystemFont();
     }
 
     private void updateText() {
@@ -149,7 +146,7 @@ public class TextFlowPage extends TestPaneBase {
     }
 
     private Font getFont() {
-        return fontSelector.getFont();
+        return fontOption.getFont();
     }
 
     private Node[] mkInlineNodes() {
