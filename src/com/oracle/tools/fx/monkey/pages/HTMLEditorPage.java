@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,17 +24,42 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import javafx.scene.Node;
 import javafx.scene.web.HTMLEditor;
+import com.oracle.tools.fx.monkey.options.TextChoiceOption;
+import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- *
+ * HTML Editor Page.
  */
-public class HtmlEditorPage extends TestPaneBase {
-    public HtmlEditorPage() {
-        FX.name(this, "HtmlEditorPage");
-        HTMLEditor ed = new HTMLEditor();
-        setContent(ed);
+public class HTMLEditorPage extends TestPaneBase {
+    private final HTMLEditor control;
+
+    public HTMLEditorPage() {
+        FX.name(this, "HTMLEditorPage");
+        control = new HTMLEditor();
+
+        OptionPane op = new OptionPane();
+        op.section("HTMLEditor");
+        op.option("HTML Text:", createHtmlTextOption());
+        ControlOptions.appendTo(op, control);
+
+        setOptions(op);
+        setContent(control);
+        // TODO set html text
+    }
+
+    private Node createHtmlTextOption() {
+        TextChoiceOption op = new TextChoiceOption("htmlText", true, null);
+        op.addChoice("Simple", "<html><body><h1>Simple HTML</h1>This is a <b>test</b>.</body></html>");
+        op.addChoice("<empty HTML>", "<html><body/></html>");
+        op.addChoice("<null>", null);
+        op.property().addListener((s, p, htmlText) -> {
+            control.setHtmlText(htmlText);
+        });
+        return op;
     }
 }

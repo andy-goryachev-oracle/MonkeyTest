@@ -45,9 +45,11 @@ public class TextChoiceOption extends BorderPane {
     private final SimpleStringProperty property = new SimpleStringProperty();
     private final ComboBox<Object> field;
 
-    public TextChoiceOption(String name, boolean allowEditButton, StringProperty prop) {
+    public TextChoiceOption(String name, boolean allowEditButton, StringProperty p) {
         FX.name(this, name);
-        property.bindBidirectional(prop);
+        if (p != null) {
+            property.bindBidirectional(p);
+        }
 
         field = new ComboBox<>();
         field.setMaxWidth(Double.MAX_VALUE);
@@ -62,7 +64,7 @@ public class TextChoiceOption extends BorderPane {
                 return text;
             }
         });
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
+        field.getSelectionModel().selectedItemProperty().addListener((pr) -> {
             String text = getSelectedText();
             property.set(text);
         });
@@ -76,6 +78,10 @@ public class TextChoiceOption extends BorderPane {
 
         setCenter(field);
         setMaxWidth(Double.MAX_VALUE);
+    }
+
+    public SimpleStringProperty property() {
+        return property;
     }
 
     private void editValue() {

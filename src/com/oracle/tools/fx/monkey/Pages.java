@@ -42,7 +42,7 @@ public class Pages {
             new DemoPage("ColorPicker", ColorPickerPage::new),
             new DemoPage("DatePicker", DatePickerPage::new),
             new DemoPage("HBox", HBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("HTMLEditor", HTMLEditorPage::new),
             // TODO Hyperlink
             // TODO InputField: DoubleField, IntegerField, WebColorField
             new DemoPage("Label", LabelPage::new),
