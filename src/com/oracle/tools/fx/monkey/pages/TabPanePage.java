@@ -72,7 +72,7 @@ public class TabPanePage extends TestPaneBase {
         op.option("Tab Max Height", Options.tabPaneConstraints("tabMaxHeight", control.tabMaxHeightProperty()));
         op.option("Tab Max Width", Options.tabPaneConstraints("tabMaxWidth", control.tabMaxWidthProperty()));
         op.option("Tab Min Height", Options.tabPaneConstraints("tabMinHeight", control.tabMinHeightProperty()));
-        op.option("Tab Min Height", Options.tabPaneConstraints("tabMinWidth", control.tabMinWidthProperty()));
+        op.option("Tab Min Width", Options.tabPaneConstraints("tabMinWidth", control.tabMinWidthProperty()));
         
         ControlOptions.appendTo(op, control);
 
