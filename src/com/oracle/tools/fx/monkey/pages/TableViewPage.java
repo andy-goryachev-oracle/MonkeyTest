@@ -59,6 +59,7 @@ import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * TableView page
@@ -112,15 +113,13 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.section("TableView");
 
         op.option("Columns:", createColumnsSelector("columns", control.getColumns()));
-        op.option(addColumnButton);
-        op.option(removeColumnButton);
+        op.option(Utils.buttons(addColumnButton, removeColumnButton));
         op.option("Column Resize Policy:", createColumnResizePolicy("columnResizePolicy", control.columnResizePolicyProperty()));
         op.option(new BooleanOption("editable", "editable", control.editableProperty()));
         op.option("Fixed Cell Size:", Options.fixedSizeOption("fixedCellSize", control.fixedCellSizeProperty()));
         op.option("Focus Model:", createFocusModelOptions("focusModel", control.focusModelProperty()));
         op.option("Items:", createItemsOptions("items", control.getItems()));
-        op.option(addDataItemButton);
-        op.option(clearDataItemsButton);
+        op.option(Utils.buttons(addDataItemButton, clearDataItemsButton));
         op.option("Placeholder: TODO", null); // TODO
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));

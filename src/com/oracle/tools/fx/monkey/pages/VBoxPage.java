@@ -46,6 +46,7 @@ import com.oracle.tools.fx.monkey.sheets.RegionOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * VBox Page.
@@ -74,8 +75,7 @@ public class VBoxPage extends TestPaneBase {
         op.section("VBox");
         op.option("Alignment:", new EnumOption<Pos>("alignment", Pos.class, box.alignmentProperty()));
         op.option("Children:", PaneContentOptions.createOptions(box.getChildren(), this::createBuilder));
-        op.option(addButton);
-        op.option(clearButton);
+        op.option(Utils.buttons(addButton, clearButton));
         op.option(new BooleanOption("fillHWidth", "fill width", box.fillWidthProperty()));
         op.option("Spacing:", Options.spacing("spacing", box.spacingProperty()));
 

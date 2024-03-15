@@ -24,6 +24,10 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -50,5 +54,21 @@ public class ImageTools {
         }
 
         return im;
+    }
+
+    public static Image createImage(String s, int w, int h) {
+        byte[] hash;
+        try {
+            hash = MessageDigest.getInstance("sha-256").digest(s.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            hash = new byte[3];
+        }
+        Color color = Color.rgb(hash[0] & 0xff, hash[1] & 0xff, hash[2] & 0xff);
+        Canvas c = new Canvas(w, h);
+        GraphicsContext g = c.getGraphicsContext2D();
+        g.setFill(color);
+        g.fillRect(0, 0, w, h);
+        return c.snapshot(null, null);
     }
 }

@@ -25,19 +25,14 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.function.BiConsumer;
+import javafx.scene.Node;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 
 /**
  * Monkey Tester Utilities
  */
 public class Utils {
-    public static Object[] combine(Object[] src, Object ... pairs) {
-        int sz = src.length + pairs.length;
-        Object[] rv = new Object[sz];
-        System.arraycopy(src, 0, rv, 0, src.length);
-        System.arraycopy(pairs, 0, rv, src.length, pairs.length);
-        return rv;
-    }
-
     public static boolean isBlank(Object x) {
         if(x == null) {
             return true;
@@ -51,5 +46,11 @@ public class Utils {
             String v = (String)pairs[i++];
             client.accept(k, v);
         }
+    }
+
+    public static Pane buttons(Node ... nodes) {
+        HBox b = new HBox(nodes);
+        b.setSpacing(2);
+        return b;
     }
 }
