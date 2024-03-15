@@ -25,31 +25,14 @@
 package com.oracle.tools.fx.monkey.options;
 
 import javafx.beans.property.Property;
-import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.util.Formats;
 
 /**
- * Double Option Bound to a Property
+ * Double Option Bound to a Property.
  */
 public class DoubleOption extends ObjectOption<Number> {
     public DoubleOption(String name, Property<Number> p) {
         super(name, p);
-    }
-
-    public static DoubleOption forRegion(String name, Property<Number> p) {
-        DoubleOption d = new DoubleOption(name, p);
-        d.addChoice("USE_COMPUTED_SIZE (-1)", Region.USE_COMPUTED_SIZE);
-        d.addChoice("USE_PREF_SIZE (-∞)", Region.USE_PREF_SIZE);
-        d.addChoice("0", Double.valueOf(0));
-        d.addChoice("10", 10.0);
-        d.addChoice("33.3", 33.3);
-        d.addChoice("100", 100.0);
-        d.addChoice("Double.MAX_VALUE", Double.MAX_VALUE);
-        d.addChoice("Double.MIN_VALUE", Double.MIN_VALUE);
-        d.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
-        d.addChoice("Double.NaN", Double.NaN);
-        d.selectInitialValue();
-        return d;
     }
 
     public static DoubleOption of(String name, Property<Number> p, double ... values) {
@@ -60,9 +43,5 @@ public class DoubleOption extends ObjectOption<Number> {
         }
         d.selectInitialValue();
         return d;
-    }
-
-    public static DoubleOption lineSpacing(String name, Property<Number> p) {
-        return of(name, p, 0, 0.5, 1, 2, 3.14, 10, 33.33, 100);
     }
 }

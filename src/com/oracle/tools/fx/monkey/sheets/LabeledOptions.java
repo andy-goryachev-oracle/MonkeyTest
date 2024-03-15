@@ -30,12 +30,10 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
-import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
-import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
@@ -51,7 +49,7 @@ public class LabeledOptions {
         op.option("Font:", new FontOption("font", false, label.fontProperty()));
         op.option("Graphic:", new GraphicOption("graphic", label.graphicProperty()));
         op.option("Padding:", new InsetsOption("padding", false, label.paddingProperty()));
-        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", label.lineSpacingProperty()));
+        op.option("Line Spacing:", Options.lineSpacing("lineSpacing", label.lineSpacingProperty()));
         op.option("Text:", Options.textOption("text", multiLine, true, label.textProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, label.textAlignmentProperty()));
         op.option("Text Fill: TODO", null); // TODO text fill
@@ -60,7 +58,6 @@ public class LabeledOptions {
         op.option(new BooleanOption("underline", "underline", label.underlineProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", label.wrapTextProperty()));
 
-        // control
         ControlOptions.appendTo(op, label);
     }
 }

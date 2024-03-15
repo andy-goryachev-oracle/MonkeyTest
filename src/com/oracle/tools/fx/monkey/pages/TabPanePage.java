@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,6 +36,10 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TabPane.TabDragPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -49,6 +54,7 @@ public class TabPanePage extends TestPaneBase {
         FX.name(this, "TabPanePage");
 
         control = new TabPane();
+        // TODO graphic, other Tab propertis in the context menu
         control.getTabs().addAll(
             new Tab("One", mkContent("Tab One Content")),
             new Tab("Two", mkContent("Tab Two Content")),
@@ -56,16 +62,22 @@ public class TabPanePage extends TestPaneBase {
             new Tab("Four", mkContent("Tab Four Content"))
         );
 
-        // TODO options
-        control.setTabDragPolicy(TabDragPolicy.REORDER);
-        control.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
-
-        OptionPane p = new OptionPane();
-        p.option("TODO", null);
-        //p.option(promptChoice.node());
+        OptionPane op = new OptionPane();
+        op.section("TabPane");
+        op.option(new BooleanOption("rotateGraphic", "rotate graphic", control.rotateGraphicProperty()));
+        op.option("Selection Model: TODO", null); // FIX
+        op.option("Side:", new EnumOption<Side>("side", true, Side.class, control.sideProperty()));
+        op.option("Tab Closing Policy:", new EnumOption<TabClosingPolicy>("tabClosingPolicy", true, TabClosingPolicy.class, control.tabClosingPolicyProperty()));
+        op.option("Tab Drag Policy:", new EnumOption<TabDragPolicy>("tabDragPolicy", true, TabDragPolicy.class, control.tabDragPolicyProperty()));
+        op.option("Tab Max Height", Options.tabPaneConstraints("tabMaxHeight", control.tabMaxHeightProperty()));
+        op.option("Tab Max Width", Options.tabPaneConstraints("tabMaxWidth", control.tabMaxWidthProperty()));
+        op.option("Tab Min Height", Options.tabPaneConstraints("tabMinHeight", control.tabMinHeightProperty()));
+        op.option("Tab Min Height", Options.tabPaneConstraints("tabMinWidth", control.tabMinWidthProperty()));
+        
+        ControlOptions.appendTo(op, control);
 
         setContent(control);
-        setOptions(p);
+        setOptions(op);
     }
 
     private Node mkContent(String text) {

@@ -38,7 +38,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextBoundsType;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
-import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
@@ -50,7 +49,7 @@ import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Text Page
+ * Text Page.
  */
 public class TextPage extends TestPaneBase {
     private final Text text;
@@ -78,7 +77,7 @@ public class TextPage extends TestPaneBase {
         op.option("Caret Position:", new IntOption("caretPosition", -1, Integer.MAX_VALUE, text.caretPositionProperty()));
         op.option("Font:", new FontOption("font", false, text.fontProperty()));
         op.option("Font Smoothing:", new EnumOption<>("fontSmoothing", FontSmoothingType.class, text.fontSmoothingTypeProperty()));
-        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", text.lineSpacingProperty()));
+        op.option("Line Spacing:", Options.lineSpacing("lineSpacing", text.lineSpacingProperty()));
         op.option("Selection Start:", new IntOption("selectionStart", -1, Integer.MAX_VALUE, text.selectionStartProperty()));
         op.option("Selection End:", new IntOption("selectionEnd", -1, Integer.MAX_VALUE, text.selectionEndProperty()));
         op.option("Selection Fill: TODO", null); // TODO

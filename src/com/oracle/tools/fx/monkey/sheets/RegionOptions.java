@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.sheets;
 import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.BorderOption;
-import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
@@ -38,29 +37,19 @@ public class RegionOptions {
     public static void appendTo(OptionPane op, Region region) {
         op.section("Region");
         op.option("Background: TODO", null); // TODO
-
         op.option("Border:", new BorderOption("border", region.borderProperty()));
-
         op.option(new BooleanOption("cacheShape", "cache shape", region.cacheShapeProperty()));
-
         op.option(new BooleanOption("centerShape", "center shape", region.centerShapeProperty()));
-
-        op.option("Max Height:", DoubleOption.forRegion("maxHeight", region.maxHeightProperty()));
-        op.option("Max Width:", DoubleOption.forRegion("maxWidth", region.maxWidthProperty()));
-        op.option("Min Height:", DoubleOption.forRegion("minHeight", region.minHeightProperty()));
-        op.option("Min Width:", DoubleOption.forRegion("minWidth", region.minWidthProperty()));
-
+        op.option("Max Height:", Options.forRegion("maxHeight", region.maxHeightProperty()));
+        op.option("Max Width:", Options.forRegion("maxWidth", region.maxWidthProperty()));
+        op.option("Min Height:", Options.forRegion("minHeight", region.minHeightProperty()));
+        op.option("Min Width:", Options.forRegion("minWidth", region.minWidthProperty()));
         op.option("Opaque Insets:", new InsetsOption("opaqueInsets", true, region.opaqueInsetsProperty()));
-
         op.option("Padding:", new InsetsOption("padding", false, region.paddingProperty()));
-
-        op.option("Pref Height:", DoubleOption.forRegion("prefHeight", region.prefHeightProperty()));
-        op.option("Pref Width:", DoubleOption.forRegion("prefWidth", region.prefWidthProperty()));
-
+        op.option("Pref Height:", Options.forRegion("prefHeight", region.prefHeightProperty()));
+        op.option("Pref Width:", Options.forRegion("prefWidth", region.prefWidthProperty()));
         op.option(new BooleanOption("scaleShape", "scale shape", region.scaleShapeProperty()));
-
         op.option("Shape: TODO", null); // TODO
-
         op.option(new BooleanOption("snapToPixel", "snap to pixel", region.snapToPixelProperty()));
 
         NodeOptions.appendTo(op, region);

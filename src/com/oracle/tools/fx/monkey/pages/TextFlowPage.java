@@ -38,22 +38,22 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
-import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionOptions;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
-import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * TextFlow Page
+ * TextFlow Page.
  */
 public class TextFlowPage extends TestPaneBase {
     private final ActionSelector contentOption;
@@ -101,26 +101,21 @@ public class TextFlowPage extends TestPaneBase {
 
         OptionPane op = new OptionPane();
         op.section("TextFlow");
-        
         op.option("Content:", contentOption);
-        
         op.option("Font:", fontOption);
-        
-        op.option("Line Spacing:", DoubleOption.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
-        
+        op.option("Line Spacing:", Options.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         op.option("Tab Size:", IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
-
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
-        //
+
         op.separator();
         op.option(showChars);
         op.option(showCaretPaths);
+
         op.separator();
         op.option("Pick Result:", pickResult);
         op.option("Text.hitTest:", hitInfo2);
         op.option("TextFlow.hitTest:", hitInfo);
 
-        // region
         RegionOptions.appendTo(op, textFlow);
 
         setContent(textFlow);
