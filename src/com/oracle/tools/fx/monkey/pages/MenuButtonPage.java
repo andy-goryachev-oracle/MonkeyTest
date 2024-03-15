@@ -33,7 +33,7 @@ import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
+import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -54,7 +54,7 @@ public class MenuButtonPage extends TestPaneBase {
         op.section("MenuButton");
         op.option("Items:", createItemsOptions("items", control.getItems()));
         op.option("Popup Side:", new EnumOption<Side>("popupSide", true, Side.class, control.popupSideProperty()));
-        LabeledOptions.appendTo(op, "ButtonBase", false, control);
+        LabeledPropertySheet.appendTo(op, "ButtonBase", false, control);
 
         setContent(control);
         setOptions(op);

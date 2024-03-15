@@ -50,7 +50,7 @@ import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -114,7 +114,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         op.separator();
         op.option(jumpButton);
         op.option(refresh);
-        ControlOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
         setOptions(op);
         setContent(new BorderPane(control));
     }

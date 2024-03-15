@@ -51,7 +51,7 @@ import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
@@ -133,7 +133,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(refresh);
 
         // control
-        ControlOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);

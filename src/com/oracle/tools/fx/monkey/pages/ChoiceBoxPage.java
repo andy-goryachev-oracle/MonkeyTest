@@ -26,7 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -60,7 +60,7 @@ public class ChoiceBoxPage extends TestPaneBase {
         op.option("Selection Model: TODO", null); // TODO
         op.option("Value: TODO", null); // TODO
 
-        ControlOptions.appendTo(op, choiceBox);
+        ControlPropertySheet.appendTo(op, choiceBox);
 
         setContent(choiceBox);
         setOptions(op);

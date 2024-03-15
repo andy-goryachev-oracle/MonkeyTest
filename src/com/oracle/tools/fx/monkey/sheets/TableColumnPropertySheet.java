@@ -31,7 +31,8 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 /**
  * TreeTableView/TableView (Selected) Column Property Sheet
  */
-public class TableColumnOptions {
+// TODO this is not used
+public class TableColumnPropertySheet {
 //    public TableColumnOptions(String name, ObjectProperty<TableColumn> p) {
 //        super(name, (v) -> {
 //            var col = p.get();

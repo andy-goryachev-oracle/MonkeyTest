@@ -30,7 +30,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
-import com.oracle.tools.fx.monkey.sheets.TextInputControlOptions;
+import com.oracle.tools.fx.monkey.sheets.TextInputControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -61,7 +61,7 @@ public class TextFieldPage extends TestPaneBase {
         op.separator();
         op.option(inScroll);
         
-        TextInputControlOptions.appendTo(op, false, textField);
+        TextInputControlPropertySheet.appendTo(op, false, textField);
 
         setContent(textField);
         setOptions(op);

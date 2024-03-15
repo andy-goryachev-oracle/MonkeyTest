@@ -42,7 +42,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.sheets.RegionOptions;
+import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -116,7 +116,7 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text.hitTest:", hitInfo2);
         op.option("TextFlow.hitTest:", hitInfo);
 
-        RegionOptions.appendTo(op, textFlow);
+        RegionPropertySheet.appendTo(op, textFlow);
 
         setContent(textFlow);
         setOptions(op);

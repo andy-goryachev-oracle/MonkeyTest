@@ -24,21 +24,24 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.scene.control.Control;
+import javafx.scene.control.TextInputControl;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.FontOption;
+import com.oracle.tools.fx.monkey.options.PromptTextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
- * Control Property Sheet.
+ * Text Input Control Property Sheet.
  */
-public class ControlOptions {
-    public static void appendTo(OptionPane op, Control control) {
-        op.section("Control");
-        op.option("Context Menu: TODO", null);
-        // TODO context menu
-        op.option("Tooltip: TODO", null);
-        // TODO tooltip
+public class TextInputControlPropertySheet {
+    public static void appendTo(OptionPane op, boolean multiLine, TextInputControl control) {
+        op.section("TextInputControl");
+        op.option(new BooleanOption("editable", "editable", control.editableProperty()));
+        op.option("Font:", new FontOption("font", false, control.fontProperty()));
+        op.option("Prompt Text:", new PromptTextOption("promptText", true, control.promptTextProperty()));
+        op.option("Text:", Options.textOption("text", multiLine, true, control.textProperty()));
+        op.option("Text Formatter: TODO", null); // TODO
 
-        // region
-        RegionOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
     }
 }

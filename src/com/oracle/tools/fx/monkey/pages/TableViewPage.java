@@ -50,7 +50,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
@@ -141,7 +141,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         //TableColumnOptions.appendTo(op, currentColumn);
 
         // control option sheet
-        ControlOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);

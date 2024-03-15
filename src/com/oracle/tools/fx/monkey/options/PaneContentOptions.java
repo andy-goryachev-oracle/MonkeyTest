@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.sheets;
+package com.oracle.tools.fx.monkey.options;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 
 /**
- * Pane Children Options.
+ * Pane content Options.
  */
 public class PaneContentOptions {
     public static Node createOptions(ObservableList<Node> children, Supplier<Builder> b) {

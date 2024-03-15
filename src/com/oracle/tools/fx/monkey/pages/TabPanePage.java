@@ -38,7 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -74,7 +74,7 @@ public class TabPanePage extends TestPaneBase {
         op.option("Tab Min Height", Options.tabPaneConstraints("tabMinHeight", control.tabMinHeightProperty()));
         op.option("Tab Min Width", Options.tabPaneConstraints("tabMinWidth", control.tabMinWidthProperty()));
         
-        ControlOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);

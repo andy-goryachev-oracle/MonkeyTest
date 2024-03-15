@@ -43,6 +43,6 @@ public class ChartPropertySheet {
         op.option("Title:", Options.textOption("text", false, true, chart.titleProperty()));
         op.option("Title Side:", new EnumOption<Side>("titleSide", true, Side.class, chart.titleSideProperty()));
 
-        RegionOptions.appendTo(op, chart);
+        RegionPropertySheet.appendTo(op, chart);
     }
 }

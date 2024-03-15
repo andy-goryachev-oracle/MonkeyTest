@@ -33,7 +33,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
+import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -55,7 +55,7 @@ public class TitledPanePage extends TestPaneBase {
         op.option(new BooleanOption("collapsible", "collapsible", control.collapsibleProperty()));
         op.option("Content:", createContentOptions("content", control.contentProperty()));
         op.option(new BooleanOption("expanded", "expanded", control.expandedProperty()));
-        LabeledOptions.appendTo(op, "Labeled", false, control);
+        LabeledPropertySheet.appendTo(op, "Labeled", false, control);
 
         setContent(control);
         setOptions(op);

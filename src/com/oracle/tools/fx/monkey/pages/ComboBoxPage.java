@@ -34,7 +34,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import com.oracle.tools.fx.monkey.sheets.ComboBoxBaseOptions;
+import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -107,7 +107,7 @@ public class ComboBoxPage extends TestPaneBase {
         op.option(changeCountButton);
 
         op.section("ComboBoxBase");
-        ComboBoxBaseOptions.appendTo(op, comboBox);
+        ComboBoxBasePropertySheet.appendTo(op, comboBox);
 
         setContent(b);
         setOptions(op);

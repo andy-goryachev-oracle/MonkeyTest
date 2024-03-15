@@ -40,7 +40,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 /**
  * Labeled Control Property Sheet.
  */
-public class LabeledOptions {
+public class LabeledPropertySheet {
     public static void appendTo(OptionPane op, String section, boolean multiLine, Labeled label) {
         op.section(section);
         op.option("Alignment:", new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
@@ -58,6 +58,6 @@ public class LabeledOptions {
         op.option(new BooleanOption("underline", "underline", label.underlineProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", label.wrapTextProperty()));
 
-        ControlOptions.appendTo(op, label);
+        ControlPropertySheet.appendTo(op, label);
     }
 }

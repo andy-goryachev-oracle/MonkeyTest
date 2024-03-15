@@ -25,7 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.Label;
-import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
+import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -48,7 +48,7 @@ public class LabelPage extends TestPaneBase {
 //        });
 
         OptionPane op = new OptionPane();
-        LabeledOptions.appendTo(op, "Label", true, label);
+        LabeledPropertySheet.appendTo(op, "Label", true, label);
         setOptions(op);
     }
 }

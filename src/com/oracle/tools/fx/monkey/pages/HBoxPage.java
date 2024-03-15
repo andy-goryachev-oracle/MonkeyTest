@@ -40,9 +40,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.sheets.PaneContentOptions;
-import com.oracle.tools.fx.monkey.sheets.RegionOptions;
+import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -79,7 +79,7 @@ public class HBoxPage extends TestPaneBase {
         op.option(new BooleanOption("fillHeight", "fill height", box.fillHeightProperty()));
         op.option("Spacing:", Options.spacing("spacing", box.spacingProperty()));
 
-        RegionOptions.appendTo(op, box);
+        RegionPropertySheet.appendTo(op, box);
 
         BorderPane bp = new BorderPane(box);
         bp.setPadding(new Insets(0, 10, 0, 0));

@@ -32,7 +32,7 @@ import javafx.scene.web.WebView;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.sheets.NodeOptions;
+import com.oracle.tools.fx.monkey.sheets.NodePropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -80,7 +80,7 @@ public class WebViewPage extends TestPaneBase {
         op.option("Pref Height", Options.tabPaneConstraints("prefHeight", webView.prefHeightProperty()));
         op.option("Pref Width", Options.tabPaneConstraints("prefWidth", webView.prefWidthProperty()));
         op.option("Zoom:", DoubleOption.of("zoom", webView.zoomProperty(), 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0));
-        NodeOptions.appendTo(op, webView);
+        NodePropertySheet.appendTo(op, webView);
 
         BorderPane bp = new BorderPane();
         bp.setTop(addressField);

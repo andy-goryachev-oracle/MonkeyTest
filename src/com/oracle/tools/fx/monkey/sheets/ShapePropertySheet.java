@@ -35,28 +35,19 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 /**
  * Shape Properties Sheet
  */
-public class ShapeOptions {
+public class ShapePropertySheet {
     public static void appendTo(OptionPane op, Shape shape) {
         op.section("Shape");
-
         op.option("Fill: TODO", null); // TODO paint
-
         op.option(new BooleanOption("smooth", "smooth", shape.smoothProperty()));
-
         op.option("Stroke: TODO", null); // TODO paint
-
         op.option("Stroke Dash Offset: TODO", null); // TODO double
-
         op.option("Stroke Line Cap:", new EnumOption<>("strokeLineCap", StrokeLineCap.class, shape.strokeLineCapProperty()));
-
         op.option("Stroke Line Join:", new EnumOption<>("strokeLineJoin", StrokeLineJoin.class, shape.strokeLineJoinProperty()));
-
         op.option("Stroke Miter Limit: TODO", null); // TODO double
-
         op.option("Stroke Type:", new EnumOption<>("strokeType", StrokeType.class, shape.strokeTypeProperty()));
-
         op.option("Stroke width: TODO", null); // TODO double
 
-        NodeOptions.appendTo(op, shape);
+        NodePropertySheet.appendTo(op, shape);
     }
 }

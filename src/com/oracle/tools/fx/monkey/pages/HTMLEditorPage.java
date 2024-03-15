@@ -27,7 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.Node;
 import javafx.scene.web.HTMLEditor;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -45,7 +45,7 @@ public class HTMLEditorPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.section("HTMLEditor");
         op.option("HTML Text:", createHtmlTextOption());
-        ControlOptions.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control);
 
         setOptions(op);
         setContent(control);

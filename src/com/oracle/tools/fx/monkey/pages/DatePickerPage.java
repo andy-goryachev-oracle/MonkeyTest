@@ -26,7 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.time.LocalDate;
 import javafx.scene.control.DatePicker;
-import com.oracle.tools.fx.monkey.sheets.ComboBoxBaseOptions;
+import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -44,7 +44,7 @@ public class DatePickerPage extends TestPaneBase {
 
         OptionPane op = new OptionPane();
         op.section("ColorPicker");
-        ComboBoxBaseOptions.appendTo(op, control);
+        ComboBoxBasePropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);

@@ -42,7 +42,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.sheets.ShapeOptions;
+import com.oracle.tools.fx.monkey.sheets.ShapePropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -93,7 +93,7 @@ public class TextPage extends TestPaneBase {
         op.option(showChars);
         op.option("Text.hitTest:", hitInfo);
 
-        ShapeOptions.appendTo(op, text);
+        ShapePropertySheet.appendTo(op, text);
 
         scroll = new ScrollPane();
         scroll.setBorder(Border.EMPTY);
