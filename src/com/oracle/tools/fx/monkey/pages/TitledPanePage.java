@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -38,42 +39,29 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * TitledPane Page
+ * TitledPane Page.
  */
 public class TitledPanePage extends TestPaneBase {
-    private final TitledPane titledPane;
+    private final TitledPane control;
 
     public TitledPanePage() {
         FX.name(this, "TitledPane");
 
-        titledPane = new TitledPane();
-
-//        TextChoiceOption textOption = Options.singleLineTextOption("text", true, titledPane.textProperty());
-//        textOption.removeChoice("Writing Systems");
-
-        ObjectOption<Node> contentOption = new ObjectOption<>("content", titledPane.contentProperty());
-        contentOption.addChoiceSupplier("Label", () -> new Label("Label"));
-        contentOption.addChoiceSupplier("AnchorPane", () -> makeAnchorPane());
-        contentOption.addChoiceSupplier("<null>", () -> null);
+        control = new TitledPane();
 
         OptionPane op = new OptionPane();
         op.section("TitledPane");
-        op.option(new BooleanOption("animated", "animated", titledPane.animatedProperty()));
-        op.option(new BooleanOption("collapsible", "collapsible", titledPane.collapsibleProperty()));
-//        op.option("Text:", textOption);
-        op.option("Content:", contentOption);
-        op.option(new BooleanOption("expanded", "expanded", titledPane.expandedProperty()));
+        op.option(new BooleanOption("animated", "animated", control.animatedProperty()));
+        op.option(new BooleanOption("collapsible", "collapsible", control.collapsibleProperty()));
+        op.option("Content:", createContentOptions("content", control.contentProperty()));
+        op.option(new BooleanOption("expanded", "expanded", control.expandedProperty()));
+        LabeledOptions.appendTo(op, "Labeled", false, control);
 
-        op.section("Labeled");
-        LabeledOptions.appendTo(op, false, titledPane);
-
-        setContent(titledPane);
+        setContent(control);
         setOptions(op);
-
-        contentOption.selectFirst();
     }
 
-    protected Node makeAnchorPane() {
+    private Node makeAnchorPane() {
         VBox b = new VBox(new TextField("First"), new TextField("Second"));
         AnchorPane p = new AnchorPane(b);
         AnchorPane.setTopAnchor(b, 10.0);
@@ -81,5 +69,14 @@ public class TitledPanePage extends TestPaneBase {
         AnchorPane.setLeftAnchor(b, 100.0);
         AnchorPane.setRightAnchor(b, 50.0);
         return p;
+    }
+
+    private Node createContentOptions(String name, ObjectProperty<Node> p) {
+        ObjectOption<Node> s = new ObjectOption<>(name, p);
+        s.addChoiceSupplier("Label", () -> new Label("Label"));
+        s.addChoiceSupplier("AnchorPane", () -> makeAnchorPane());
+        s.addChoiceSupplier("<null>", () -> null);
+        s.selectFirst();
+        return s;
     }
 }

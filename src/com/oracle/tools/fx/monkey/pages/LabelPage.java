@@ -48,8 +48,7 @@ public class LabelPage extends TestPaneBase {
 //        });
 
         OptionPane op = new OptionPane();
-        op.section("Label");
-        LabeledOptions.appendTo(op, true, label);
+        LabeledOptions.appendTo(op, "Label", true, label);
         setOptions(op);
     }
 }

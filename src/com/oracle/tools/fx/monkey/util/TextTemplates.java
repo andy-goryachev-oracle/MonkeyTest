@@ -37,6 +37,7 @@ public class TextTemplates {
 
     public static Object[] multiLineTextPairs() {
         return new Object[] {
+            "Short", "short",
             "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
             "Right-to-Left", RIGHT_TO_LEFT,
             "Writing Systems", WritingSystemsDemo.getText(false),
@@ -48,7 +49,6 @@ public class TextTemplates {
             "Newlines", "\n1\n2\n\n3\n\n\n4\n\n\n\n5\n",
             "Long CJK",  createLongCJK(),
             "Single Newline", "\n",
-            "Short", "yo",
             "<empty>", "",
             "<null>", null,
        };
@@ -56,6 +56,7 @@ public class TextTemplates {
 
     public static Object[] singleLineTextPairs() {
         return new Object[] {
+            "Short", "short",
             "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
             "Right-to-Left", "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די",
             "Tibetan", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ",
@@ -65,7 +66,6 @@ public class TextTemplates {
             "Newlines and Tabs", "1\t\n2\r3\r\n4",
             "Single Tab", "\t",
             "Emojis", "[🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]",
-            "Short", "yo",
             "<empty>", "",
             "<null>", null,
         };

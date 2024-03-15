@@ -43,7 +43,8 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Labeled Control Property Sheet.
  */
 public class LabeledOptions {
-    public static void appendTo(OptionPane op, boolean multiLine, Labeled label) {
+    public static void appendTo(OptionPane op, String section, boolean multiLine, Labeled label) {
+        op.section(section);
         op.option("Alignment:", new EnumOption<>("alignment", Pos.class, label.alignmentProperty()));
         op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, label.contentDisplayProperty()));
         op.option("Ellipsis String:", new TextOption("ellipsisString", label.ellipsisStringProperty()));

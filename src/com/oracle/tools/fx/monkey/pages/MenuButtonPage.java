@@ -24,34 +24,59 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import javafx.collections.ObservableList;
+import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import com.oracle.tools.fx.monkey.sheets.ControlOptions;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.sheets.LabeledOptions;
+import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- *
+ * MenuButton Page.
  */
 public class MenuButtonPage extends TestPaneBase {
     private final MenuButton control;
 
     public MenuButtonPage() {
         control = new MenuButton();
-        // TODO
-        control.setText("Text");
+
+        control.setText("Menu Button");
         control.getItems().add(new MenuItem("Edit"));
-        setContent(control);
 
         OptionPane op = new OptionPane();
         op.section("MenuButton");
-        // TODO popup side
-        // TODO items
-        // TODO graphic
-        // TODO all button base properties
+        op.option("Items:", createItemsOptions("items", control.getItems()));
+        op.option("Popup Side:", new EnumOption<Side>("popupSide", true, Side.class, control.popupSideProperty()));
+        LabeledOptions.appendTo(op, "ButtonBase", false, control);
 
-        // control
-        ControlOptions.appendTo(op, control);
+        setContent(control);
         setOptions(op);
+    }
+
+    private Supplier<List<MenuItem>> mk(int count) {
+        return () -> {
+            ArrayList<MenuItem> rv = new ArrayList(count);
+            for (int i = 0; i < count; i++) {
+                rv.add(new MenuItem("Item_" + (i + 1)));
+            }
+            return rv;
+        };
+    }
+
+    private Node createItemsOptions(String name, ObservableList<MenuItem> items) {
+        ObjectSelector<List<MenuItem>> s = new ObjectSelector<>(name, items::setAll);
+        s.addChoiceSupplier("1 Item", mk(1));
+        s.addChoiceSupplier("10 Items", mk(10));
+        s.addChoiceSupplier("1,000 Items", mk(1000));
+        s.addChoiceSupplier("<empty>", mk(0));
+        s.selectFirst();
+        return s;
     }
 }

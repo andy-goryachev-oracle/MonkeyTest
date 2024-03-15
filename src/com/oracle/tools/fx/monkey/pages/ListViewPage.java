@@ -66,10 +66,9 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class ListViewPage extends TestPaneBase implements HasSkinnable {
     private final ListView<Object> control;
-    private final Callback defaultCellFactory;
-    private final FocusModel<Object> defaultFocusModel;
+    private final Callback originalCellFactory;
+    private final FocusModel<Object> originalFocusModel;
     private final MultipleSelectionModel<Object> originalSelectionModel;
-    private MultipleSelectionModel<Object> defaultSelectionModel;
 
     public ListViewPage() {
         FX.name(this, "ListViewPage");
@@ -80,9 +79,8 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
             int ix = ev.getIndex();
             ev.getSource().getItems().set(ix, ev.getNewValue());
         });
-        defaultFocusModel = control.getFocusModel();
-        defaultSelectionModel = control.getSelectionModel();
-        defaultCellFactory = control.getCellFactory();
+        originalFocusModel = control.getFocusModel();
+        originalCellFactory = control.getCellFactory();
         originalSelectionModel = control.getSelectionModel();
 
         Button addButton = new Button("Add Item");
@@ -165,7 +163,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
     private Node createCellFactoryOptions() {
         ObjectOption<Callback> op = new ObjectOption("cellFactory", control.cellFactoryProperty());
-        op.addChoice("<default>", defaultCellFactory);
+        op.addChoice("<default>", originalCellFactory);
         op.addChoiceSupplier("TextFieldListCell", () -> TextFieldListCell.forListView());
         op.addChoiceSupplier("Large Icon", () -> {
             return (r) -> {
@@ -214,7 +212,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
 
     private Node createFocusModelOptions(String name, ObjectProperty<FocusModel<Object>> p) {
         ObjectOption<FocusModel<Object>> s = new ObjectOption<>(name, p);
-        s.addChoice("<default>", defaultFocusModel);
+        s.addChoice("<default>", originalFocusModel);
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
