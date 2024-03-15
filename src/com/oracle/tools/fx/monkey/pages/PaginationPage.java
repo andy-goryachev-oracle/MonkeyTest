@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,13 +25,54 @@
 
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.scene.Node;
+import javafx.scene.control.Pagination;
+import javafx.scene.image.ImageView;
+import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.ImageTools;
+import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * Pagination Control Page.
  */
 public class PaginationPage extends TestPaneBase {
+    private final Pagination control;
+
     public PaginationPage() {
         super("PaginationPage");
+        
+        control = new Pagination();
+        
+        OptionPane op = new OptionPane();
+        op.section("Pagination");
+        op.option("Current Page Index:", new IntOption("currentPageIndex", 0, Integer.MAX_VALUE, control.currentPageIndexProperty()));
+        op.option("Max Page Indicator Count:", new IntOption("maxPageIndicatorCount", 0, Integer.MAX_VALUE, control.maxPageIndicatorCountProperty()));
+        // TODO INDETERMINATE
+        op.option("Page Count:", new IntOption("pageCount", 1, Integer.MAX_VALUE, control.pageCountProperty()));
+        op.option("Page Factory:", createPageFactoryOptions("pageFactory", control.pageFactoryProperty()));
+        
+        ControlPropertySheet.appendTo(op, control);
+        
+        setContent(control);
+        setOptions(op);
+    }
+    
+    private Callback<Integer, Node> createImagesFactory() {
+        return (ix) -> {
+            String s = String.valueOf(ix);
+            return new ImageView(ImageTools.createImage(s, 256, 256));
+        };
+    }
+
+    private Node createPageFactoryOptions(String name, ObjectProperty<Callback<Integer, Node>> p) {
+        ObjectOption<Callback<Integer, Node>> op = new ObjectOption<>(name, p);
+        op.addChoice("Images", createImagesFactory()); 
+        op.addChoice("<null>", null);
+        return op;
     }
 }
