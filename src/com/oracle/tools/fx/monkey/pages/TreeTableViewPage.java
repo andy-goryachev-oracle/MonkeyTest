@@ -43,7 +43,6 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeTableView.ResizeFeatures;
-import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.Background;
@@ -69,14 +68,11 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     private final TreeTableView<DataRow> control;
-    private final TreeTableViewSelectionModel<DataRow> originalSelectionModel;
-    //TODO private final Callback<TreeTableColumn<String, String>, TreeTableCell<String, String>> defaultCellFactory;
 
     public TreeTableViewPage() {
         FX.name(this, "TreeTableViewPage");
 
         control = new TreeTableView<>();
-        originalSelectionModel = control.getSelectionModel();
 
         Button addDataItemButton = new Button("Add Data Item");
         addDataItemButton.setOnAction((ev) -> {
@@ -445,10 +441,11 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     private static record SelectionChoice(boolean isNull, boolean isMultiple, boolean isCells) { } 
 
     private Node createSelectionModelOptions(String name) {
+        var original = control.getSelectionModel();
         ObjectSelector<SelectionChoice> s = new ObjectSelector<>(name, (v) -> {
-            control.setSelectionModel(v.isNull() ? null : originalSelectionModel);
-            originalSelectionModel.setSelectionMode(v.isMultiple() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
-            originalSelectionModel.setCellSelectionEnabled(v.isCells());
+            control.setSelectionModel(v.isNull() ? null : original);
+            original.setSelectionMode(v.isMultiple() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+            original.setCellSelectionEnabled(v.isCells());
         });
         s.addChoice("Single Row", new SelectionChoice(false, false, false));
         s.addChoice("Multiple Rows", new SelectionChoice(false, true, false));

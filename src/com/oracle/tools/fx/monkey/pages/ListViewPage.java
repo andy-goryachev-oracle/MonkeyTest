@@ -66,9 +66,6 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class ListViewPage extends TestPaneBase implements HasSkinnable {
     private final ListView<Object> control;
-    private final Callback originalCellFactory;
-    private final FocusModel<Object> originalFocusModel;
-    private final MultipleSelectionModel<Object> originalSelectionModel;
 
     public ListViewPage() {
         FX.name(this, "ListViewPage");
@@ -79,9 +76,6 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
             int ix = ev.getIndex();
             ev.getSource().getItems().set(ix, ev.getNewValue());
         });
-        originalFocusModel = control.getFocusModel();
-        originalCellFactory = control.getCellFactory();
-        originalSelectionModel = control.getSelectionModel();
 
         Button addButton = new Button("Add Item");
         addButton.setOnAction((ev) -> {
@@ -162,8 +156,9 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     }
 
     private Node createCellFactoryOptions() {
+        var original = control.getCellFactory();
         ObjectOption<Callback> op = new ObjectOption("cellFactory", control.cellFactoryProperty());
-        op.addChoice("<default>", originalCellFactory);
+        op.addChoice("<default>", original);
         op.addChoiceSupplier("TextFieldListCell", () -> TextFieldListCell.forListView());
         op.addChoiceSupplier("Large Icon", () -> {
             return (r) -> {
@@ -211,17 +206,19 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     }
 
     private Node createFocusModelOptions(String name, ObjectProperty<FocusModel<Object>> p) {
+        var original = control.getFocusModel();
         ObjectOption<FocusModel<Object>> s = new ObjectOption<>(name, p);
-        s.addChoice("<default>", originalFocusModel);
+        s.addChoice("<default>", original);
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
     }
     
     private Node createSelectionModelOptions(String name) {
+        var original = control.getSelectionModel();
         ObjectSelector<Boolean> s = new ObjectSelector<>(name, (v) -> {
-            control.setSelectionModel(v == null ? null : originalSelectionModel);
-            originalSelectionModel.setSelectionMode(Boolean.TRUE.equals(v) ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+            control.setSelectionModel(v == null ? null : original);
+            original.setSelectionMode(Boolean.TRUE.equals(v) ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
         });
         s.addChoice("Single", Boolean.FALSE);
         s.addChoice("Multiple", Boolean.TRUE);

@@ -66,7 +66,6 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final TableView<DataRow> control;
-    private final TableViewSelectionModel<DataRow> originalSelectionModel;
 
     public TableViewPage() {
         FX.name(this, "TableViewPage");
@@ -75,7 +74,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         control.setPadding(new Insets(2));
         // TODO move to "background" property
         control.focusedProperty().subscribe(nv -> control.setBackground(Background.fill(nv ? Color.LIGHTGREEN : Color.LIGHTPINK)));
-        originalSelectionModel = control.getSelectionModel();
 
         Button addDataItemButton = new Button("Add Data Item");
         addDataItemButton.setOnAction((ev) -> {
@@ -495,10 +493,11 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private static record SelectionChoice(boolean isNull, boolean isMultiple, boolean isCells) { } 
 
     private Node createSelectionModelOptions(String name) {
+        var original = control.getSelectionModel();
         ObjectSelector<SelectionChoice> s = new ObjectSelector<>(name, (v) -> {
-            control.setSelectionModel(v.isNull() ? null : originalSelectionModel);
-            originalSelectionModel.setSelectionMode(v.isMultiple() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
-            originalSelectionModel.setCellSelectionEnabled(v.isCells());
+            control.setSelectionModel(v.isNull() ? null : original);
+            original.setSelectionMode(v.isMultiple() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+            original.setCellSelectionEnabled(v.isCells());
         });
         s.addChoice("Single Row", new SelectionChoice(false, false, false));
         s.addChoice("Multiple Rows", new SelectionChoice(false, true, false));
