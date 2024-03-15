@@ -28,7 +28,6 @@ import javafx.scene.Node;
 import javafx.scene.web.HTMLEditor;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -39,7 +38,8 @@ public class HTMLEditorPage extends TestPaneBase {
     private final HTMLEditor control;
 
     public HTMLEditorPage() {
-        FX.name(this, "HTMLEditorPage");
+        super("HTMLEditorPage");
+
         control = new HTMLEditor();
 
         OptionPane op = new OptionPane();

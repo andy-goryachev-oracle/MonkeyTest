@@ -35,7 +35,6 @@ import javafx.scene.layout.BorderPane;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.sheets.ChartPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -47,7 +46,7 @@ public class PieChartPage extends TestPaneBase {
     private final PieChart chart;
 
     public PieChartPage() {
-        FX.name(this, "PieChartPage");
+        super("PieChartPage");
 
         chart = new PieChart();
 

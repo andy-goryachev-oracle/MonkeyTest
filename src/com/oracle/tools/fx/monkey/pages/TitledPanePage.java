@@ -34,7 +34,6 @@ import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -45,7 +44,7 @@ public class TitledPanePage extends TestPaneBase {
     private final TitledPane control;
 
     public TitledPanePage() {
-        FX.name(this, "TitledPane");
+        super("TitledPane");
 
         control = new TitledPane();
 

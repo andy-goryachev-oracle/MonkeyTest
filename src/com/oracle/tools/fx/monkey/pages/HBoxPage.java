@@ -43,7 +43,6 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -56,7 +55,7 @@ public class HBoxPage extends TestPaneBase {
     private final HBox box;
 
     public HBoxPage() {
-        FX.name(this, "HBoxPage");
+        super("HBoxPage");
 
         box = new HBox();
 

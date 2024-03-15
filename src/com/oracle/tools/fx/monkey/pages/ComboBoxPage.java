@@ -47,7 +47,7 @@ public class ComboBoxPage extends TestPaneBase {
     private final Label itemCountField;
 
     public ComboBoxPage() {
-        FX.name(this, "ComboBoxPage");
+        super("ComboBoxPage");
 
         itemCountField = new Label("<default>");
 

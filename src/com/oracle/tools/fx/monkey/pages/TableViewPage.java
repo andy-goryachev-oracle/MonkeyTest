@@ -42,7 +42,6 @@ import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
-import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.Background;
@@ -54,7 +53,6 @@ import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -62,13 +60,13 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * TableView page
+ * TableView Page.
  */
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final TableView<DataRow> control;
 
     public TableViewPage() {
-        FX.name(this, "TableViewPage");
+        super("TableViewPage");
 
         control = new TableView<>();
         control.setPadding(new Insets(2));

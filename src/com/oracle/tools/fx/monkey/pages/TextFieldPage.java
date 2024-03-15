@@ -36,7 +36,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * TextField Page
+ * TextField Page.
  */
 public class TextFieldPage extends TestPaneBase {
     private final TextField textField;
@@ -47,9 +47,8 @@ public class TextFieldPage extends TestPaneBase {
     }
 
     protected TextFieldPage(TextField f, String name) {
+        super(name);
         this.textField = f;
-
-        FX.name(this, "TextFieldPage");
 
         inScroll = new CheckBox("in scroll pane");
         FX.name(inScroll, "inScrollPane");

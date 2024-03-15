@@ -43,7 +43,6 @@ import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.ShapePropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -59,7 +58,7 @@ public class TextPage extends TestPaneBase {
     private final Label hitInfo;
 
     public TextPage() {
-        FX.name(this, "TextPage");
+        super("TextPage");
 
         text = new Text();
         text.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);

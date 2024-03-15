@@ -45,8 +45,9 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Tests various XYCharts
+ * Tests various XYCharts.
  */
+// TODO individual pages with individual property sheets.
 public class XYChartPage extends TestPaneBase {
     public enum Mode {
         AREA,
@@ -63,7 +64,7 @@ public class XYChartPage extends TestPaneBase {
     protected static Random rnd = new Random();
 
     public XYChartPage() {
-        FX.name(this, "XYChartPage");
+        super("XYChartPage");
 
         modeSelector = new ComboBox<>();
         FX.name(modeSelector, "modeSelector");

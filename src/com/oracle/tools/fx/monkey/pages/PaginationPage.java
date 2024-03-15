@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,32 +22,16 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.scene.control.Label;
-import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
-import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Label Page
+ * Pagination Control Page.
  */
-public class LabelPage extends TestPaneBase {
-    private final Label label;
-
-    public LabelPage() {
-        super("LabelPage");
-
-        label = new Label();
-        setContent(label);
-
-        // JDK-8092102
-//        control.textTruncatedProperty().addListener((s,p,c) -> {
-//            System.err.println("truncated: " + c);
-//        });
-
-        OptionPane op = new OptionPane();
-        LabeledPropertySheet.appendTo(op, "Label", true, label);
-        setOptions(op);
+public class PaginationPage extends TestPaneBase {
+    public PaginationPage() {
+        super("PaginationPage");
     }
 }

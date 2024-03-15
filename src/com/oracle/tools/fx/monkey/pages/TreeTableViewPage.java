@@ -55,7 +55,6 @@ import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -70,7 +69,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     private final TreeTableView<DataRow> control;
 
     public TreeTableViewPage() {
-        FX.name(this, "TreeTableViewPage");
+        super("TreeTableViewPage");
 
         control = new TreeTableView<>();
 

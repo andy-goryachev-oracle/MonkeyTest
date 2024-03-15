@@ -34,7 +34,6 @@ import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.NodePropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -48,7 +47,7 @@ public class WebViewPage extends TestPaneBase {
     private final WebEngine engine;
 
     public WebViewPage() {
-        FX.name(this, "WebViewPage");
+        super("WebViewPage");
 
         webView = new WebView();
         engine = webView.getEngine();

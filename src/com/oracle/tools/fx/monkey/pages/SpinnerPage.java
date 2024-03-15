@@ -26,16 +26,16 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.util.StringConverter;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Spinner Page
+ * Spinner Page.
  */
 public class SpinnerPage extends TestPaneBase {
     enum Mode {
@@ -59,7 +59,7 @@ public class SpinnerPage extends TestPaneBase {
     private Spinner<Number> control;
 
     public SpinnerPage() {
-        FX.name(this, "SpinnerPage");
+        super("SpinnerPage");
 
         modeChoice = new ComboBox<>();
         FX.name(modeChoice, "modeChoice");

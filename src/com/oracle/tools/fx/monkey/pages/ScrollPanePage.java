@@ -34,14 +34,14 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * ScrollPane Page
+ * ScrollPane Page.
  */
 public class ScrollPanePage extends TestPaneBase {
     private final ScrollPane scroll;
     private final Label content;
 
     public ScrollPanePage() {
-        FX.name(this, "ScrollPanePage");
+        super("ScrollPanePage");
 
         content = new Label();
         content.setAlignment(Pos.CENTER);

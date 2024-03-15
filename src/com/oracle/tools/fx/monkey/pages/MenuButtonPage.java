@@ -45,6 +45,8 @@ public class MenuButtonPage extends TestPaneBase {
     private final MenuButton control;
 
     public MenuButtonPage() {
+        super("MenuButtonPage");
+
         control = new MenuButton();
 
         control.setText("Menu Button");

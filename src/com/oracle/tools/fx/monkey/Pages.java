@@ -49,10 +49,11 @@ public class Pages {
             new DemoPage("ListView", ListViewPage::new),
             // TODO MenuBar
             new DemoPage("MenuButton", MenuButtonPage::new),
-            // TODO Pagination
+            new DemoPage("Pagination", PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
+            // TODO RadioButton
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
             // TODO Separator

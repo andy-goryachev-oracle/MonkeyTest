@@ -38,7 +38,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -52,7 +51,6 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
@@ -68,7 +66,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     private final ListView<Object> control;
 
     public ListViewPage() {
-        FX.name(this, "ListViewPage");
+        super("ListViewPage");
 
         control = new ListView<>();
         control.setTooltip(new Tooltip("edit to 'update' to commit the change"));

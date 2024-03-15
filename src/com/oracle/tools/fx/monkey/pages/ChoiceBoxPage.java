@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -39,7 +38,7 @@ public class ChoiceBoxPage extends TestPaneBase {
     private ChoiceBox<String> choiceBox;
 
     public ChoiceBoxPage() {
-        FX.name(this, "ChoiceBoxPage");
+        super("ChoiceBoxPage");
 
         choiceBox = new ChoiceBox();
 

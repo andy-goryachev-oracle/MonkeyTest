@@ -33,7 +33,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * ScrollBar Page
+ * ScrollBar Page.
  */
 public class ScrollBarPage extends TestPaneBase {
     private ScrollBar scroll;
@@ -43,7 +43,7 @@ public class ScrollBarPage extends TestPaneBase {
     };
 
     public ScrollBarPage() {
-        FX.name(this, "ScrollBarPage");
+        super("ScrollBarPage");
 
         scroll = new ScrollBar();
 

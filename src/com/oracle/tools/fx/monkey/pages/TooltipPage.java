@@ -38,19 +38,18 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Tooltip Page
+ * Tooltip Page.
  */
 public class TooltipPage extends TestPaneBase {
     private final Tooltip control; // TODO not a control, but a PopupWindow
 
     public TooltipPage() {
-        FX.name(this, "TooltipPage");
+        super("TooltipPage");
 
         control = new Tooltip("This is a tooltip with some default text, to be settable later.");
 

@@ -28,18 +28,17 @@ import javafx.scene.control.TextArea;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.TextInputControlPropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * TextArea Page
+ * TextArea Page.
  */
 public class TextAreaPage extends TestPaneBase {
     private final TextArea textArea;
 
     public TextAreaPage() {
-        FX.name(this, "TextAreaPage");
+        super("TextAreaPage");
 
         textArea = new TextArea();
 

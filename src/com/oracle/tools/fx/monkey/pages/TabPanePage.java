@@ -40,7 +40,6 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -51,7 +50,7 @@ public class TabPanePage extends TestPaneBase {
     private final TabPane control;
 
     public TabPanePage() {
-        FX.name(this, "TabPanePage");
+        super("TabPanePage");
 
         control = new TabPane();
         // TODO graphic, other Tab propertis in the context menu

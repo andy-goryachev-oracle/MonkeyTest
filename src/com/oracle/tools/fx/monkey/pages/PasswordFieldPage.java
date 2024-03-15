@@ -28,7 +28,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.PasswordField;
 
 /**
- * PasswordField page uses the fact that PasswordField is a TextField.
+ * PasswordField Page uses the fact that PasswordField is a TextField.
  */
 public class PasswordFieldPage extends TextFieldPage {
     public PasswordFieldPage() {

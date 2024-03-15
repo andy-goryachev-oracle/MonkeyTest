@@ -44,7 +44,6 @@ import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -66,7 +65,7 @@ public class TextFlowPage extends TestPaneBase {
     private final TextFlow textFlow;
 
     public TextFlowPage() {
-        FX.name(this, "TextFlowPage");
+        super("TextFlowPage");
 
         textFlow = new TextFlow();
         textFlow.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);

@@ -55,7 +55,7 @@ public class TreeViewPage extends TestPaneBase {
     private int seq;
 
     public TreeViewPage() {
-        FX.name(this, "TreeViewPage");
+        super("TreeViewPage");
 
         control = new TreeView<>(new CheckBoxTreeItem<>("root"));
         control.getRoot().setExpanded(true);

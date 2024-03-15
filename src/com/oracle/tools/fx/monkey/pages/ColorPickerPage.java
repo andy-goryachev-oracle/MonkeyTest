@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -38,7 +37,7 @@ public class ColorPickerPage extends TestPaneBase {
     private ColorPicker control;
 
     public ColorPickerPage() {
-        FX.name(this, "ColorPickerPage");
+        super("ColorPickerPage");
 
         control = new ColorPicker(Color.YELLOW);
         control.setOnAction((ev) -> {
