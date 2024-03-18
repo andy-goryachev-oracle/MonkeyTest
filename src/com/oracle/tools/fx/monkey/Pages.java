@@ -33,6 +33,9 @@ public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("Accordion", AccordionPage::new),
+            new DemoPage("AreaChart", AreaChartPage::new),
+            new DemoPage("BarChart", BarChartPage::new),
+            new DemoPage("BubbleChart", BubbleChartPage::new),
             // TODO Button
             // TODO ButtonBar
             // TODO new DemoPage("Canvas", CanvasPage::new),
@@ -46,6 +49,7 @@ public class Pages {
             // TODO Hyperlink
             // TODO InputField: DoubleField, IntegerField, WebColorField
             new DemoPage("Label", LabelPage::new),
+            new DemoPage("LineChart", LineChartPage::new),
             new DemoPage("ListView", ListViewPage::new),
             // TODO MenuBar
             new DemoPage("MenuButton", MenuButtonPage::new),
@@ -60,6 +64,8 @@ public class Pages {
             // TODO Slider
             new DemoPage("Spinner", SpinnerPage::new),
             // TODO SplitPane
+            new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
+            new DemoPage("StackedBarChart", StackedBarChartPage::new),
             new DemoPage("TableView", TableViewPage::new),
             new DemoPage("TabPane", TabPanePage::new),
             new DemoPage("Text", TextPage::new),
@@ -75,7 +81,6 @@ public class Pages {
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("VBox", VBoxPage::new),
             new DemoPage("WebView", WebViewPage::new),
-            new DemoPage("X/Y Charts", XYChartPage::new),
         };
     }
 }

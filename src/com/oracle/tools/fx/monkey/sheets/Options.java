@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.sheets;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
-import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
@@ -60,6 +59,10 @@ public class Options {
 
     public static DoubleOption spacing(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 0.333, 0.5, 1, 2, 10, 20, 33.4, 50, 100);
+    }
+
+    public static DoubleOption gaps(String name, DoubleProperty p) {
+        return DoubleOption.of(name, p, 0, 1, 1.5, 4, 10, 20, 33.33, 100);
     }
 
     public static DoubleOption tabPaneConstraints(String name, DoubleProperty p) {
