@@ -30,7 +30,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
@@ -69,9 +68,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         super("TableViewPage");
 
         control = new TableView<>();
-        control.setPadding(new Insets(2));
-        // TODO move to "background" property
-        control.focusedProperty().subscribe(nv -> control.setBackground(Background.fill(nv ? Color.LIGHTGREEN : Color.LIGHTPINK)));
 
         Button addDataItemButton = new Button("Add Data Item");
         addDataItemButton.setOnAction((ev) -> {
