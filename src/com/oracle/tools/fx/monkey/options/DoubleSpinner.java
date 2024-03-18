@@ -24,25 +24,24 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Spinner;
 import com.oracle.tools.fx.monkey.util.FX;
 
 /**
- * Int Option Bound to a Property.
+ *
  */
-public class IntOption extends Spinner<Integer> {
-    private final SimpleIntegerProperty property = new SimpleIntegerProperty();
+public class DoubleSpinner extends Spinner<Double> {
+    private final SimpleDoubleProperty property = new SimpleDoubleProperty();
 
-    public IntOption(String name, int min, int max, IntegerProperty p) {
-        super(min, max, p.get());
+    public DoubleSpinner(String name, DoubleProperty p, double min, double max, double amountToStepBy) {
+        super(min, max, p.get(), amountToStepBy);
 
         FX.name(this, name);
         setEditable(true);
 
         property.bindBidirectional(p);
-
         valueProperty().addListener((s, pr, val) -> {
             property.set(val);
         });

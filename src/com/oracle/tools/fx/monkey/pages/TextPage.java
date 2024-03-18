@@ -81,7 +81,7 @@ public class TextPage extends TestPaneBase {
         op.option("Selection End:", new IntOption("selectionEnd", -1, Integer.MAX_VALUE, text.selectionEndProperty()));
         op.option("Selection Fill: TODO", null); // TODO
         op.option(new BooleanOption("strikeThrough", "strike through", text.strikethroughProperty()));
-        op.option("Tab Size:", IntOption.tabSize("tabSize", text.tabSizeProperty()));
+        op.option("Tab Size:", Options.tabSize("tabSize", text.tabSizeProperty()));
         op.option("Text:", Options.textOption("textSelector", true, true, text.textProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, text.textAlignmentProperty()));
         op.option("Text Origin:", new EnumOption<VPos>("textOrigin", VPos.class, text.textOriginProperty()));

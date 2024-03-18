@@ -56,6 +56,7 @@ public class XYChartPropertySheet {
         op.option(new BooleanOption("horizontalZeroLineVisible", "horizontal zero line visible", chart.horizontalZeroLineVisibleProperty()));
         op.option(new BooleanOption("verticalGridLinesVisible", "vertical grid lines visible", chart.verticalGridLinesVisibleProperty()));
         op.option(new BooleanOption("verticalZeroLineVisible", "vertical zero line visible", chart.verticalZeroLineVisibleProperty()));
+
         ChartPropertySheet.appendTo(op, chart);
     }
 

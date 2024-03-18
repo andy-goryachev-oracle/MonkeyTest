@@ -34,24 +34,24 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Region Property Sheet.
  */
 public class RegionPropertySheet {
-    public static void appendTo(OptionPane op, Region region) {
+    public static void appendTo(OptionPane op, Region r) {
         op.section("Region");
-        op.option("Background: TODO", null); // TODO
-        op.option("Border:", new BorderOption("border", region.borderProperty()));
-        op.option(new BooleanOption("cacheShape", "cache shape", region.cacheShapeProperty()));
-        op.option(new BooleanOption("centerShape", "center shape", region.centerShapeProperty()));
-        op.option("Max Height:", Options.forRegion("maxHeight", region.maxHeightProperty()));
-        op.option("Max Width:", Options.forRegion("maxWidth", region.maxWidthProperty()));
-        op.option("Min Height:", Options.forRegion("minHeight", region.minHeightProperty()));
-        op.option("Min Width:", Options.forRegion("minWidth", region.minWidthProperty()));
-        op.option("Opaque Insets:", new InsetsOption("opaqueInsets", true, region.opaqueInsetsProperty()));
-        op.option("Padding:", new InsetsOption("padding", false, region.paddingProperty()));
-        op.option("Pref Height:", Options.forRegion("prefHeight", region.prefHeightProperty()));
-        op.option("Pref Width:", Options.forRegion("prefWidth", region.prefWidthProperty()));
-        op.option(new BooleanOption("scaleShape", "scale shape", region.scaleShapeProperty()));
+        op.option("Background:", Options.background(r, "background", r.backgroundProperty()));
+        op.option("Border:", new BorderOption("border", r.borderProperty()));
+        op.option(new BooleanOption("cacheShape", "cache shape", r.cacheShapeProperty()));
+        op.option(new BooleanOption("centerShape", "center shape", r.centerShapeProperty()));
+        op.option("Max Height:", Options.forRegion("maxHeight", r.maxHeightProperty()));
+        op.option("Max Width:", Options.forRegion("maxWidth", r.maxWidthProperty()));
+        op.option("Min Height:", Options.forRegion("minHeight", r.minHeightProperty()));
+        op.option("Min Width:", Options.forRegion("minWidth", r.minWidthProperty()));
+        op.option("Opaque Insets:", new InsetsOption("opaqueInsets", true, r.opaqueInsetsProperty()));
+        op.option("Padding:", new InsetsOption("padding", false, r.paddingProperty()));
+        op.option("Pref Height:", Options.forRegion("prefHeight", r.prefHeightProperty()));
+        op.option("Pref Width:", Options.forRegion("prefWidth", r.prefWidthProperty()));
+        op.option(new BooleanOption("scaleShape", "scale shape", r.scaleShapeProperty()));
         op.option("Shape: TODO", null); // TODO
-        op.option(new BooleanOption("snapToPixel", "snap to pixel", region.snapToPixelProperty()));
+        op.option(new BooleanOption("snapToPixel", "snap to pixel", r.snapToPixelProperty()));
 
-        NodePropertySheet.appendTo(op, region);
+        NodePropertySheet.appendTo(op, r);
     }
 }

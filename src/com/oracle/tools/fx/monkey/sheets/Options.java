@@ -24,11 +24,19 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
+import javafx.scene.Node;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -45,7 +53,7 @@ public class Options {
      * @param prop
      * @return
      */
-    public static TextChoiceOption textOption(String name, boolean multiLine, boolean allowEditButton, StringProperty prop) {
+    public static Node textOption(String name, boolean multiLine, boolean allowEditButton, StringProperty prop) {
         TextChoiceOption op = new TextChoiceOption(name, true, prop);
         Object[] pairs = multiLine ? TextTemplates.multiLineTextPairs() : TextTemplates.singleLineTextPairs();
         Utils.fromPairs(pairs, (k,v) -> op.addChoice(k, v));
@@ -53,19 +61,19 @@ public class Options {
         return op;
     }
 
-    public static DoubleOption fixedSizeOption(String name, DoubleProperty p) {
+    public static Node fixedSizeOption(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 20, 33.4, 50, 100);
     }
 
-    public static DoubleOption spacing(String name, DoubleProperty p) {
+    public static Node spacing(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 0.333, 0.5, 1, 2, 10, 20, 33.4, 50, 100);
     }
 
-    public static DoubleOption gaps(String name, DoubleProperty p) {
+    public static Node gaps(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 1, 1.5, 4, 10, 20, 33.33, 100);
     }
 
-    public static DoubleOption tabPaneConstraints(String name, DoubleProperty p) {
+    public static Node tabPaneConstraints(String name, DoubleProperty p) {
         DoubleOption d = new DoubleOption(name, p);
         d.addChoice("0", Double.valueOf(0));
         d.addChoice("10", 10.0);
@@ -78,7 +86,7 @@ public class Options {
         return d;
     }
 
-    public static DoubleOption forRegion(String name, Property<Number> p) {
+    public static Node forRegion(String name, Property<Number> p) {
         DoubleOption d = new DoubleOption(name, p);
         d.addChoice("USE_COMPUTED_SIZE (-1)", Region.USE_COMPUTED_SIZE);
         d.addChoice("USE_PREF_SIZE (-∞)", Region.USE_PREF_SIZE);
@@ -94,7 +102,40 @@ public class Options {
         return d;
     }
 
-    public static DoubleOption lineSpacing(String name, Property<Number> p) {
+    public static Node lineSpacing(String name, Property<Number> p) {
         return DoubleOption.of(name, p, 0, 0.5, 1, 2, 3.14, 10, 33.33, 100);
+    }
+
+    public static Node background(Node owner, String name, Property<Background> p) {
+        ObjectOption<Background> op = new ObjectOption<>(name, p);
+        op.addChoiceSupplier("Black", () -> {
+            return Background.fill(Color.BLACK);
+        });
+        op.addChoiceSupplier("Red", () -> {
+            return Background.fill(Color.RED);
+        });
+        op.addChoiceSupplier("White", () -> {
+            return Background.fill(Color.WHITE);
+        });
+        // TODO let background property track focused and focusWithin properties to change the bg
+        // also make sure to removeListener when the background is set to another value
+//        op.addChoiceSupplier("Focus(Green), NoFocus(Gray)", () -> {
+//            BooleanBinding b = Bindings.createBooleanBinding(
+//                () -> {
+//                    
+//                },
+//                owner.focusTraversableProperty(),
+//                owner.focusedProperty(),
+//                owner.focusWithinProperty()
+//            );
+//            Background bg = new Background();
+//        });
+        op.addChoice("<null>", null);
+        op.selectInitialValue();
+        return op;
+    }
+
+    public static IntOption tabSize(String name, IntegerProperty p) {
+        return new IntOption(name, 0, Integer.MAX_VALUE, p);
     }
 }

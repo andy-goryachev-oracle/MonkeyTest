@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
@@ -44,8 +45,17 @@ public class TextOption extends BorderPane {
     private final TextField textField;
 
     public TextOption(String name, StringProperty p) {
-        FX.name(this, name);
+        this(name);
         property.bindBidirectional(p);
+    }
+
+    public TextOption(String name, ObjectProperty<String> p) {
+        this(name);
+        property.bindBidirectional(p);
+    }
+
+    private TextOption(String name) {
+        FX.name(this, name);
 
         textField = new TextField();
         textField.setMaxWidth(Double.MAX_VALUE);

@@ -40,8 +40,8 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
     private final SimpleObjectProperty<T> property = new SimpleObjectProperty<>();
 
     public ObjectOption(String name, Property<T> p) {
-        property.bindBidirectional(p);
         FX.name(this, name);
+        property.bindBidirectional(p);
 
         // TODO add the current value to choices and select it
 

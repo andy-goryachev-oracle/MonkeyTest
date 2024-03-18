@@ -37,7 +37,6 @@ public class ChartPropertySheet {
     public static void appendTo(OptionPane op, Chart chart) {
         op.section("Chart");
         op.option(new BooleanOption("animated", "animated", chart.animatedProperty()));
-        op.option("Legend: TODO", null); // TODO
         op.option("Legend Side:", new EnumOption<Side>("legendSide", true, Side.class, chart.legendSideProperty()));
         op.option(new BooleanOption("legendVisible", "legend visible", chart.legendVisibleProperty()));
         op.option("Title:", Options.textOption("text", false, true, chart.titleProperty()));

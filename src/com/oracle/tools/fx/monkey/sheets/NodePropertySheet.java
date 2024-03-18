@@ -30,6 +30,7 @@ import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.effect.BlendMode;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.DoubleSpinner;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -38,42 +39,42 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
  * Node Property Sheet.
  */
 public class NodePropertySheet {
-    public static void appendTo(OptionPane op, Node node) {
+    public static void appendTo(OptionPane op, Node n) {
         op.section("Node");
-        op.option("Accessible Help: TODO", null); // TODO
-        op.option("Accessible Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, node.accessibleRoleProperty()));
-        op.option("Accessible Role Description: TODO", null); // TODO
-        op.option("Accessible Text: TODO", null); // TODO
-        op.option("Blend Mode:", new EnumOption<>("blendMode", BlendMode.class, node.blendModeProperty()));
-        op.option(new BooleanOption("cache", "cache", node.cacheProperty()));
-        op.option("Cache Hint:", new EnumOption<>("cacheHint", CacheHint.class, node.cacheHintProperty()));
+        op.option("Accessible Help:", new TextOption("accessibleHelp", n.accessibleHelpProperty()));
+        op.option("Accessible Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, n.accessibleRoleProperty()));
+        op.option("Accessible Role Description:", new TextOption("accessibleRoleDescription", n.accessibleRoleDescriptionProperty()));
+        op.option("Accessible Text:", new TextOption("accessibleText", n.accessibleTextProperty()));
+        op.option("Blend Mode:", new EnumOption<>("blendMode", BlendMode.class, n.blendModeProperty()));
+        op.option(new BooleanOption("cache", "cache", n.cacheProperty()));
+        op.option("Cache Hint:", new EnumOption<>("cacheHint", CacheHint.class, n.cacheHintProperty()));
         op.option("Clip: TODO", null); // TODO
         op.option("Cursor: TODO", null); // TODO
-        op.option("Depth Test:", new EnumOption<>("depthText", CacheHint.class, node.cacheHintProperty()));
-        op.option(new BooleanOption("disable", "disable", node.disableProperty()));
+        op.option("Depth Test:", new EnumOption<>("depthText", CacheHint.class, n.cacheHintProperty()));
+        op.option(new BooleanOption("disable", "disable", n.disableProperty()));
         op.option("Effect: TODO", null); // TODO
-        op.option(new BooleanOption("focusTraversable", "focus traversable", node.focusTraversableProperty()));
-        op.option("Id:", new TextOption("id", node.idProperty()));
+        op.option(new BooleanOption("focusTraversable", "focus traversable", n.focusTraversableProperty()));
+        op.option("Id:", new TextOption("id", n.idProperty()));
         op.option("Input Method Requests: TODO", null); // TODO
         op.option("Layout X: TODO", null); // TODO
         op.option("Layout Y: TODO", null); // TODO
-        op.option(new BooleanOption("managed", "managed", node.managedProperty()));
-        op.option(new BooleanOption("mouseTransparent", "mouse transparent", node.mouseTransparentProperty()));
-        op.option("Node Orientation:", new EnumOption<>("nodeOrientation", NodeOrientation.class, node.nodeOrientationProperty()));
-        op.option("On Various Events: TODO", null); // TODO own section?
-        op.option("Opacity: TODO", null); // TODO
-        op.option(new BooleanOption("pickOnBounds", "pick on bounds", node.pickOnBoundsProperty()));
+        op.option(new BooleanOption("managed", "managed", n.managedProperty()));
+        op.option(new BooleanOption("mouseTransparent", "mouse transparent", n.mouseTransparentProperty()));
+        op.option("Node Orientation:", new EnumOption<>("nodeOrientation", NodeOrientation.class, n.nodeOrientationProperty()));
+        //op.option("On Various Events: TODO", null); // TODO own section?
+        op.option("Opacity:", new DoubleSpinner("opacity", n.opacityProperty(), -0.1, 1.1, 0.1));
+        op.option(new BooleanOption("pickOnBounds", "pick on bounds", n.pickOnBoundsProperty()));
         op.option("Rotate: TODO", null); // TODO
         op.option("Rotation Axis: TODO", null); // TODO
         op.option("Scale X: TODO", null); // TODO
         op.option("Scale Y: TODO", null); // TODO
         op.option("Scale Z: TODO", null); // TODO
-        op.option("Style:", new TextOption("style", node.styleProperty()));
+        op.option("Style:", new TextOption("style", n.styleProperty()));
         op.option("Translate X: TODO", null); // TODO
         op.option("Translate Y: TODO", null); // TODO
         op.option("Translate Z: TODO", null); // TODO
         op.option("User Data: TODO", null); // TODO
         op.option("View Order: TODO", null); // TODO
-        op.option(new BooleanOption("visible", "visible", node.visibleProperty()));
+        op.option(new BooleanOption("visible", "visible", n.visibleProperty()));
     }
 }

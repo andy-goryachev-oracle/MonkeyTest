@@ -103,7 +103,7 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Content:", contentOption);
         op.option("Font:", fontOption);
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
-        op.option("Tab Size:", IntOption.tabSize("tabSize", textFlow.tabSizeProperty()));
+        op.option("Tab Size:", Options.tabSize("tabSize", textFlow.tabSizeProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
 
         op.separator();
