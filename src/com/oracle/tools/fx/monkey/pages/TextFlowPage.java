@@ -40,7 +40,6 @@ import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
-import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
@@ -77,7 +76,11 @@ public class TextFlowPage extends TestPaneBase {
         hitInfo2 = new Label();
 
         contentOption = new ActionSelector("content");
-        contentOption.addButton("Edit", this::openEditDialog);
+        contentOption.addButton("Edit", () -> {
+            new EnterTextDialog(this, getText(), (s) -> {
+                setContent(s);
+            }).show();
+        });
         Utils.fromPairs(TextTemplates.multiLineTextPairs(), (k,v) -> contentOption.addChoice(k, () -> setContent(v)));
         contentOption.addChoice("Inline Nodes", () -> setContent(mkInlineNodes()));
         contentOption.addChoice("Rich Text", () -> setContent(createRichText()));
@@ -85,13 +88,11 @@ public class TextFlowPage extends TestPaneBase {
         contentOption.addChoice("Accadian", () -> setContent(TextTemplates.AKKADIAN));
 
         fontOption = new FontOption("font", false, null);
-        fontOption.getProperty().addListener((s,p,v) -> updateText());
-
-        Button editButton = new Button("Enter Text");
-        editButton.setOnAction((ev) -> {
-            new EnterTextDialog(this, getText(), (s) -> {
-                updateText();
-            }).show();
+        fontOption.getProperty().addListener((s,p,v) -> {
+            Runnable r = contentOption.getValue();
+            if (r != null) {
+                r.run();
+            }
         });
 
         showChars = new BooleanOption("showChars", "show characters", () -> updateShowCharacters());
@@ -121,13 +122,6 @@ public class TextFlowPage extends TestPaneBase {
         setOptions(op);
 
         fontOption.selectSystemFont();
-    }
-
-    private void updateText() {
-        Runnable r = contentOption.getValue();
-        if (r != null) {
-            r.run();
-        }
     }
 
     private void setContent(String text) {
@@ -246,11 +240,5 @@ public class TextFlowPage extends TestPaneBase {
         } else {
             ShowCharacterRuns.remove(textFlow);
         }
-    }
-
-    private void openEditDialog() {
-        new EnterTextDialog(this, getText(), (s) -> {
-            // TODO update text
-        }).show();
     }
 }
