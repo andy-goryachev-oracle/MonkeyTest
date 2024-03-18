@@ -113,7 +113,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option(new BooleanOption("editable", "editable", control.editableProperty()));
         op.option("Fixed Cell Size:", Options.fixedSizeOption("fixedCellSize", control.fixedCellSizeProperty()));
         op.option("Focus Model:", createFocusModelOptions("focusModel", control.focusModelProperty()));
-        op.option("Placeholder: TODO", null); // TODO
+        op.option("Placeholder:", Options.placeholderNode("placeholder", control.placeholderProperty()));
         op.option("Root:", createRootOptions("root", control.rootProperty()));
         op.option(Utils.buttons(addDataItemButton, clearDataItemsButton));
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));

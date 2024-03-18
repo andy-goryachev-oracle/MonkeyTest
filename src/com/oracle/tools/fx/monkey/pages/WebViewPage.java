@@ -30,6 +30,7 @@ import javafx.scene.text.FontSmoothingType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.ColorOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.NodePropertySheet;
@@ -75,7 +76,7 @@ public class WebViewPage extends TestPaneBase {
         op.option("Max Width", Options.tabPaneConstraints("maxWidth", webView.maxWidthProperty()));
         op.option("Min Height", Options.tabPaneConstraints("minHeight", webView.minHeightProperty()));
         op.option("Min Width", Options.tabPaneConstraints("minWidth", webView.minWidthProperty()));
-        op.option("Page Fill: TODO", null); // TODO
+        op.option("Page Fill:", new ColorOption("textFill", webView.pageFillProperty()));
         op.option("Pref Height", Options.tabPaneConstraints("prefHeight", webView.prefHeightProperty()));
         op.option("Pref Width", Options.tabPaneConstraints("prefWidth", webView.prefWidthProperty()));
         op.option("Zoom:", DoubleOption.of("zoom", webView.zoomProperty(), 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0));

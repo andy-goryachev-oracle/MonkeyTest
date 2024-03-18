@@ -29,25 +29,27 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.shape.StrokeType;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.DoubleSpinner;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.PaintOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
  * Shape Properties Sheet
  */
 public class ShapePropertySheet {
-    public static void appendTo(OptionPane op, Shape shape) {
+    public static void appendTo(OptionPane op, Shape n) {
         op.section("Shape");
-        op.option("Fill: TODO", null); // TODO paint
-        op.option(new BooleanOption("smooth", "smooth", shape.smoothProperty()));
-        op.option("Stroke: TODO", null); // TODO paint
-        op.option("Stroke Dash Offset: TODO", null); // TODO double
-        op.option("Stroke Line Cap:", new EnumOption<>("strokeLineCap", StrokeLineCap.class, shape.strokeLineCapProperty()));
-        op.option("Stroke Line Join:", new EnumOption<>("strokeLineJoin", StrokeLineJoin.class, shape.strokeLineJoinProperty()));
-        op.option("Stroke Miter Limit: TODO", null); // TODO double
-        op.option("Stroke Type:", new EnumOption<>("strokeType", StrokeType.class, shape.strokeTypeProperty()));
-        op.option("Stroke width: TODO", null); // TODO double
+        op.option("Fill:", new PaintOption("fill", n.fillProperty()));
+        op.option(new BooleanOption("smooth", "smooth", n.smoothProperty()));
+        op.option("Stroke:", new PaintOption("stroke", n.strokeProperty()));
+        op.option("Stroke Dash Offset:", new DoubleSpinner("strokeWidth", n.strokeDashOffsetProperty(), 0, 100, 0.1));
+        op.option("Stroke Line Cap:", new EnumOption<>("strokeLineCap", StrokeLineCap.class, n.strokeLineCapProperty()));
+        op.option("Stroke Line Join:", new EnumOption<>("strokeLineJoin", StrokeLineJoin.class, n.strokeLineJoinProperty()));
+        op.option("Stroke Miter Limit:", new DoubleSpinner("strokeWidth", n.strokeMiterLimitProperty(), 0, 100, 0.1));
+        op.option("Stroke Type:", new EnumOption<>("strokeType", StrokeType.class, n.strokeTypeProperty()));
+        op.option("Stroke width:", new DoubleSpinner("strokeWidth", n.strokeWidthProperty(), 0, 100, 0.1));
 
-        NodePropertySheet.appendTo(op, shape);
+        NodePropertySheet.appendTo(op, n);
     }
 }

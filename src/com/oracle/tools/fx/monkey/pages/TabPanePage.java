@@ -40,6 +40,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -64,7 +65,7 @@ public class TabPanePage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.section("TabPane");
         op.option(new BooleanOption("rotateGraphic", "rotate graphic", control.rotateGraphicProperty()));
-        op.option("Selection Model: TODO", null); // FIX
+        op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option("Side:", new EnumOption<Side>("side", true, Side.class, control.sideProperty()));
         op.option("Tab Closing Policy:", new EnumOption<TabClosingPolicy>("tabClosingPolicy", true, TabClosingPolicy.class, control.tabClosingPolicyProperty()));
         op.option("Tab Drag Policy:", new EnumOption<TabDragPolicy>("tabDragPolicy", true, TabDragPolicy.class, control.tabDragPolicyProperty()));
@@ -94,5 +95,16 @@ public class TabPanePage extends TestPaneBase {
         b.getChildren().add(textField);
         b.getChildren().add(button);
         return b;
+    }
+
+    private Node createSelectionModelOptions(String name) {
+        var original = control.getSelectionModel();
+        ObjectSelector<Boolean> s = new ObjectSelector<>(name, (v) -> {
+            control.setSelectionModel(v == null ? null : original);
+        });
+        s.addChoice("Single", Boolean.FALSE);
+        s.addChoice("<null>", null);
+        s.selectFirst();
+        return s;
     }
 }

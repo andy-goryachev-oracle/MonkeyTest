@@ -35,9 +35,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
+import com.oracle.tools.fx.monkey.options.DoubleSpinner;
 import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -68,11 +70,11 @@ public class TooltipPage extends TestPaneBase {
         op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
         op.option("Font: TODO", null); // TODO font
         op.option("Graphic:", graphic);
-        op.option("Graphic Text Gap: TODO", null); // TODO graphic text gap
+        op.option("Graphic Text Gap:", new DoubleSpinner("graphicTextGap", control.graphicTextGapProperty(), 0, 100, 0.1));
         op.option("Hide Delay:", new DurationOption("hideDelay", control.hideDelayProperty()));
         op.option("Show Delay:", new DurationOption("showDelay", control.showDelayProperty()));
         op.option("Show Duration:", new DurationOption("showDuration", control.showDurationProperty()));
-        op.option("Text: TODO", null); // TODO text
+        op.option("Text:", Options.textOption("text", true, true, control.textProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, control.textAlignmentProperty()));
         op.option("Text Overrun:", new EnumOption<>("textOverrun", OverrunStyle.class, control.textOverrunProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", control.wrapTextProperty()));

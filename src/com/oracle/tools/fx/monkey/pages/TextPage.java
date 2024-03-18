@@ -41,6 +41,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
+import com.oracle.tools.fx.monkey.options.PaintOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.ShapePropertySheet;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -79,7 +80,7 @@ public class TextPage extends TestPaneBase {
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", text.lineSpacingProperty()));
         op.option("Selection Start:", new IntOption("selectionStart", -1, Integer.MAX_VALUE, text.selectionStartProperty()));
         op.option("Selection End:", new IntOption("selectionEnd", -1, Integer.MAX_VALUE, text.selectionEndProperty()));
-        op.option("Selection Fill: TODO", null); // TODO
+        op.option("Selection Fill:", new PaintOption("selectionFill", text.selectionFillProperty()));
         op.option(new BooleanOption("strikeThrough", "strike through", text.strikethroughProperty()));
         op.option("Tab Size:", Options.tabSize("tabSize", text.tabSizeProperty()));
         op.option("Text:", Options.textOption("textSelector", true, true, text.textProperty()));

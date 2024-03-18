@@ -101,12 +101,10 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         op.option(new BooleanOption("editable", "editable", control.editableProperty()));
         op.option("Fixed Cell Size:", Options.fixedSizeOption("fixedCellSize", control.fixedCellSizeProperty()));
         op.option("Focus Model:", createFocusModelOptions("focusModel", control.focusModelProperty()));
-
         op.option("Items:", createItemsOptions("items", control.getItems()));
         op.option(Utils.buttons(addButton, clearButton));
-
         op.option("Orientation:", new EnumOption<Orientation>("orientation", Orientation.class, control.orientationProperty()));
-        op.option("Placeholder: TODO", null); // TODO
+        op.option("Placeholder:", Options.placeholderNode("placeholder", control.placeholderProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
 
         op.separator();

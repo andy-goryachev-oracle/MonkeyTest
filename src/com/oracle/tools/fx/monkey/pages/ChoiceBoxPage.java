@@ -24,44 +24,41 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.collections.FXCollections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * ChoiceBox Page
  */
 public class ChoiceBoxPage extends TestPaneBase {
-    private ChoiceBox<String> choiceBox;
+    private ChoiceBox<Object> control;
 
     public ChoiceBoxPage() {
         super("ChoiceBoxPage");
 
-        choiceBox = new ChoiceBox();
-
-        ObjectSelector<String[]> itemsOption = new ObjectSelector<>("items", (v) -> {
-            choiceBox.setItems(FXCollections.observableArrayList(v));
-        });
-        itemsOption.addChoice("0", mk(0));
-        itemsOption.addChoice("1", mk(1));
-        itemsOption.addChoice("2", mk(2));
-        itemsOption.addChoice("5", mk(5));
-        itemsOption.addChoice("100", mk(100));
-        itemsOption.addChoice("1_000", mk(1_000));
+        control = new ChoiceBox();
 
         OptionPane op = new OptionPane();
         op.section("ChoiceBox");
         op.option("Converter: TODO", null); // TODO
-        op.option("Items:", itemsOption);
-        op.option("Selection Model: TODO", null); // TODO
+        op.option("Items:", createItemsOption("items", control.getItems()));
+        op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option("Value: TODO", null); // TODO
 
-        ControlPropertySheet.appendTo(op, choiceBox);
+        ControlPropertySheet.appendTo(op, control);
 
-        setContent(choiceBox);
+        setContent(control);
         setOptions(op);
     }
 
@@ -71,5 +68,60 @@ public class ChoiceBoxPage extends TestPaneBase {
             ss[i] = ("Item " + i);
         }
         return ss;
+    }
+
+    // TODO duplicate code in ListView and some other classes - move to utils?
+    private String newItem(Object n) {
+        return n + "." + SequenceNumber.next();
+    }
+
+    private String newVariableItem(Object n) {
+        int rows = 1 << new Random().nextInt(5);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < rows; i++) {
+            if (i > 0) {
+                sb.append('\n');
+            }
+            sb.append(i);
+        }
+        return n + "." + SequenceNumber.next() + "." + sb;
+    }
+
+    private Supplier<List<Object>> createItems(int count, Function<Integer, Object> gen) {
+        return () -> {
+            ArrayList<Object> rv = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                Object v = gen.apply(i);
+                rv.add(v);
+            }
+            return rv;
+        };
+    }
+
+    private Node createItemsOption(String name, ObservableList<Object> items) {
+        ObjectSelector<List<Object>> s = new ObjectSelector<>(name, (v) -> {
+            items.setAll(v);
+        });
+        s.addChoiceSupplier("1 Row", createItems(1, this::newItem));
+        s.addChoiceSupplier("10 Rows", createItems(10, this::newItem));
+        s.addChoiceSupplier("200 Rows", createItems(200, this::newItem));
+        //s.addChoiceSupplier("10,000 Rows", createItems(10_000, this::newItem));
+        s.addChoiceSupplier("10 Variable Height Rows", createItems(10, this::newVariableItem));
+        s.addChoiceSupplier("200 Variable HeightRows", createItems(200, this::newVariableItem));
+        s.addChoice("<empty>", List.of());
+        s.selectFirst();
+        return s;
+    }
+
+    // TODO may be move to common?
+    private Node createSelectionModelOptions(String name) {
+        var original = control.getSelectionModel();
+        ObjectSelector<Boolean> s = new ObjectSelector<>(name, (v) -> {
+            control.setSelectionModel(v == null ? null : original);
+        });
+        s.addChoice("Single", Boolean.FALSE);
+        s.addChoice("<null>", null);
+        s.selectFirst();
+        return s;
     }
 }

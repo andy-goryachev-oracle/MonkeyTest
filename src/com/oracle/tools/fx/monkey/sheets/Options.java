@@ -24,13 +24,14 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -135,7 +136,16 @@ public class Options {
         return op;
     }
 
-    public static IntOption tabSize(String name, IntegerProperty p) {
+    public static Node tabSize(String name, IntegerProperty p) {
         return new IntOption(name, 0, Integer.MAX_VALUE, p);
+    }
+
+    public static Node placeholderNode(String name, ObjectProperty<Node> p) {
+        ObjectOption<Node> op = new ObjectOption<>(name, p);
+        op.addChoiceSupplier("Button", () -> new Button("Placeholder"));
+        op.addChoiceSupplier("Label", () -> new Label("Placeholder"));
+        op.addChoice("<null>", null);
+        op.selectInitialValue();
+        return op;
     }
 }

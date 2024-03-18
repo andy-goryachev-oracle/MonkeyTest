@@ -50,45 +50,25 @@ public class TableColumnPropertySheet {
 
     public static void appendTo(OptionPane op, ObjectProperty<TableColumn> currentColumn) {
         op.section("Current Column");
-        
         op.option("Cell Factory: TODO", null); // TODO
-
         op.option("Cell Value Factory: TODO", null); // TODO
-        
         op.option("Comparator: TODO", null); // TODO
-        
         op.option("Context Menu: TODO", null); // TODO
-        
         //op.option(new BooleanOption("editable", "editable", null)); // FIX how to set properties dynamically? Optional?
-        
         op.option("Graphic: TODO", null); // TODO
-        
         op.option("Id: TODO", null); // TODO
-        
         op.option("Max Width: TODO", null); // TODO
-
         op.option("Min Width: TODO", null); // TODO
-
         op.option("Pref Width: TODO", null); // TODO
-
         op.option("reorderable: TODO", null); // TODO
-
         op.option("resizeable: TODO", null); // TODO
-
         op.option("Sort Type: TODO", null); // TODO
-
         op.option("sortable: TODO", null); // TODO
-
         op.option("Sort Node: TODO", null); // TODO
-
         op.option("Style: TODO", null); // TODO
-
         op.option("Text: TODO", null); // TODO
-
         op.option("User Data: TODO", null); // TODO
-
         op.option("visible: TODO", null); // TODO
-
         op.option(": TODO", null); // TODO
     }
 }

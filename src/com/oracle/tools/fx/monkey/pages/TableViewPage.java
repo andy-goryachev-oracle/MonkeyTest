@@ -116,7 +116,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Focus Model:", createFocusModelOptions("focusModel", control.focusModelProperty()));
         op.option("Items:", createItemsOptions("items", control.getItems()));
         op.option(Utils.buttons(addDataItemButton, clearDataItemsButton));
-        op.option("Placeholder: TODO", null); // TODO
+        op.option("Placeholder:", Options.placeholderNode("placeholder", control.placeholderProperty()));
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option("Sort Policy: TODO", null); // TODO
