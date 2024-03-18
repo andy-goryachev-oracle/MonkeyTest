@@ -27,33 +27,37 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
+import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Accordion Page.
  */
 public class AccordionPage extends TestPaneBase {
-    private final Accordion accordion;
+    private final Accordion control;
 
     public AccordionPage() {
         super("AccordionPage");
 
-        accordion = new Accordion();
+        control = new Accordion();
         addPane();
 
+        // TODO MenuButtons with more options
         Button addButton = new Button("Add Pane");
         addButton.setOnAction((ev) -> addPane());
 
-        Button removeButton = new Button("Remove Pane");
+        Button removeButton = new Button("Remove");
         removeButton.setOnAction((ev) -> removePane());
 
         OptionPane op = new OptionPane();
-        op.add(addButton);
-        op.add(removeButton);
+        op.section("Accordion");
+        op.option("Panes:", Utils.buttons(addButton, removeButton));
+        ControlPropertySheet.appendTo(op, control);
 
-        setContent(accordion);
+        setContent(control);
         setOptions(op);
     }
 
@@ -65,13 +69,13 @@ public class AccordionPage extends TestPaneBase {
             System.out.println(name);
         });
         TitledPane p = new TitledPane(name, b);
-        accordion.getPanes().add(p);
+        control.getPanes().add(p);
     }
 
     private void removePane() {
-        int sz = accordion.getPanes().size();
+        int sz = control.getPanes().size();
         if (sz > 0) {
-            accordion.getPanes().remove(0);
+            control.getPanes().remove(0);
         }
     }
 }
