@@ -28,18 +28,20 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.skin.TextFieldSkin;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.TextInputControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TextField Page.
  */
-public class TextFieldPage extends TestPaneBase {
-    private final TextField textField;
+public class TextFieldPage extends TestPaneBase implements HasSkinnable {
+    private final TextField control;
     private final CheckBox inScroll;
 
     public TextFieldPage() {
@@ -48,30 +50,40 @@ public class TextFieldPage extends TestPaneBase {
 
     protected TextFieldPage(TextField f, String name) {
         super(name);
-        this.textField = f;
+        this.control = f;
 
         inScroll = new CheckBox("in scroll pane");
         FX.name(inScroll, "inScrollPane");
         inScroll.setOnAction((ev) -> updateScroll());
 
         OptionPane op = new OptionPane();
-        op.option("Alignment:", new EnumOption<>("alignment", false, Pos.class, textField.alignmentProperty()));
-        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, textField.prefColumnCountProperty()));
+        op.option("Alignment:", new EnumOption<>("alignment", false, Pos.class, control.alignmentProperty()));
+        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, control.prefColumnCountProperty()));
         op.separator();
         op.option(inScroll);
         
-        TextInputControlPropertySheet.appendTo(op, false, textField);
+        TextInputControlPropertySheet.appendTo(op, false, control);
 
-        setContent(textField);
+        setContent(control);
         setOptions(op);
     }
 
     private void updateScroll() {
         if(inScroll.isSelected()) {
-            ScrollPane sp = new ScrollPane(textField);
+            ScrollPane sp = new ScrollPane(control);
             setContent(sp);
         } else {
-            setContent(textField);
+            setContent(control);
         }
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TextFieldSkin(control));
     }
 }

@@ -35,11 +35,13 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TabPane.TabDragPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.control.skin.TabPaneSkin;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -47,7 +49,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * TabPane Page.
  */
-public class TabPanePage extends TestPaneBase {
+public class TabPanePage extends TestPaneBase implements HasSkinnable {
     private final TabPane control;
 
     public TabPanePage() {
@@ -106,5 +108,15 @@ public class TabPanePage extends TestPaneBase {
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TabPaneSkin(control));
     }
 }

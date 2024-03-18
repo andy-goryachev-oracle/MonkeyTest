@@ -60,7 +60,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * ListView page
+ * ListView Page.
  */
 public class ListViewPage extends TestPaneBase implements HasSkinnable {
     private final ListView<Object> control;
@@ -115,7 +115,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         setContent(new BorderPane(control));
     }
 
-    protected void jump() {
+    private void jump() {
         int sz = control.getItems().size();
         int ix = sz / 2;
 

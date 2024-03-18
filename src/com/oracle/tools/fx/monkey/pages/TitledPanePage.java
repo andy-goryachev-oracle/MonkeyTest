@@ -29,18 +29,20 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.skin.TitledPaneSkin;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TitledPane Page.
  */
-public class TitledPanePage extends TestPaneBase {
+public class TitledPanePage extends TestPaneBase implements HasSkinnable {
     private final TitledPane control;
 
     public TitledPanePage() {
@@ -77,5 +79,15 @@ public class TitledPanePage extends TestPaneBase {
         s.addChoiceSupplier("<null>", () -> null);
         s.selectFirst();
         return s;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TitledPaneSkin(control));
     }
 }

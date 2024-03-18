@@ -28,11 +28,13 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.skin.PaginationSkin;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -40,7 +42,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * Pagination Control Page.
  */
-public class PaginationPage extends TestPaneBase {
+public class PaginationPage extends TestPaneBase implements HasSkinnable {
     private final Pagination control;
 
     public PaginationPage() {
@@ -74,5 +76,15 @@ public class PaginationPage extends TestPaneBase {
         op.addChoice("Images", createImagesFactory()); 
         op.addChoice("<null>", null);
         return op;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new PaginationSkin(control));
     }
 }

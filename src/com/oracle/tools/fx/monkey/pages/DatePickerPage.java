@@ -26,14 +26,16 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.time.LocalDate;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.skin.DatePickerSkin;
 import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * DatePicker Page
+ * DatePicker Page.
  */
-public class DatePickerPage extends TestPaneBase {
+public class DatePickerPage extends TestPaneBase implements HasSkinnable {
     private DatePicker control;
 
     public DatePickerPage() {
@@ -42,10 +44,20 @@ public class DatePickerPage extends TestPaneBase {
         control = new DatePicker(LocalDate.now());
 
         OptionPane op = new OptionPane();
-        op.section("ColorPicker");
+        op.section("DatePicker");
         ComboBoxBasePropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new DatePickerSkin(control));
     }
 }

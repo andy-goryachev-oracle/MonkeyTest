@@ -25,33 +25,45 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.TextArea;
+import javafx.scene.control.skin.TextAreaSkin;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.sheets.TextInputControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * TextArea Page.
  */
-public class TextAreaPage extends TestPaneBase {
-    private final TextArea textArea;
+public class TextAreaPage extends TestPaneBase implements HasSkinnable {
+    private final TextArea control;
 
     public TextAreaPage() {
         super("TextAreaPage");
 
-        textArea = new TextArea();
+        control = new TextArea();
 
         OptionPane op = new OptionPane();
         op.section("TextArea");
-        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, textArea.prefColumnCountProperty()));
-        op.option("Preferred Row Count:", new IntOption("prefRowCount", -1, Integer.MAX_VALUE, textArea.prefRowCountProperty()));
+        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, control.prefColumnCountProperty()));
+        op.option("Preferred Row Count:", new IntOption("prefRowCount", -1, Integer.MAX_VALUE, control.prefRowCountProperty()));
         op.option("Scroll Left: TODO", null); // TODO
         op.option("Scroll Top: TODO", null); // TODO
-        op.option(new BooleanOption("wrapText", "wrap text", textArea.wrapTextProperty()));
-        TextInputControlPropertySheet.appendTo(op, true, textArea);
+        op.option(new BooleanOption("wrapText", "wrap text", control.wrapTextProperty()));
+        TextInputControlPropertySheet.appendTo(op, true, control);
 
-        setContent(textArea);
+        setContent(control);
         setOptions(op);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TextAreaSkin(control));
     }
 }

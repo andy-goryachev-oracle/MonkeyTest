@@ -37,6 +37,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * Spinner Page.
  */
+// TODO convert to final control (use value factory)
 public class SpinnerPage extends TestPaneBase {
     enum Mode {
         DOUBLE,
@@ -95,7 +96,7 @@ public class SpinnerPage extends TestPaneBase {
         FX.select(modeChoice, Mode.DOUBLE);
     }
 
-    protected void updateControl() {
+    private void updateControl() {
         Mode m = modeChoice.getSelectionModel().getSelectedItem();
         if (m == null) {
             m = Mode.DOUBLE;
@@ -118,7 +119,7 @@ public class SpinnerPage extends TestPaneBase {
         setContent(control);
     }
 
-    protected StringConverter<Number> createConverter(Converter c) {
+    private StringConverter<Number> createConverter(Converter c) {
         if (c != null) {
             switch (c) {
             case PERCENT:

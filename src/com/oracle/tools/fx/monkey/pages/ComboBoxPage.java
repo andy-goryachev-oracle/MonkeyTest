@@ -34,10 +34,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.util.StringConverter;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
@@ -45,9 +47,9 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * ComboBox Page
+ * ComboBox Page.
  */
-public class ComboBoxPage extends TestPaneBase {
+public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
     private final ComboBox<Object> control;
 
     public ComboBoxPage() {
@@ -157,5 +159,15 @@ public class ComboBoxPage extends TestPaneBase {
         op.addChoice("<null>", null);
         op.selectInitialValue();
         return op;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ComboBoxListViewSkin<>(control));
     }
 }

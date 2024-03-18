@@ -36,12 +36,14 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.control.skin.TreeViewSkin;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -50,7 +52,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
 /**
  * TreeView Page.
  */
-public class TreeViewPage extends TestPaneBase {
+public class TreeViewPage extends TestPaneBase implements HasSkinnable {
     private final TreeView<Object> control;
     private int seq;
 
@@ -176,5 +178,15 @@ public class TreeViewPage extends TestPaneBase {
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new TreeViewSkin(control));
     }
 }

@@ -29,15 +29,17 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.skin.ScrollPaneSkin;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * ScrollPane Page.
  */
-public class ScrollPanePage extends TestPaneBase {
-    private final ScrollPane scroll;
+public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
+    private final ScrollPane control;
     private final Label content;
 
     public ScrollPanePage() {
@@ -46,7 +48,7 @@ public class ScrollPanePage extends TestPaneBase {
         content = new Label();
         content.setAlignment(Pos.CENTER);
         
-        scroll = new ScrollPane(content);
+        control = new ScrollPane(content);
 
         ComboBox<Dimension2D> prefSize = new ComboBox<>();
         FX.name(prefSize, "prefSize");
@@ -64,17 +66,27 @@ public class ScrollPanePage extends TestPaneBase {
         OptionPane p = new OptionPane();
         p.option("Preferred size:", prefSize);
 
-        setContent(scroll);
+        setContent(control);
         setOptions(p);
 
 //        min.getSelectionModel().select(0L);
     }
 
-    protected void updatePrefSize(Dimension2D d) {
+    private void updatePrefSize(Dimension2D d) {
         double w = d.getWidth();
         double h = d.getHeight();
         content.setPrefSize(w, h);
         String s = "Preferred size: " + w + " x " + h;
         content.setText(s);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ScrollPaneSkin(control));
     }
 }

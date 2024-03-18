@@ -32,16 +32,18 @@ import java.util.function.Supplier;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.skin.ChoiceBoxSkin;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * ChoiceBox Page
+ * ChoiceBox Page.
  */
-public class ChoiceBoxPage extends TestPaneBase {
+public class ChoiceBoxPage extends TestPaneBase implements HasSkinnable {
     private ChoiceBox<Object> control;
 
     public ChoiceBoxPage() {
@@ -123,5 +125,15 @@ public class ChoiceBoxPage extends TestPaneBase {
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ChoiceBoxSkin(control));
     }
 }

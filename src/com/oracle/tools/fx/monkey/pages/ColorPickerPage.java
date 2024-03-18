@@ -25,15 +25,17 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.skin.ColorPickerSkin;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.sheets.ComboBoxBasePropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * ColorPicker Page
+ * ColorPicker Page.
  */
-public class ColorPickerPage extends TestPaneBase {
+public class ColorPickerPage extends TestPaneBase implements HasSkinnable {
     private ColorPicker control;
 
     public ColorPickerPage() {
@@ -51,5 +53,15 @@ public class ColorPickerPage extends TestPaneBase {
 
         setContent(control);
         setOptions(op);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ColorPickerSkin(control));
     }
 }

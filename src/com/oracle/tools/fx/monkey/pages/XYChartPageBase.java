@@ -60,7 +60,7 @@ public abstract class XYChartPageBase extends TestPaneBase {
         return a;
     }
     
-    private Series<Number, Number> createNumberSeries() {
+    protected Series<Number, Number> createNumberSeries() {
         String name = "S" + (seq++);
         XYChart.Series s = new XYChart.Series();
         s.setName(name);
@@ -71,7 +71,7 @@ public abstract class XYChartPageBase extends TestPaneBase {
         return s;
     }
 
-    private Series<String, Number> createBarSeries() {
+    protected Series<String, Number> createBarSeries() {
         String name = "S" + (seq++);
         XYChart.Series s = new XYChart.Series();
         s.setName(name);

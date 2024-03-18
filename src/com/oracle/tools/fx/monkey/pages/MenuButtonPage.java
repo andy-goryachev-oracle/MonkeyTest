@@ -32,8 +32,10 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.skin.MenuButtonSkin;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -41,7 +43,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 /**
  * MenuButton Page.
  */
-public class MenuButtonPage extends TestPaneBase {
+public class MenuButtonPage extends TestPaneBase implements HasSkinnable {
     private final MenuButton control;
 
     public MenuButtonPage() {
@@ -80,5 +82,15 @@ public class MenuButtonPage extends TestPaneBase {
         s.addChoiceSupplier("<empty>", mk(0));
         s.selectFirst();
         return s;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new MenuButtonSkin(control));
     }
 }

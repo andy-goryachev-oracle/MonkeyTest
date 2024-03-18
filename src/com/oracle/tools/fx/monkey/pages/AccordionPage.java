@@ -27,7 +27,9 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.skin.AccordionSkin;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SequenceNumber;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -36,7 +38,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
 /**
  * Accordion Page.
  */
-public class AccordionPage extends TestPaneBase {
+public class AccordionPage extends TestPaneBase implements HasSkinnable {
     private final Accordion control;
 
     public AccordionPage() {
@@ -77,5 +79,15 @@ public class AccordionPage extends TestPaneBase {
         if (sz > 0) {
             control.getPanes().remove(0);
         }
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new AccordionSkin(control));
     }
 }

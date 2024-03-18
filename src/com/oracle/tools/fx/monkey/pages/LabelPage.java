@@ -25,21 +25,22 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.skin.LabelSkin;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Label Page
+ * Label Page.
  */
-public class LabelPage extends TestPaneBase {
-    private final Label label;
+public class LabelPage extends TestPaneBase implements HasSkinnable {
+    private final Label control;
 
     public LabelPage() {
         super("LabelPage");
 
-        label = new Label();
-        setContent(label);
+        control = new Label();
 
         // JDK-8092102
 //        control.textTruncatedProperty().addListener((s,p,c) -> {
@@ -47,7 +48,19 @@ public class LabelPage extends TestPaneBase {
 //        });
 
         OptionPane op = new OptionPane();
-        LabeledPropertySheet.appendTo(op, "Label", true, label);
+        LabeledPropertySheet.appendTo(op, "Label", true, control);
+
+        setContent(control);
         setOptions(op);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new LabelSkin(control));
     }
 }

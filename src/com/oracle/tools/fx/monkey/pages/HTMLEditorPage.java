@@ -26,15 +26,17 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.scene.Node;
 import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.HTMLEditorSkin;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * HTML Editor Page.
+ * HTMLEditor Page.
  */
-public class HTMLEditorPage extends TestPaneBase {
+public class HTMLEditorPage extends TestPaneBase implements HasSkinnable {
     private final HTMLEditor control;
 
     public HTMLEditorPage() {
@@ -61,5 +63,15 @@ public class HTMLEditorPage extends TestPaneBase {
             control.setHtmlText(htmlText);
         });
         return op;
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new HTMLEditorSkin(control));
     }
 }
