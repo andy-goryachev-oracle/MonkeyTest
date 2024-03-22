@@ -26,12 +26,17 @@
 package com.oracle.tools.fx.monkey.tools;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.HexFormat;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -45,6 +50,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.util.FX;
 
@@ -57,6 +64,7 @@ public class ImageDecoderWindow extends Stage {
     private final Label status;
     private final BorderPane imagePane;
     private final BorderPane resultPane;
+    private byte[] bytes;
 
     public ImageDecoderWindow() {
         FX.name(this, "ImageDecoderWindow");
@@ -67,17 +75,23 @@ public class ImageDecoderWindow extends Stage {
 
         imageField = new ImageView();
         imageField.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+        imageField.setOnContextMenuRequested((ev) -> {
+            ContextMenu m = new ContextMenu();
+            FX.item(m, "Save Image", saveImageAction());
+            m.show(ImageDecoderWindow.this, ev.getScreenX(), ev.getScreenY());
+        });
 
         status = new Label();
         status.setPadding(new Insets(2, 10, 2, 10));
 
         ScrollPane scroll = new ScrollPane(imageField);
-        scroll.setBackground(Background.fill(Color.DARKGRAY));
+        scroll.setBackground(Background.fill(Color.DARKGRAY)); // FIX does not work
 
         imagePane = new BorderPane(scroll);
         imagePane.setBottom(status);
 
         resultPane = new BorderPane();
+        resultPane.setBackground(Background.fill(Color.DARKGRAY));
 
         TabPane tp = new TabPane();
         tp.getTabs().setAll(
@@ -92,6 +106,33 @@ public class ImageDecoderWindow extends Stage {
         setScene(new Scene(tp));
         setWidth(1200);
         setHeight(1000);
+    }
+
+    private Runnable saveImageAction() {
+        if (bytes == null) {
+            return null;
+        }
+
+        return () -> {
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().addAll(new ExtensionFilter("PNG Files", "*.png"));
+            fc.setTitle("Save Image");
+            fc.setInitialDirectory(new File("."));
+            fc.setInitialFileName("IMG_" + System.currentTimeMillis() + ".png");
+
+            File f = fc.showSaveDialog(this);
+            if (f != null) {
+                try {
+                    Files.write(f.toPath(), bytes);
+                } catch (Exception e) {
+                    Alert a = new Alert(AlertType.ERROR);
+                    a.setTitle("Save Error");
+                    a.setContentText(e.getMessage());
+                    a.initOwner(this);
+                    a.showAndWait();
+                }
+            }
+        };
     }
 
     private void handleSelection(Number ix) {
@@ -126,14 +167,40 @@ public class ImageDecoderWindow extends Stage {
         return null;
     }
 
+    private String cleanup(String text) {
+        int sz = text.length();
+        for (int i = 0; i < sz; i++) {
+            char c = text.charAt(i);
+            if (Character.isWhitespace(c)) {
+                return cleanup(text, i);
+            }
+        }
+        return text;
+    }
+
+    private String cleanup(String text, int start) {
+        int sz = text.length();
+        StringBuilder sb = new StringBuilder(sz);
+        sb.append(text, 0, start);
+        for (int i = start; i < sz; i++) {
+            char c = text.charAt(i);
+            if (!Character.isWhitespace(c)) {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
     private void decode() {
         String err;
         try {
-            String text = textField.getText().trim();
+            String text = textField.getText();
+            text = cleanup(text);
             byte[] b = Base64.getDecoder().decode(text);
             if ((b == null) || (b.length == 0)) {
                 err = "No valid image data.";
             } else {
+                bytes = b;
                 Image im = new Image(new ByteArrayInputStream(b));
                 imageField.setImage(im);
                 resultPane.setCenter(imagePane);
@@ -146,7 +213,9 @@ public class ImageDecoderWindow extends Stage {
             err = sw.toString();
         }
         TextArea t = new TextArea(err);
+        t.setEditable(false);
         t.setFont(new Font("monospaced", 12));
         resultPane.setCenter(t);
+        bytes = null;
     }
 }

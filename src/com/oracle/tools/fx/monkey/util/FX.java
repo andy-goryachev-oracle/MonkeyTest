@@ -129,7 +129,9 @@ public class FX {
     public static MenuItem item(ContextMenu cm, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
         applyMnemonic(mi);
-        if (action != null) {
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
             mi.setOnAction((ev) -> action.run());
         }
         cm.getItems().add(mi);
