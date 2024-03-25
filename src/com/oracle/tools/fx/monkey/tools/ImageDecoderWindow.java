@@ -57,6 +57,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 
 /**
  * Image Decoder Window.
+ * See https://bugs.openjdk.org/browse/JDK-8328716
  */
 public class ImageDecoderWindow extends Stage {
     private final TextArea textField;

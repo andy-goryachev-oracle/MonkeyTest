@@ -60,7 +60,7 @@ import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
 
 /**
- * Monkey Tester Main Window
+ * Monkey Tester Main Window.
  */
 public class MainWindow extends Stage {
     protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
