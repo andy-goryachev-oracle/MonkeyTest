@@ -27,8 +27,6 @@ package com.oracle.tools.fx.monkey.util;
 
 import java.util.function.Consumer;
 import javafx.beans.property.Property;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
