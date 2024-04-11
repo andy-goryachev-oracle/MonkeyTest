@@ -164,4 +164,19 @@ public class Options {
             }
         });
     }
+
+    public static Node forColumnWidth(String name, double defaultValue, DoubleProperty p) {
+        DoubleOption d = new DoubleOption(name, p);
+        d.addChoice("0", Double.valueOf(0));
+        d.addChoice("10", 10.0);
+        d.addChoice("33.3", 33.3);
+        d.addChoice("100", 100.0);
+        d.addChoice("Double.MAX_VALUE", Double.MAX_VALUE);
+        d.addChoice("Double.MIN_VALUE", Double.MIN_VALUE);
+        d.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
+        d.addChoice("Double.NaN", Double.NaN);
+        d.addChoice("<default: " + defaultValue + ">", defaultValue);
+        d.selectInitialValue();
+        return d;
+    }
 }

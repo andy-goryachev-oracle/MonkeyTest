@@ -33,6 +33,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumnBase;
@@ -52,6 +53,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.TableColumnPropertySheet;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -303,7 +305,15 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return new SimpleObjectProperty(v);
         });
+        tc.setContextMenu(createPopupMenu(tc));
         return tc;
+    }
+
+    private ContextMenu createPopupMenu(TreeTableColumn<?,?> tc) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
+        FX.item(m, "Delete", () -> control.getColumns().remove(tc));
+        return m;
     }
 
     private ColumnBuilder<TreeTableColumn<DataRow, ?>> columnBuilder() {

@@ -33,6 +33,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
@@ -49,6 +50,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.TableColumnPropertySheet;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
 import com.oracle.tools.fx.monkey.util.DataRow;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -128,9 +130,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.separator();
         op.option(refresh);
 
-        // currently selected column option sheet
-        //TableColumnOptions.appendTo(op, currentColumn);
-
         // control option sheet
         ControlPropertySheet.appendTo(op, control);
 
@@ -189,62 +188,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         control.getColumns().clear();
     }
 
-//                case COL_WITH_GRAPHIC:
-//                    {
-//                        TableColumn<Object, String> c = new TableColumn<>();
-//                        tableView.getColumns().add(c);
-//                        c.setText("C" + tableView.getColumns().size());
-//                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-//                        c.setCellFactory((r) -> {
-//                            return new TableCell<>() {
-//                                @Override
-//                                protected void updateItem(String item, boolean empty) {
-//                                    super.updateItem(item, empty);
-//                                    Text t = new Text(
-//                                        "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
-//                                    t.wrappingWidthProperty().bind(widthProperty());
-//                                    setPrefHeight(USE_COMPUTED_SIZE);
-//                                    setGraphic(t);
-//                                }
-//                            };
-//                        });
-//                        lastColumn = c;
-//                    }
-
-    // FIX move to column menu
-//    void filter() {
-//        Filter f = filterSelector.getSelectionModel().getSelectedItem();
-//        if (f == Filter.NONE) {
-//            f = null;
-//        }
-//        if (f != null) {
-//            ObservableList<Object> items = FXCollections.observableArrayList();
-//            items.addAll(tableView.getItems());
-//            FilteredList<Object> filteredList = new FilteredList<>(items);
-//            switch(f) {
-//            case SKIP1S:
-//                filteredList.setPredicate((s) -> {
-//                    if (s == null) {
-//                        return true;
-//                    }
-//                    return !((String)s).contains("11");
-//                });
-//                break;
-//            case SKIP2S:
-//                filteredList.setPredicate((s) -> {
-//                    if (s == null) {
-//                        return true;
-//                    }
-//                    return !((String)s).contains("22");
-//                });
-//                break;
-//            default:
-//                throw new Error("?" + f);
-//            }
-//            //tableView.setItems(filteredList);
-//        }
-//    }
-
     @Override
     public void nullSkin() {
         control.setSkin(null);
@@ -254,92 +197,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     public void newSkin() {
         control.setSkin(new TableViewSkin<>(control));
     }
-
-    // FIX move to column menu
-//    private Callback<CellDataFeatures<Object, String>, ObservableValue<String>> getValueFactory(CellValue t) {
-//        if (t != null) {
-//            switch (t) {
-//            case MIN_MAX:
-//                return (f) -> {
-//                    String s = describe(f.getTableColumn());
-//                    return new SimpleStringProperty(s);
-//                };
-//            case QUOTED:
-//                return (f) -> {
-//                    String s = "\"" + f.getValue() + '"';
-//                    return new SimpleStringProperty(s);
-//                };
-//            case VALUE:
-//                return (f) -> {
-//                    String s = String.valueOf(f.getValue());
-//                    return new SimpleStringProperty(s);
-//                };
-//            }
-//        }
-//        return null;
-//    }
-
-//    private Node getIcon(String text) {
-//        if (text.contains("0")) {
-//            return icon(Color.RED);
-//        } else if (text.contains("1")) {
-//            return icon(Color.GREEN);
-//        }
-//        return null;
-//    }
-//
-//    private Node icon(Color color) {
-//        Canvas c = new Canvas(16, 16);
-//        GraphicsContext g = c.getGraphicsContext2D();
-//        g.setFill(color);
-//        g.fillRect(0, 0, c.getWidth(), c.getHeight());
-//        return c;
-//    }
-
-    // FIX move to column menu
-//    private Callback getCellFactory(Cells t) {
-//        if (t != null) {
-//            switch (t) {
-//            case NULL:
-//                return null;
-//            case GRAPHICS:
-//                return (r) -> {
-//                    return new TableCell<String,String>() {
-//                        @Override
-//                        protected void updateItem(String item, boolean empty) {
-//                            super.updateItem(item, empty);
-//                            if (item == null) {
-//                                super.setText(null);
-//                                super.setGraphic(null);
-//                            } else {
-//                                String s = item.toString();
-//                                super.setText(s);
-//                                Node n = getIcon(s);
-//                                super.setGraphic(n);
-//                            }
-//                        }
-//                    };
-//                };
-//            case VARIABLE:
-//                return (r) -> {
-//                    return new TableCell<String,String>() {
-//                        @Override
-//                        protected void updateItem(String item, boolean empty) {
-//                            super.updateItem(item, empty);
-//                            String s =
-//                                "111111111111111111111111111111111111111111111" +
-//                                "11111111111111111111111111111111111111111\n2\n3\n";
-//                            Text t = new Text(s);
-//                            t.wrappingWidthProperty().bind(widthProperty());
-//                            setPrefHeight(USE_COMPUTED_SIZE);
-//                            setGraphic(t);
-//                        }
-//                    };
-//                };
-//            }
-//        }
-//        return TableColumn.DEFAULT_CELL_FACTORY;
-//    }
 
     /**
      * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
@@ -451,7 +308,15 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return new SimpleObjectProperty(v);
         });
+        tc.setContextMenu(createPopupMenu(tc));
         return tc;
+    }
+
+    private ContextMenu createPopupMenu(TableColumn<?,?> tc) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
+        FX.item(m, "Delete", () -> control.getColumns().remove(tc));
+        return m;
     }
 
     private Node createColumnResizePolicy(String name, ObjectProperty<Callback<ResizeFeatures, Boolean>> p) {
