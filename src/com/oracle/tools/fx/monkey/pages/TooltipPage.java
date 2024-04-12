@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -55,11 +56,6 @@ public class TooltipPage extends TestPaneBase {
 
         control = new Tooltip("This is a tooltip with some default text, to be settable later.");
 
-        ObjectOption<Node> graphic = new ObjectOption<>("graphic", control.graphicProperty());
-        graphic.addChoice("<null>", null);
-        graphic.addChoice("Image", ImageTools.createImageView(Color.RED, 256, 256));
-        graphic.addChoiceSupplier("Interactive Content", this::createInteractiveContent);
-
         Label content = new Label("Hover to show the tooltip");
         content.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         Tooltip.install(content, control);
@@ -69,7 +65,7 @@ public class TooltipPage extends TestPaneBase {
         op.section("Tooltip");
         op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, control.contentDisplayProperty()));
         op.option("Font: TODO", null); // TODO font
-        op.option("Graphic:", graphic);
+        op.option("Graphic:", createGraphicOptions("graphic", control.graphicProperty()));
         op.option("Graphic Text Gap:", new DoubleSpinner("graphicTextGap", 0, 100, 0.1, control.graphicTextGapProperty()));
         op.option("Hide Delay:", new DurationOption("hideDelay", control.hideDelayProperty()));
         op.option("Show Delay:", new DurationOption("showDelay", control.showDelayProperty()));
@@ -83,6 +79,14 @@ public class TooltipPage extends TestPaneBase {
 
         setContent(new BorderPane(content));
         setOptions(op);
+    }
+
+    private Node createGraphicOptions(String string, ObjectProperty<Node> graphicProperty) {
+        ObjectOption<Node> op = new ObjectOption<>("graphic", control.graphicProperty());
+        op.addChoice("<null>", null);
+        op.addChoice("Image", ImageTools.createImageView(Color.RED, 256, 256));
+        op.addChoiceSupplier("Interactive Content", this::createInteractiveContent);
+        return op;
     }
 
     // TODO tooltip cannot be interactive: the default behavior is to move it away from underneath the mouse pointer!
