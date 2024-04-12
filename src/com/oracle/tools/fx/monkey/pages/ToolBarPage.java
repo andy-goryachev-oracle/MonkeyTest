@@ -31,6 +31,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitMenuButton;
@@ -102,10 +103,11 @@ public class ToolBarPage extends TestPaneBase {
         s.addChoiceSupplier("Mixed", () -> {
             return List.of(
                 button(),
-                label("Find:"),
+                label("Label"),
                 textField(20),
                 button(),
                 button(),
+                checkBox("checkbox"),
                 button(),
                 button(),
                 button(),
@@ -126,6 +128,12 @@ public class ToolBarPage extends TestPaneBase {
 
     private Node label(String text) {
         Label n = new Label(text);
+        setContextMenu(n);
+        return n;
+    }
+
+    private Node checkBox(String text) {
+        CheckBox n = new CheckBox(text);
         setContextMenu(n);
         return n;
     }

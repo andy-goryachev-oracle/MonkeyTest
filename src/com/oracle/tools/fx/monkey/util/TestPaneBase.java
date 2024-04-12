@@ -48,9 +48,11 @@ public class TestPaneBase extends BorderPane {
 
     public TestPaneBase(String name) {
         FX.name(this, name);
+        FX.style(this, name);
 
         contentPane = new BorderPane();
         contentPane.setOpacity(1.0);
+        FX.style(contentPane, "content");
 
         updateContent();
     }
