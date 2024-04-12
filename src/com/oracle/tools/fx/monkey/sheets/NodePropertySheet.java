@@ -32,6 +32,7 @@ import javafx.scene.effect.BlendMode;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleSpinner;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.StyleClassOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
@@ -70,6 +71,7 @@ public class NodePropertySheet {
         op.option("Scale Y: TODO", null); // TODO
         op.option("Scale Z: TODO", null); // TODO
         op.option("Style:", new TextOption("style", n.styleProperty()));
+        op.option("Style Class:", new StyleClassOption("styleClass", n.getStyleClass()));
         op.option("Translate X: TODO", null); // TODO
         op.option("Translate Y: TODO", null); // TODO
         op.option("Translate Z: TODO", null); // TODO
