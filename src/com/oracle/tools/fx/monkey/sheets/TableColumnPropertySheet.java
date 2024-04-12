@@ -24,21 +24,16 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TreeTableColumn;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
-import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
+import com.oracle.tools.fx.monkey.util.OptionWindow;
 
 /**
  * TreeTableView/TableView (Selected) Column Property Sheet
@@ -62,25 +57,9 @@ public class TableColumnPropertySheet extends BorderPane {
         } else {
             name = " [" + name + "]";
         }
+        
         TableColumnPropertySheet p = new TableColumnPropertySheet(c);
-        ScrollPane sp = new ScrollPane(p);
-        sp.setFitToHeight(true);
-        sp.setFitToWidth(true);
-        Stage w = new Stage();
-        w.initOwner(FX.getParentWindow(parent));
-        w.setScene(new Scene(sp));
-        w.setTitle("Table Column Properties" + name);
-        w.addEventHandler(KeyEvent.KEY_RELEASED, p::handleKey);
-        w.setWidth(500);
-        w.setHeight(800);
-        w.show();
-    }
-
-    private void handleKey(KeyEvent ev) {
-        if (ev.getCode() == KeyCode.ESCAPE) {
-            Stage w = (Stage)ev.getSource();
-            w.hide();
-        }
+        OptionWindow.open(parent, "Table Column Properties" + name, 500, 800, p);
     }
 
     private void tableColumnOptions(OptionPane op, TableColumn<?, ?> c) {
@@ -258,4 +237,87 @@ public class TableColumnPropertySheet extends BorderPane {
 //        }
 //        return TableColumn.DEFAULT_CELL_FACTORY;
 //    }
+    
+    
+    
+    // TODO tree table
+    
+    
+
+//  protected Pane createPane(Data demo, ResizePolicy policy, Object[] spec) {
+//      TreeTableColumn<String, String> lastColumn = null;
+//      int id = 1;
+//
+//      for (int i = 0; i < spec.length;) {
+//          Object x = spec[i++];
+//          if (x instanceof Cmd cmd) {
+//              switch (cmd) {
+//              case COL_WITH_GRAPHIC:
+//                  lastColumn = makeColumn((c) -> {
+//                      c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+//                      c.setCellFactory((r) -> {
+//                          return new TreeTableCell<>() {
+//                              @Override
+//                              protected void updateItem(String item, boolean empty) {
+//                                  super.updateItem(item, empty);
+//                                  if (empty) {
+//                                      setGraphic(null);
+//                                  } else {
+//                                      Text t = new Text("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+//                                      t.wrappingWidthProperty().bind(widthProperty());
+//                                      setGraphic(t);
+//                                  }
+//                                  setPrefHeight(USE_COMPUTED_SIZE);
+//                              }
+//                          };
+//                      });
+//                  });
+//              case ROWS:
+//                  {
+//                      int n = (int)(spec[i++]);
+//                      TreeItem subNodeTreeItem = null;
+//                      for (int j = 0; j < n; j++) {
+//                          TreeItem treeItem = new TreeItem(newItem());
+//                          if (addSubNodes.isSelected()) {
+//                              subNodeTreeItem = new TreeItem(newItem());
+//                              treeItem.getChildren().add(subNodeTreeItem);
+//                          }
+//                          if (addGraphics.isSelected()) {
+//                              treeItem.setGraphic(new Rectangle(10, 10, Color.RED));
+//                              if (subNodeTreeItem != null) {
+//                                  subNodeTreeItem.setGraphic(new Rectangle(10, 10));
+//                              }
+//                          }
+//                          control.getRoot().getChildren().add(treeItem);
+//                      }
+//                  }
+
+//  protected TreeTableColumn<String, String> makeColumn(Consumer<TreeTableColumn<String, String>> updater) {
+//      TreeTableColumn<String, String> c = new TreeTableColumn<>();
+//      control.getColumns().add(c);
+//      c.setText("C" + control.getColumns().size());
+//      updater.accept(c);
+//
+//      if (defaultCellFactory == null) {
+//          defaultCellFactory = c.getCellFactory();
+//      }
+//
+//      Cells t = cellFactorySelector.getSelectionModel().getSelectedItem();
+//      Callback<TreeTableColumn<String, String>, TreeTableCell<String, String>> f = getCellFactory(t);
+//      c.setCellFactory(f);
+//
+//      c.setOnEditCommit((ev) -> {
+//          if ("update".equals(ev.getNewValue())) {
+//              var item = ev.getRowValue();
+//              item.setValue("UPDATED!");
+//              System.out.println("committing the value `UPDATED!`");
+//          } else {
+//              System.out.println("discarding the new value: " + ev.getNewValue());
+//          }
+//      });
+//
+//      return c;
+//  }
+
+
 }

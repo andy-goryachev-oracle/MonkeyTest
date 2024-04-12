@@ -292,4 +292,16 @@ public class FX {
         }
         return b;
     }
+
+    public static void style(Node n, String style) {
+        n.getStyleClass().add(style);
+    }
+
+    public static void style(Node n, String style, boolean on) {
+        if (on) {
+            n.getStyleClass().add(style);
+        } else {
+            n.getStyleClass().remove(style);
+        }
+    }
 }

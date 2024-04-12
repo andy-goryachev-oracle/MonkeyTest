@@ -35,7 +35,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableRow;
@@ -79,32 +78,13 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             control.getItems().clear();
         });
 
-        SplitMenuButton addColumnButton = new SplitMenuButton(
-            FX.menuItem("at the beginning", () -> addColumn(0)),
-            FX.menuItem("in the middle", () -> addColumn(1)),
-            FX.menuItem("at the end", () -> addColumn(2))
-        );
-        addColumnButton.setText("Add Column");
-
-        SplitMenuButton removeColumnButton = new SplitMenuButton(
-            FX.menuItem("at the beginning", () -> removeColumn(0)),
-            FX.menuItem("in the middle", () -> removeColumn(1)),
-            FX.menuItem("at the end", () -> removeColumn(2)),
-            FX.menuItem("all", () -> removeAllColumns())
-        );
-        removeColumnButton.setText("Remove Column");
-
         Button refresh = FX.button("Refresh", () -> {
             control.refresh();
         });
 
-        // layout
-
         OptionPane op = new OptionPane();
         op.section("TableView");
-
         op.option("Columns:", createColumnsSelector("columns", control.getColumns()));
-        op.option(Utils.buttons(addColumnButton, removeColumnButton));
         op.option("Column Resize Policy:", createColumnResizePolicy("columnResizePolicy", control.columnResizePolicyProperty()));
         op.option(new BooleanOption("editable", "editable", control.editableProperty()));
         op.option("Fixed Cell Size:", Options.fixedSizeOption("fixedCellSize", control.fixedCellSizeProperty()));
@@ -116,76 +96,52 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option("Sort Policy: TODO", null); // TODO
         op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", control.tableMenuButtonVisibleProperty()));
-
-        // TODO
-//        op.label("Filter:");
-//        op.option(filterSelector);
-//        op.label("Cell Value:");
-//        op.option(cellValueSelector);
-//        op.label("Cell Factory:");
-//        op.option(cellFactorySelector);
-//        op.label("Selection Model:");
-//        op.option(selectionSelector);
-
         op.separator();
         op.option(refresh);
-
-        // control option sheet
         ControlPropertySheet.appendTo(op, control);
 
         setContent(control);
         setOptions(op);
     }
 
-    private void addColumn(int where) {
+    private ContextMenu createPopupMenu(TableColumn<?,?> tc) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
+        FX.separator(m);
+        FX.item(m, "Add Column Before", () -> addColumn(tc, false));
+        FX.item(m, "Add Column After", () -> addColumn(tc, true));
+        FX.separator(m);
+        FX.item(m, "Remove Column", () -> control.getColumns().remove(tc));
+        FX.item(m, "Remove All Columns", () -> control.getColumns().clear());
+        return m;
+    }
+
+    private TableColumn<DataRow, Object> newColumn() {
+        TableColumn<DataRow, Object> tc = new TableColumn();
+        tc.setCellFactory(TextFieldTableCell.<DataRow, Object>forTableColumn(DataRow.converter()));
+        tc.setCellValueFactory((cdf) -> {
+            Object v = cdf.getValue();
+            if (v instanceof DataRow r) {
+                return r.getValue(tc);
+            }
+            return new SimpleObjectProperty(v);
+        });
+        tc.setContextMenu(createPopupMenu(tc));
+        return tc;
+    }
+
+    private void addColumn(TableColumn<?, ?> ref, boolean after) {
+        int ix = control.getColumns().indexOf(ref);
+        if (ix < 0) {
+            return;
+        }
+        if (after) {
+            ix++;
+        }
+
         TableColumn<DataRow, Object> c = newColumn();
         c.setText("C" + System.currentTimeMillis());
-        //c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-
-        int ct = control.getColumns().size();
-        int ix;
-        switch (where) {
-        case 0:
-            ix = 0;
-            break;
-        case 1:
-            ix = ct / 2;
-            break;
-        case 2:
-        default:
-            ix = ct;
-            break;
-        }
-        if ((ct == 0) || (ix >= ct)) {
-            control.getColumns().add(c);
-        } else {
-            control.getColumns().add(ix, c);
-        }
-    }
-
-    private void removeColumn(int where) {
-        int ct = control.getColumns().size();
-        int ix;
-        switch (where) {
-        case 0:
-            ix = 0;
-            break;
-        case 1:
-            ix = ct / 2;
-            break;
-        case 2:
-        default:
-            ix = ct - 1;
-            break;
-        }
-
-        if ((ct >= 0) && (ix < ct)) {
-            control.getColumns().remove(ix);
-        }
-    }
-
-    private void removeAllColumns() {
-        control.getColumns().clear();
+        control.getColumns().add(ix, c);
     }
 
     @Override
@@ -219,6 +175,10 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return false;
         }
+    }
+
+    private ColumnBuilder<TableColumn<DataRow, ?>> columnBuilder() {
+        return new ColumnBuilder<>(this::newColumn);
     }
 
     private Node createColumnsSelector(String name, ObservableList<TableColumn<DataRow, ?>> columns) {
@@ -292,31 +252,6 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         );
         s.addChoice("<empty>", FXCollections.observableArrayList());
         return s;
-    }
-
-    private ColumnBuilder<TableColumn<DataRow, ?>> columnBuilder() {
-        return new ColumnBuilder<>(this::newColumn);
-    }
-
-    private TableColumn<DataRow, Object> newColumn() {
-        TableColumn<DataRow, Object> tc = new TableColumn();
-        tc.setCellFactory(TextFieldTableCell.<DataRow, Object>forTableColumn(DataRow.converter()));
-        tc.setCellValueFactory((cdf) -> {
-            Object v = cdf.getValue();
-            if (v instanceof DataRow r) {
-                return r.getValue(tc);
-            }
-            return new SimpleObjectProperty(v);
-        });
-        tc.setContextMenu(createPopupMenu(tc));
-        return tc;
-    }
-
-    private ContextMenu createPopupMenu(TableColumn<?,?> tc) {
-        ContextMenu m = new ContextMenu();
-        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
-        FX.item(m, "Delete", () -> control.getColumns().remove(tc));
-        return m;
     }
 
     private Node createColumnResizePolicy(String name, ObjectProperty<Callback<ResizeFeatures, Boolean>> p) {
