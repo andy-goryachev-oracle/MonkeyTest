@@ -83,11 +83,6 @@ public class OptionPane extends VBox {
     public void section(String name, OptionGridPane content) {
         TitledPane t = new TitledPane(name, content);
         getChildren().add(t);
-
-        List<TitledPane> panes = getPanes();
-        if (panes.size() == 1) {
-            panes.get(0).setExpanded(true);
-        }
     }
 
     private OptionGridPane lastSection() {
@@ -95,6 +90,7 @@ public class OptionPane extends VBox {
         if (panes.size() == 0) {
             section("Properties");
         }
+        panes = getPanes();
         TitledPane t = panes.get(panes.size() - 1);
         return (OptionGridPane)t.getContent();
     }

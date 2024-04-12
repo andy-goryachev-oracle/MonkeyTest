@@ -40,6 +40,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMenu;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
@@ -150,25 +151,15 @@ public class ToolBarPage extends TestPaneBase {
     private void setContextMenu(Region n) {
         n.setOnContextMenuRequested((ev) -> {
             ContextMenu m = new ContextMenu();
-            FX.item(m, "Remove", () -> {
-                control.getItems().remove(n);
-            });
-
+            FX.item(m, "Remove", () -> control.getItems().remove(n));
             FX.separator(m);
-
             FX.item(m, "Edit Text", EnterTextDialog.getRunnable(n, getTextProperty(n)));
-
             FX.separator(m);
-
-            FX.item(m, "Pref(50)", () -> {
-                n.setPrefWidth(50);
-            });
-            FX.item(m, "Pref(200)", () -> {
-                n.setPrefWidth(200);
-            });
-            FX.item(m, "Pref(500)", () -> {
-                n.setPrefWidth(500);
-            });
+            FX.item(m, "Pref(50)", () -> n.setPrefWidth(50));
+            FX.item(m, "Pref(200)", () -> n.setPrefWidth(200));
+            FX.item(m, "Pref(500)", () -> n.setPrefWidth(500));
+            FX.separator(m);
+            FX.item(m, "Properties...", () -> PropertiesMenu.openPropertiesDialog(this, n));
             m.show(n, ev.getScreenX(), ev.getScreenY());
         });
     }

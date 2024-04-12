@@ -112,13 +112,13 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
     private ContextMenu createPopupMenu(TreeTableColumn<?,?> tc) {
         ContextMenu m = new ContextMenu();
-        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
-        FX.separator(m);
         FX.item(m, "Add Column Before", () -> addColumn(tc, false));
         FX.item(m, "Add Column After", () -> addColumn(tc, true));
         FX.separator(m);
         FX.item(m, "Remove Column", () -> control.getColumns().remove(tc));
         FX.item(m, "Remove All Columns", () -> control.getColumns().clear());
+        FX.separator(m);
+        FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
         return m;
     }
 

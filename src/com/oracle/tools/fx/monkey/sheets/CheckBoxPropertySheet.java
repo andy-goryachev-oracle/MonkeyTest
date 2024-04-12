@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,40 +22,22 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.pages;
+package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.scene.control.TextArea;
-import javafx.scene.control.skin.TextAreaSkin;
-import com.oracle.tools.fx.monkey.sheets.TextAreaPropertySheet;
-import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import javafx.scene.control.CheckBox;
+import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * TextArea Page.
+ * CheckBox property sheet.
  */
-public class TextAreaPage extends TestPaneBase implements HasSkinnable {
-    private final TextArea control;
+public class CheckBoxPropertySheet {
+    public static void appendTo(OptionPane op, CheckBox n) {
+        op.section("CheckBox");
+        op.option(new BooleanOption("allowIndeterminate", "allow indeterminate", n.allowIndeterminateProperty()));
+        op.option(new BooleanOption("indeterminate", "indeterminate", n.indeterminateProperty()));
+        op.option(new BooleanOption("selected", "selected", n.selectedProperty()));
 
-    public TextAreaPage() {
-        super("TextAreaPage");
-
-        control = new TextArea();
-
-        OptionPane op = new OptionPane();
-        TextAreaPropertySheet.appendTo(op, control);
-
-        setContent(control);
-        setOptions(op);
-    }
-
-    @Override
-    public void nullSkin() {
-        control.setSkin(null);
-    }
-
-    @Override
-    public void newSkin() {
-        control.setSkin(new TextAreaSkin(control));
+        LabeledPropertySheet.appendTo(op, "Labeled", false, n);
     }
 }

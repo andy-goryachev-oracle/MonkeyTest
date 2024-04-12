@@ -57,6 +57,7 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
         super("ComboBoxPage");
 
         control = new ComboBox<>();
+        control.setOnAction((ev) -> addItem());
 
         Button addButton = FX.button("Add Item", () -> {
             control.getItems().add(newItem(""));
@@ -92,6 +93,17 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
+    }
+
+    private void addItem() {
+        Object v = control.getValue();
+        if (!control.getItems().contains(v)) {
+            System.out.println("added: " + v);
+            control.getItems().add(0, v);
+            if (control.getSelectionModel() != null) {
+                control.getSelectionModel().select(0);
+            }
+        }
     }
 
     // TODO common code with ListViewPage - move to utils?
@@ -151,6 +163,19 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
                 @Override
                 public Object fromString(String s) {
                     return s;
+                }
+            };
+        });
+        op.addChoiceSupplier("Number", () -> {
+            return new StringConverter<Object>() {
+                @Override
+                public String toString(Object x) {
+                    return x == null ? null : String.valueOf(x);
+                }
+
+                @Override
+                public Object fromString(String s) {
+                    return s == null ? null : Double.parseDouble(s);
                 }
             };
         });

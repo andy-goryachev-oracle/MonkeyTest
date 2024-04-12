@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,40 +22,27 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.pages;
+package com.oracle.tools.fx.monkey.sheets;
 
-import javafx.scene.control.TextArea;
-import javafx.scene.control.skin.TextAreaSkin;
-import com.oracle.tools.fx.monkey.sheets.TextAreaPropertySheet;
-import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import java.util.function.Consumer;
+import javafx.geometry.Pos;
+import javafx.scene.control.TextField;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * TextArea Page.
+ * TextField property sheet.
  */
-public class TextAreaPage extends TestPaneBase implements HasSkinnable {
-    private final TextArea control;
+public class TextFieldPropertySheet {
+    public static void appendTo(OptionPane op, TextField control, Runnable r) {
+        op.section("TextField");
+        op.option("Alignment:", new EnumOption<>("alignment", false, Pos.class, control.alignmentProperty()));
+        op.option("Preferred Column Count:", new IntOption("prefColumnCount", -1, Integer.MAX_VALUE, control.prefColumnCountProperty()));
+        if (r != null) {
+            r.run();
+        }
 
-    public TextAreaPage() {
-        super("TextAreaPage");
-
-        control = new TextArea();
-
-        OptionPane op = new OptionPane();
-        TextAreaPropertySheet.appendTo(op, control);
-
-        setContent(control);
-        setOptions(op);
-    }
-
-    @Override
-    public void nullSkin() {
-        control.setSkin(null);
-    }
-
-    @Override
-    public void newSkin() {
-        control.setSkin(new TextAreaSkin(control));
+        TextInputControlPropertySheet.appendTo(op, false, control);
     }
 }
