@@ -63,6 +63,7 @@ public class ToolBarPage extends TestPaneBase {
 
         SplitMenuButton addButton = new SplitMenuButton(
             FX.menuItem("Button", () -> add(button())),
+            FX.menuItem("CheckBox", () -> add(checkBox("CheckBox"))),
             FX.menuItem("Label", () -> add(label("Label"))),
             FX.menuItem("TextField", () -> add(textField(20)))
         );

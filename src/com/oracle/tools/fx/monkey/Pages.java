@@ -36,10 +36,10 @@ public class Pages {
             new DemoPage("AreaChart", AreaChartPage::new),
             new DemoPage("BarChart", BarChartPage::new),
             new DemoPage("BubbleChart", BubbleChartPage::new),
-            // TODO Button
+            new DemoPage("Button", ButtonPage::new),
             // TODO ButtonBar
             // TODO new DemoPage("Canvas", CanvasPage::new),
-            // TODO CheckBox
+            new DemoPage("CheckBox", CheckBoxPage::new),
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),

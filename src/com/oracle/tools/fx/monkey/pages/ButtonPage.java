@@ -22,45 +22,40 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.sheets;
+package com.oracle.tools.fx.monkey.pages;
 
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.skin.ButtonSkin;
+import com.oracle.tools.fx.monkey.sheets.ButtonPropertySheet;
+import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.OptionWindow;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Properties... menu.
+ * Button Page.
  */
-public class PropertiesMenu {
-    public static void openPropertiesDialog(Object parent, Node n) {
-        String name;
-        OptionPane op = new OptionPane();
-        if(n instanceof Button t) {
-            name = "Button";
-            ButtonPropertySheet.appendTo(op, t);
-        } else if(n instanceof CheckBox t) {
-            name = "CheckBox";
-            CheckBoxPropertySheet.appendTo(op, t);
-        } else if (n instanceof Label t) {
-            name = "Label";
-            LabeledPropertySheet.appendTo(op, "Label", false, t);
-        } else if(n instanceof TextArea t) {
-            name = "TextArea";
-            TextAreaPropertySheet.appendTo(op, t);
-        } else if(n instanceof TextField t) {
-            name = "TextField";
-            TextFieldPropertySheet.appendTo(op, t, null);
-        } else {
-            // TODO other types
-            System.err.println("property sheet not yet created for:" + n);
-            return;
-        }
+public class ButtonPage extends TestPaneBase implements HasSkinnable {
+    private final Button control;
 
-        OptionWindow.open(parent, "Properties: " + name, 500, 800, op);
+    public ButtonPage() {
+        super("ButtonPage");
+
+        control = new Button("Button");
+
+        OptionPane op = new OptionPane();
+        ButtonPropertySheet.appendTo(op, control);
+
+        setContent(control);
+        setOptions(op);
+    }
+
+    @Override
+    public void nullSkin() {
+        control.setSkin(null);
+    }
+
+    @Override
+    public void newSkin() {
+        control.setSkin(new ButtonSkin(control));
     }
 }
