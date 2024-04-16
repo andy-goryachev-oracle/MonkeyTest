@@ -53,4 +53,11 @@ public class Utils {
         b.setSpacing(2);
         return b;
     }
+
+    public static boolean eq(Object a, Object b) {
+        if (a == null) {
+            return b == null;
+        }
+        return a.equals(b);
+    }
 }
