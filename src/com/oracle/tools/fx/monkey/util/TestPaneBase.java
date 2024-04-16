@@ -52,7 +52,7 @@ public class TestPaneBase extends BorderPane {
 
         contentPane = new BorderPane();
         contentPane.setOpacity(1.0);
-        FX.style(contentPane, "content");
+        FX.style(contentPane, "test-content");
 
         updateContent();
     }
