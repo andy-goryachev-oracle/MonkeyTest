@@ -33,6 +33,7 @@ import javafx.util.StringConverter;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.NamedValue;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Double Option Bound to a Property.
@@ -73,7 +74,7 @@ public class DoubleOption extends ComboBox<Object> {
     }
 
     private Number parseValue(String s) {
-        if (s == null) {
+        if (Utils.isBlank(s)) {
             return null;
         }
         NamedValue<Number> n = find(s);
@@ -82,8 +83,8 @@ public class DoubleOption extends ComboBox<Object> {
                 return Double.parseDouble(s);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                return null;
             }
+            return null;
         }
         return n.getValue();
     }
