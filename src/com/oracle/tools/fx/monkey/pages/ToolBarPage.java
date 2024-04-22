@@ -34,6 +34,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
@@ -65,7 +66,8 @@ public class ToolBarPage extends TestPaneBase {
             FX.menuItem("Button", () -> add(button())),
             FX.menuItem("CheckBox", () -> add(checkBox("CheckBox"))),
             FX.menuItem("Label", () -> add(label("Label"))),
-            FX.menuItem("TextField", () -> add(textField(20)))
+            FX.menuItem("TextField", () -> add(textField(20))),
+            FX.menuItem("ListView", () -> add(listView()))
         );
         addButton.setText("Add");
 
@@ -144,6 +146,16 @@ public class ToolBarPage extends TestPaneBase {
         setContextMenu(n);
         n.setPrefColumnCount(cols);
         return n;
+    }
+
+    private Node listView() {
+        ListView<String> listView = new ListView<>();
+        for (int i = 0; i < 10; i++) {
+            listView.getItems().add("Item " + i);
+        }
+        listView.setPrefHeight(100);
+        setContextMenu(listView);
+        return listView;
     }
 
     private Property<String> getTextProperty(Node n) {
