@@ -56,6 +56,7 @@ public class Native2AsciiPane extends BorderPane {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         {
             TableColumn<Entry, Integer> c = new TableColumn<>();
+            // FIX there is no easy way to add a tooltip to table column!!!
             c.setText("Index");
             c.setCellValueFactory((d) -> new SimpleObjectProperty<Integer>(d.getValue().index));
             c.setPrefWidth(50);
@@ -71,7 +72,14 @@ public class Native2AsciiPane extends BorderPane {
         {
             TableColumn<Entry, String> c = new TableColumn<>();
             c.setText("U+Code");
-            c.setCellValueFactory((d) -> new SimpleStringProperty(d.getValue().code));
+            c.setCellValueFactory((d) -> new SimpleStringProperty(d.getValue().ucode));
+            c.setPrefWidth(100);
+            table.getColumns().add(c);
+        }
+        {
+            TableColumn<Entry, String> c = new TableColumn<>();
+            c.setText("CodePoint");
+            c.setCellValueFactory((d) -> new SimpleStringProperty(d.getValue().codePoint));
             c.setPrefWidth(100);
             table.getColumns().add(c);
         }
@@ -213,9 +221,18 @@ public class Native2AsciiPane extends BorderPane {
         ArrayList<Entry> es = new ArrayList<>(sz);
         for (int i = 0; i < sz; i++) {
             char c = text.charAt(i);
-            String code = String.format("%04X", (int)c);
+            int codePoint = -1;
+            String cp = null;
+            if (Character.isHighSurrogate(c)) {
+                codePoint = text.codePointAt(i);
+                cp = Character.toString(codePoint);
+            }
+            String ucode = String.format("%04X", (int)c);
             String desc = Character.getName(c);
-            Entry en = new Entry(i, String.valueOf(c), code, desc);
+            if (cp != null) {
+                desc = String.format("%s (U+%06X %s)", desc, codePoint, Character.getName(codePoint));
+            }
+            Entry en = new Entry(i, String.valueOf(c), ucode, desc, cp);
             es.add(en);
         }
         table.getItems().setAll(es);
@@ -224,14 +241,16 @@ public class Native2AsciiPane extends BorderPane {
     protected static class Entry {
         public final int index;
         public final String character;
-        public final String code;
+        public final String ucode;
         public final String description;
+        public final String codePoint;
 
-        public Entry(int index, String character, String code, String description) {
+        public Entry(int index, String character, String ucode, String description, String codePoint) {
             this.index = index;
             this.character = character;
-            this.code = code;
+            this.ucode = ucode;
             this.description = description;
+            this.codePoint = codePoint;
         }
     }
 }
