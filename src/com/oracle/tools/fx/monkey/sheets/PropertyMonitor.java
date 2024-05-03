@@ -32,57 +32,100 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 
 /**
  * Monitors Public Properties
  */
 public class PropertyMonitor extends BorderPane {
-    private final TableView<Entry> table;
+    private final TreeTableView<Entry> table;
 
-    public PropertyMonitor(Object owner) {
-        table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
-        // TODO boolean checkbox for 'monitor'
+    public PropertyMonitor(Node owner) {
+        table = new TreeTableView<>();
+        table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         {
-            TableColumn<Entry,String> c = new TableColumn<>("Name");
-            c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getName()));
+            TreeTableColumn<Entry,String> c = new TreeTableColumn<>("Name");
+            c.setCellFactory((tc) -> createCell());
+            c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getName()));
             c.setPrefWidth(120);
             table.getColumns().add(c);
         }
         {
-            TableColumn<Entry,String> c = new TableColumn<>("Type");
-            c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getType()));
+            TreeTableColumn<Entry,String> c = new TreeTableColumn<>("Type");
+            c.setCellFactory((tc) -> createCell());
+            c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getType()));
             c.setPrefWidth(100);
             table.getColumns().add(c);
         }
         {
-            TableColumn<Entry,Object> c = new TableColumn<>("Value");
-            c.setCellValueFactory((f) -> f.getValue().getValue());
+            TreeTableColumn<Entry,Object> c = new TreeTableColumn<>("Value");
+            c.setCellFactory((tc) -> createCell());
+            c.setCellValueFactory((f) -> f.getValue().getValue().getValue());
             c.setPrefWidth(300);
             table.getColumns().add(c);
         }
-
-        table.getItems().setAll(collectProperties(owner));
+        table.setShowRoot(false);
+        table.setRoot(collectProperties(owner));
         setCenter(table);
     }
 
-    private static List<Entry> collectProperties(Object x) {
+    private TreeTableCell createCell() {
+        return new TreeTableCell<Object, Object>() {
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null) {
+                    super.setText(null);
+                    super.setGraphic(null);
+                } else if (item instanceof Node) {
+                    super.setText(null);
+                    super.setGraphic((Node)item);
+                } else {
+                    super.setText(item.toString());
+                    super.setGraphic(null);
+                }
+                Object x = getTableRow().getItem();
+                if (x instanceof Entry en) {
+                    boolean hdr = en.isHeader();
+                    setBackground(hdr ? Background.fill(Color.rgb(0, 0, 0, 0.1)) : null);
+                    setStyle(hdr ? "-fx-font-weight:bold;" : "-fx-font-weight:normal;");
+                }
+            }
+        };
+    }
+
+    private static TreeItem<Entry> collectProperties(Node n) {
+        TreeItem<Entry> root = new TreeItem<>(null);
+        root.setExpanded(true);
+        boolean expand = true;
+        while (n != null) {
+            collectProperties(root, n, expand);
+            n = n.getParent();
+            expand = false;
+        }
+        return root;
+    }
+
+    private static void collectProperties(TreeItem<Entry> root, Node n, boolean expand) {
         ArrayList<Entry> a = new ArrayList<>();
         try {
-            BeanInfo inf = Introspector.getBeanInfo(x.getClass());
+            BeanInfo inf = Introspector.getBeanInfo(n.getClass());
             PropertyDescriptor[] ps = inf.getPropertyDescriptors();
             for (PropertyDescriptor p : ps) {
-                Entry en = createEntry(x, p);
+                Entry en = createEntry(n, p);
                 if (en != null) {
                     a.add(en);
                 }
@@ -96,11 +139,22 @@ public class PropertyMonitor extends BorderPane {
         } catch (IntrospectionException e) {
             e.printStackTrace();
         }
-        return a;
+
+        String type = n.getClass().getSimpleName();
+        TreeItem<Entry> ti = new TreeItem<>(new Entry(type, null, null));
+        ti.setExpanded(expand);
+        root.getChildren().add(ti);
+
+        for (Entry en : a) {
+            ti.getChildren().add(new TreeItem<>(en));
+        }
     }
 
-    private static Entry createEntry(Object x, PropertyDescriptor pd) {
+    private static Entry createEntry(Node n, PropertyDescriptor pd) {
         Class<?> t = pd.getPropertyType();
+        if (t == null) {
+            return null;
+        }
         if (t.isAssignableFrom(EventHandler.class)) {
             return null;
         }
@@ -110,11 +164,13 @@ public class PropertyMonitor extends BorderPane {
         String name = pd.getName();
         String pname = name + "Property";
         try {
-            Method m = x.getClass().getMethod(pname);
+            Method m = n.getClass().getMethod(pname);
             if (m != null) {
-                Object v = m.invoke(x);
+                Object v = m.invoke(n);
                 if (v instanceof ObservableValue val) {
-                    return new Entry(pd.getName(), pd, val);
+                    Class<?> tp = pd.getPropertyType();
+                    String type = tp == null ? "<null>" : tp.getSimpleName();
+                    return new Entry(pd.getName(), type, val);
                 }
             }
         } catch (Throwable e) {
@@ -125,19 +181,40 @@ public class PropertyMonitor extends BorderPane {
 
     static class Entry {
         private final String name;
-        private final PropertyDescriptor pd;
-        private final SimpleObjectProperty<Object> value = new SimpleObjectProperty<>();
+        private final String type;
+        private final ObservableValue prop;
+        private SimpleObjectProperty<Object> value;
 
-        public Entry(String name, PropertyDescriptor pd, ObservableValue v) {
+        public Entry(String name, String type, ObservableValue v) {
             this.name = name;
-            this.pd = pd;
-            v.addListener((s,p,c) -> {
-                setValue(c);
-            });
-            Object y = v.getValue();
-            setValue(v.getValue());
+            this.type = type;
+            this.prop = v;
+        }
+
+        public boolean isHeader() {
+            return type == null;
         }
         
+        public String getName() {
+            return name;
+        }
+
+        public SimpleObjectProperty<Object> getValue() {
+            if(value == null) {
+                value = new SimpleObjectProperty<>();
+                
+                if (prop != null) {
+                    // TODO add listeners upon request
+                    prop.addListener((s, p, c) -> {
+                        setValue(c);
+                    });
+                    Object y = prop.getValue();
+                    setValue(prop.getValue());
+                }
+            }
+            return value;
+        }
+
         private void setValue(Object x) {
             if(x instanceof Node) {
                 // do not set nodes!
@@ -146,18 +223,8 @@ public class PropertyMonitor extends BorderPane {
             value.set(x);
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public SimpleObjectProperty<Object> getValue() {
-            // TODO add listeners upon request
-            return value;
-        }
-
         public String getType() {
-            Class<?> t = pd.getPropertyType();
-            return t == null ? "<null>" : t.getSimpleName();
+            return type;
         }
 
         @Override
