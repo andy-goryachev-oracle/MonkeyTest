@@ -160,19 +160,22 @@ public class FX {
         return cb.getSelectionModel().getSelectedItem();
     }
 
-    public static Window getParentWindow(Object nodeOrWindow) {
-        if (nodeOrWindow == null) {
+    public static Window getParentWindow(Object x) {
+        if (x == null) {
             return null;
-        } else if (nodeOrWindow instanceof Window w) {
+        } else if (x instanceof Window w) {
             return w;
-        } else if (nodeOrWindow instanceof Node n) {
+        } else if (x instanceof Node n) {
             Scene s = n.getScene();
             if (s != null) {
                 return s.getWindow();
             }
             return null;
+        } else if (x instanceof MenuItem m) {
+            ContextMenu cm = m.getParentPopup();
+            return cm == null ? null : cm.getOwnerWindow();
         } else {
-            throw new Error("Node or Window only");
+            throw new Error("Node, Window, or MenuItem only: " + x);
         }
     }
 

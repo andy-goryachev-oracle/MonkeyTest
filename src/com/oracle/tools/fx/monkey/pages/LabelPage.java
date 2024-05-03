@@ -42,11 +42,6 @@ public class LabelPage extends TestPaneBase implements HasSkinnable {
 
         control = new Label();
 
-        // JDK-8092102
-//        control.textTruncatedProperty().addListener((s,p,c) -> {
-//            System.err.println("truncated: " + c);
-//        });
-
         OptionPane op = new OptionPane();
         LabeledPropertySheet.appendTo(op, "Label", true, control);
 
