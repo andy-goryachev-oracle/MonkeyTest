@@ -118,7 +118,7 @@ public class PropertyMonitor extends BorderPane {
                 }
             }
         } catch (Throwable e) {
-            System.err.println(e.getMessage());
+            // ignore
         }
         return null;
     }
@@ -151,6 +151,7 @@ public class PropertyMonitor extends BorderPane {
         }
 
         public SimpleObjectProperty<Object> getValue() {
+            // TODO add listeners upon request
             return value;
         }
 
