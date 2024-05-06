@@ -79,5 +79,7 @@ public class NodePropertySheet {
         op.option("User Data: TODO", null); // TODO
         op.option("View Order:", new DoubleOption("viewOrder", n.viewOrderProperty()));
         op.option(new BooleanOption("visible", "visible", n.visibleProperty()));
+
+        StyleablePropertySheet.appendTo(op, n);
     }
 }

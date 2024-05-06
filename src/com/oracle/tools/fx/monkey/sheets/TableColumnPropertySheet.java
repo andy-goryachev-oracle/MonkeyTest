@@ -47,6 +47,8 @@ public class TableColumnPropertySheet extends BorderPane {
             treeTableColumnOptions(op, tc);
         }
         tableColumnBaseOptions(op, c);
+
+        StyleablePropertySheet.appendTo(op, c);
         setCenter(op);
     }
 
