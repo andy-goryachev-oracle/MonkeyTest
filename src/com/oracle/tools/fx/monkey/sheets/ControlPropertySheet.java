@@ -76,12 +76,12 @@ public class ControlPropertySheet {
             }
         };
         MenuItem mi = new MenuItem("Show Properties Monitor...");
-        mi.setOnAction((ev) -> openProperties(ref.get()));
+        mi.setOnAction((ev) -> openPropertiesMonitor(ref.get()));
         m.getItems().add(mi);
         return m;
     }
 
-    private static void openProperties(PickResult pick) {
+    private static void openPropertiesMonitor(PickResult pick) {
         if (pick == null) {
             return;
         }
@@ -90,7 +90,7 @@ public class ControlPropertySheet {
             return;
         }
         String name = source.getClass().getSimpleName();
-        PropertyMonitor p = new PropertyMonitor(source);
+        PropertiesMonitor p = new PropertiesMonitor(source);
         OptionWindow.open(source, "Properties: " + name, 800, 900, p);
     }
 

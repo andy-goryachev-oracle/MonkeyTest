@@ -45,14 +45,15 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Monitors Public Properties
  */
-public class PropertyMonitor extends BorderPane {
+public class PropertiesMonitor extends BorderPane {
     private final TreeTableView<Entry> table;
 
-    public PropertyMonitor(Node owner) {
+    public PropertiesMonitor(Node owner) {
         table = new TreeTableView<>();
         table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         {
@@ -141,6 +142,13 @@ public class PropertyMonitor extends BorderPane {
         }
 
         String type = n.getClass().getSimpleName();
+        if (Utils.isBlank(type)) {
+            type = n.getClass().getName();
+            int ix = type.lastIndexOf('.');
+            if (ix >= 0) {
+                type = type.substring(ix + 1);
+            }
+        }
         TreeItem<Entry> ti = new TreeItem<>(new Entry(type, null, null));
         ti.setExpanded(expand);
         root.getChildren().add(ti);
