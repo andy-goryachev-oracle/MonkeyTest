@@ -32,9 +32,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -131,6 +133,9 @@ public class PropertiesMonitor extends BorderPane {
                     a.add(en);
                 }
             }
+
+            a.add(new Entry("styleClass", "ObservableList", n.getStyleClass()));
+
             Collections.sort(a, new Comparator<Entry>() {
                 @Override
                 public int compare(Entry a, Entry b) {
@@ -190,13 +195,13 @@ public class PropertiesMonitor extends BorderPane {
     static class Entry {
         private final String name;
         private final String type;
-        private final ObservableValue prop;
+        private final Observable prop;
         private SimpleObjectProperty<Object> value;
 
-        public Entry(String name, String type, ObservableValue v) {
+        public Entry(String name, String type, Observable p) {
             this.name = name;
             this.type = type;
-            this.prop = v;
+            this.prop = p;
         }
 
         public boolean isHeader() {
@@ -212,12 +217,18 @@ public class PropertiesMonitor extends BorderPane {
                 value = new SimpleObjectProperty<>();
                 
                 if (prop != null) {
-                    // TODO add listeners upon request
-                    prop.addListener((s, p, c) -> {
-                        setValue(c);
-                    });
-                    Object y = prop.getValue();
-                    setValue(prop.getValue());
+                    if(prop instanceof ObservableValue p) {
+                        p.addListener((src, prev, c) -> {
+                            setValue(c);
+                        });
+                        Object y = p.getValue();
+                        setValue(p.getValue());
+                    } else if(prop instanceof ObservableList p) {
+                        p.addListener((Observable x) -> {
+                            setValue(p.toString());
+                        });
+                        setValue(p.toString());
+                    }
                 }
             }
             return value;

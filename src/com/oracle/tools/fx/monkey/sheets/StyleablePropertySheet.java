@@ -40,7 +40,7 @@ public class StyleablePropertySheet {
     public static void appendTo(OptionPane op, Styleable n) {
         op.section("Styleable");
 
-        ArrayList<CssMetaData<? extends Styleable, ?>> ss = new ArrayList<>();
+        ArrayList<CssMetaData<? extends Styleable, ?>> ss = new ArrayList<>(n.getCssMetaData());
         Collections.sort(ss, new Comparator<CssMetaData>() {
             @Override
             public int compare(CssMetaData a, CssMetaData b) {
@@ -49,8 +49,11 @@ public class StyleablePropertySheet {
         });
 
         for (CssMetaData md : ss) {
-            Node ed = createOption(n, md);
-            op.option(md.getProperty(), ed);
+            // TODO
+            // Node ed = createOption(n, md);
+            // op.option(md.getProperty(), ed);
+            String val = md.getProperty(); // + ": " + md.getStyleableProperty(n).getValue();
+            op.option(val, null);
         }
     }
 
@@ -60,7 +63,6 @@ public class StyleablePropertySheet {
 //        {
 //            return null;
 //        }
-        //return new Label(String.valueOf(md.getStyleableProperty(s).getValue()));
-        return null;
+        return new Label(String.valueOf(md.getStyleableProperty(s).getValue()));
     }
 }
