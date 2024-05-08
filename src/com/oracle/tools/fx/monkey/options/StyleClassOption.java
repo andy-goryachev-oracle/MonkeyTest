@@ -39,6 +39,7 @@ import com.oracle.tools.fx.monkey.util.FX;
  * Style Class (Observable List of Strings) Option.
  * This can be later extracted into a generic option for list of strings.
  */
+// TODO instead of combo box, use r/o text field + menu button (edit / revert)
 public class StyleClassOption extends BorderPane {
     private final ComboBox<String> combo;
     private final ObservableList<String> list;
@@ -91,6 +92,6 @@ public class StyleClassOption extends BorderPane {
 
     private void setList(String text) {
         List<String> items = parseList(text);
-        list.setAll(list);
+        list.setAll(items);
     }
 }
