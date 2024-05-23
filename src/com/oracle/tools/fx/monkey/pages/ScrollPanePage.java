@@ -103,10 +103,7 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
 
     private Supplier<Node> mk(int w, int h) {
         return () -> {
-            // TODO maybe a Rectangle with a gradient paint and/or grid?
-            String s = w + "x" + h;
-            Image im = ImageTools.createImage(s, w, h);
-            return new ImageView(im);
+            return ImageTools.createImageView(w, h);
         };
     }
 
