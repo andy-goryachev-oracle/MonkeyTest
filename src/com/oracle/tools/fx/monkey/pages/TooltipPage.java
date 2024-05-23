@@ -55,6 +55,9 @@ public class TooltipPage extends TestPaneBase {
         super("TooltipPage");
 
         tooltip = new Tooltip("This is a tooltip with some default text, to be settable later.");
+        tooltip.showDelayProperty().addListener((s, p, c) -> {
+            System.out.println("showDelay=" + c);
+        });
 
         Label content = new Label("Hover over this area to show the tooltip");
         content.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
