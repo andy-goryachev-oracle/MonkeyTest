@@ -307,4 +307,37 @@ public class FX {
             n.getStyleClass().remove(style);
         }
     }
+
+    // borrowed from
+    // https://github.com/andy-goryachev/AppFramework/blob/1e9f2197ce510a77ec5f719a2cb7112b0b6cf7be/src/goryachev/fx/FX.java#L1081
+    // with the author's permission
+    /** returns a parent of the specified type, or null.  if node is an instance of the specified class, returns node */
+    public static <T> T getAncestorOfClass(Class<T> c, Node node) {
+        if (Window.class.isAssignableFrom(c)) {
+            Scene sc = node.getScene();
+            if (sc != null) {
+                Window w = sc.getWindow();
+                while (w != null) {
+                    if (w.getClass().isAssignableFrom(c)) {
+                        return (T)w;
+                    }
+
+                    // the window can be a dialog, check the owner
+                    if (w instanceof Stage stage) {
+                        w = stage.getOwner();
+                    }
+                }
+            }
+            return null;
+        } else {
+            while (node != null) {
+                if (c.isInstance(node)) {
+                    return (T)node;
+                }
+
+                node = node.getParent();
+            }
+        }
+        return null;
+    }
 }

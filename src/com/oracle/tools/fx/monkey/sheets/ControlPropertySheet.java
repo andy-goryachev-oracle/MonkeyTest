@@ -24,17 +24,16 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
-import java.util.concurrent.atomic.AtomicReference;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.PickResult;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.OptionWindow;
@@ -76,36 +75,33 @@ public class ControlPropertySheet {
         ObjectProperty<ContextMenu> p = c.contextMenuProperty();
         c.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, picker);
         ObjectOption<ContextMenu> op = new ObjectOption<>(name, p);
-        op.addChoiceSupplier("Show Properties Monitor", () -> createShowNodePropertiesContextMenu(picker));
+        op.addChoiceSupplier("Standard Context Menu", () -> createStandardContextMenu(picker));
         op.addChoice("<null>", null);
         op.selectInitialValue();
         return op;
     }
 
-    private static ContextMenu createShowNodePropertiesContextMenu(Picker picker) {
-        AtomicReference<PickResult> ref = new AtomicReference();
-        ContextMenu m = new ContextMenu() {
+    private static ContextMenu createStandardContextMenu(Picker picker) {
+        return new ContextMenu() {
             @Override
             public void show(Node anchor, double screenX, double screenY) {
-                ref.set(picker.getPickResult());
+                PickResult pick = picker.getPickResult();
+                getItems().clear();
+                populate(this, pick.getIntersectedNode());
                 super.show(anchor, screenX, screenY);
             }
-            @Override public void hide() {
-                super.hide();
-                ref.set(null);
-            }
         };
-        MenuItem mi = new MenuItem("Show Properties Monitor...");
-        mi.setOnAction((ev) -> openPropertiesMonitor(ref.get()));
-        m.getItems().add(mi);
-        return m;
     }
 
-    private static void openPropertiesMonitor(PickResult pick) {
-        if (pick == null) {
-            return;
+    private static void populate(ContextMenu m, Node source) {
+        TypeSpecificContextMenu.populate(m, source);
+        if (m.getItems().size() > 0) {
+            FX.separator(m);
         }
-        Node source = pick.getIntersectedNode();
+        FX.item(m, "Show Properties Monitor...", () -> openPropertiesMonitor(source));
+    }
+
+    private static void openPropertiesMonitor(Node source) {
         if (source == null) {
             return;
         }
