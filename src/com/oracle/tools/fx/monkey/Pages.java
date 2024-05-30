@@ -51,7 +51,7 @@ public class Pages {
             new DemoPage("Label", LabelPage::new),
             new DemoPage("LineChart", LineChartPage::new),
             new DemoPage("ListView", ListViewPage::new),
-            // TODO MenuBar
+            new DemoPage("MenuBar", MenuBarPage::new),
             new DemoPage("MenuButton", MenuButtonPage::new),
             new DemoPage("Pagination", PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
