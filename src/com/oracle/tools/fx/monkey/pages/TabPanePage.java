@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,6 +38,7 @@ import javafx.scene.control.TabPane.TabDragPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.TabPaneSkin;
 import javafx.scene.layout.VBox;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
@@ -55,7 +57,14 @@ public class TabPanePage extends TestPaneBase implements HasSkinnable {
     public TabPanePage() {
         super("TabPanePage");
 
-        control = new TabPane();
+        control = new TabPane() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
         // TODO graphic, other Tab propertis in the context menu
         control.getTabs().addAll(
             new Tab("One", mkContent("Tab One Content")),

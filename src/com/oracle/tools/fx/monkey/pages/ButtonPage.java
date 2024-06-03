@@ -24,8 +24,10 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.Button;
 import javafx.scene.control.skin.ButtonSkin;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.ButtonPropertySheet;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -40,7 +42,14 @@ public class ButtonPage extends TestPaneBase implements HasSkinnable {
     public ButtonPage() {
         super("ButtonPage");
 
-        control = new Button("Button");
+        control = new Button("Button") {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         ButtonPropertySheet.appendTo(op, control);

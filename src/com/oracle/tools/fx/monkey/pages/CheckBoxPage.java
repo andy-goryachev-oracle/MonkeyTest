@@ -24,8 +24,10 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.skin.CheckBoxSkin;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.CheckBoxPropertySheet;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -40,7 +42,14 @@ public class CheckBoxPage extends TestPaneBase implements HasSkinnable {
     public CheckBoxPage() {
         super("CheckBoxPage");
 
-        control = new CheckBox("CheckBox");
+        control = new CheckBox("CheckBox") {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         CheckBoxPropertySheet.appendTo(op, control);

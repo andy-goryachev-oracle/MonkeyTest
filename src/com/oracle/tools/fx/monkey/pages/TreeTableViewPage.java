@@ -30,6 +30,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
@@ -47,6 +48,7 @@ import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
@@ -72,7 +74,14 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
     public TreeTableViewPage() {
         super("TreeTableViewPage");
 
-        control = new TreeTableView<>();
+        control = new TreeTableView<>() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         Button addDataItemButton = FX.button("Add Data Item", this::addDataItem);
         addDataItemButton.setDisable(true); // FIX

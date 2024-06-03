@@ -28,11 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.collections.ObservableList;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.skin.MenuBarSkin;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -49,7 +51,14 @@ public class MenuBarPage extends TestPaneBase implements HasSkinnable {
     public MenuBarPage() {
         super("MenuButtonPage");
 
-        control = new MenuBar();
+        control = new MenuBar() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         op.section("MenuBar");

@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -46,6 +47,7 @@ import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
@@ -69,7 +71,14 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     public ListViewPage() {
         super("ListViewPage");
 
-        control = new ListView<>();
+        control = new ListView<>() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
         control.setTooltip(new Tooltip("edit to 'update' to commit the change"));
         control.setOnEditCommit((ev) -> {
             int ix = ev.getIndex();

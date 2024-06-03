@@ -28,6 +28,7 @@ import java.util.List;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
@@ -40,6 +41,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMenu;
@@ -60,7 +62,14 @@ public class ToolBarPage extends TestPaneBase {
     public ToolBarPage() {
         super("ToolBarPage");
 
-        control = new ToolBar();
+        control = new ToolBar() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         SplitMenuButton addButton = new SplitMenuButton(
             FX.menuItem("Button", () -> add(button())),

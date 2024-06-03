@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,6 +37,7 @@ import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
@@ -66,7 +68,14 @@ public class TextFlowPage extends TestPaneBase {
     public TextFlowPage() {
         super("TextFlowPage");
 
-        textFlow = new TextFlow();
+        textFlow = new TextFlow() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
         textFlow.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
 
         pickResult = new Label();

@@ -30,6 +30,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
@@ -45,6 +46,7 @@ import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
@@ -68,7 +70,14 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
     public TableViewPage() {
         super("TableViewPage");
 
-        control = new TableView<>();
+        control = new TableView<>() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         Button addDataItemButton = FX.button("Add Data Item", () -> {
             control.getItems().add(new DataRow());

@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -36,6 +37,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
@@ -52,7 +54,14 @@ public class TitledPanePage extends TestPaneBase implements HasSkinnable {
     public TitledPanePage() {
         super("TitledPane");
 
-        control = new TitledPane();
+        control = new TitledPane() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         op.section("TitledPane");

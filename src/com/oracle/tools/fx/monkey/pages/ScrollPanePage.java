@@ -26,12 +26,14 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
@@ -50,7 +52,14 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
     public ScrollPanePage() {
         super("ScrollPanePage");
 
-        control = new ScrollPane();
+        control = new ScrollPane() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         op.section("ScrollPane");
