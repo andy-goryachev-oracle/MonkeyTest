@@ -24,10 +24,12 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.TextFieldSkin;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.TextFieldPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -42,7 +44,14 @@ public class TextFieldPage extends TestPaneBase implements HasSkinnable {
     private final CheckBox inScroll;
 
     public TextFieldPage() {
-        this(new TextField(), "TextFieldPage");
+        this(new TextField() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        }, "TextFieldPage");
     }
 
     protected TextFieldPage(TextField f, String name) {

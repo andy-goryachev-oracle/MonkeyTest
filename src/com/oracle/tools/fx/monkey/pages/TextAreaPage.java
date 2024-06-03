@@ -24,8 +24,10 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.skin.TextAreaSkin;
+import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.TextAreaPropertySheet;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -40,7 +42,14 @@ public class TextAreaPage extends TestPaneBase implements HasSkinnable {
     public TextAreaPage() {
         super("TextAreaPage");
 
-        control = new TextArea();
+        control = new TextArea() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+                Object v = super.queryAccessibleAttribute(a, ps);
+                Loggers.accessibility.log(a, v);
+                return v;
+            }
+        };
 
         OptionPane op = new OptionPane();
         TextAreaPropertySheet.appendTo(op, control);

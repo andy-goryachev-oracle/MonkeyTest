@@ -27,10 +27,12 @@ package com.oracle.tools.fx.monkey.util;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
@@ -78,6 +80,13 @@ public class FX {
         MenuItem mi = new MenuItem(text);
         applyMnemonic(mi);
         mi.setOnAction((ev) -> action.run());
+        lastMenu(b).getItems().add(mi);
+        return mi;
+    }
+
+    public static CheckMenuItem checkItem(MenuBar b, String name, BooleanProperty prop) {
+        CheckMenuItem mi = new CheckMenuItem(name);
+        mi.selectedProperty().bindBidirectional(prop);
         lastMenu(b).getItems().add(mi);
         return mi;
     }

@@ -153,6 +153,9 @@ public class MainWindow extends Stage {
         FX.item(b, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(b, "Native to ASCII", this::openNative2Ascii);
         FX.item(b, "System Info", this::openSystemInfo);
+        // Logs
+        FX.menu(b, "_Logging");
+        FX.checkItem(b, "Accessibility", Loggers.accessibility.enabled);
         // Window
         FX.menu(b, "_Window");
         FX.item(b, orientation);
