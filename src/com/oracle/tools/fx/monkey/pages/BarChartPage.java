@@ -93,9 +93,8 @@ public class BarChartPage extends XYChartPageBase {
         list.add(new XYChart.Data<>("1", 1));
         list.add(new XYChart.Data<>("1", 2));
         list.add(new XYChart.Data<>("2", 3));
-        BarChart<String, Number> bc = new BarChart<>(new CategoryAxis(), new NumberAxis());
-        bc.getData().add(new Series<>());
-        bc.getData().getFirst().setData(list);
+        chart.getData().add(new Series<>());
+        chart.getData().getFirst().setData(list);
     }
 
     @Override
