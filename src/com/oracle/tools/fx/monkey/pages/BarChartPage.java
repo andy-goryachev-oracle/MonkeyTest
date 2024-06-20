@@ -24,9 +24,14 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.ContextMenu;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.Options;
@@ -68,6 +73,7 @@ public class BarChartPage extends XYChartPageBase {
     ContextMenu createMenu() {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Add Duplicate Category", this::addDuplicateCategory);
+        FX.item(m, "Add Series with Duplicate Category", this::addDuplicateSeries);
         return m;
     }
 
@@ -80,6 +86,16 @@ public class BarChartPage extends XYChartPageBase {
                 dd.add(new XYChart.Data(v.getXValue(), v.getYValue().doubleValue() + 1.0));
             }
         }
+    }
+
+    void addDuplicateSeries() {
+        ObservableList<XYChart.Data<String, Number>> list = FXCollections.observableArrayList();
+        list.add(new XYChart.Data<>("1", 1));
+        list.add(new XYChart.Data<>("1", 2));
+        list.add(new XYChart.Data<>("2", 3));
+        BarChart<String, Number> bc = new BarChart<>(new CategoryAxis(), new NumberAxis());
+        bc.getData().add(new Series<>());
+        bc.getData().getFirst().setData(list);
     }
 
     @Override
