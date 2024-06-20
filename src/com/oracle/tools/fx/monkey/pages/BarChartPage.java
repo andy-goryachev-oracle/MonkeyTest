@@ -27,9 +27,11 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ContextMenu;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.XYChartPropertySheet;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
@@ -50,6 +52,7 @@ public class BarChartPage extends XYChartPageBase {
             }
         };
         chart.setTitle("Bar Chart");
+        FX.setPopupMenu(chart, this::createMenu);
         addSeries();
 
         OptionPane op = new OptionPane();
@@ -60,6 +63,23 @@ public class BarChartPage extends XYChartPageBase {
 
         setContent(chart);
         setOptions(op);
+    }
+
+    ContextMenu createMenu() {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Add Duplicate Category", this::addDuplicateCategory);
+        return m;
+    }
+
+    void addDuplicateCategory() {
+        var d = chart.getData();
+        if (d.size() > 0) {
+            var dd = d.get(0).getData();
+            if (dd.size() > 0) {
+                var v = dd.get(0);
+                dd.add(new XYChart.Data(v.getXValue(), v.getYValue().doubleValue() + 1.0));
+            }
+        }
     }
 
     @Override
