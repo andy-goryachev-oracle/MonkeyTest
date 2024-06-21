@@ -46,6 +46,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -348,5 +349,16 @@ public class FX {
             }
         }
         return null;
+    }
+
+    /**
+     * Creates a new color with the same RGB values and the specified alpha (opacity).
+     *
+     * @param c the color to borrow RGB values from
+     * @param alpha the opacity
+     * @return the new color instance
+     */
+    public static Color alpha(Color c, double alpha) {
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
 }
