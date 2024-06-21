@@ -31,6 +31,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
@@ -38,8 +39,21 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.ClosePath;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -76,6 +90,7 @@ public class ShapePage extends TestPaneBase {
         stack.setBackground(Background.fill(Color.WHITE));
         stack.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         stack.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+        FX.setPopupMenu(stack, this::createPopupMenu);
 
         gen1 = new SimpleObjectProperty<>();
 
@@ -134,6 +149,52 @@ public class ShapePage extends TestPaneBase {
         op.addChoice("Circle", () -> {
             return new Circle(20, 20, 40);
         });
+        op.addChoice("Cubic Curve", () -> {
+            return new CubicCurve(0, 0, 100, 60, 200, 0, 300, 80);
+        });
+        op.addChoice("Ellipse", () -> {
+            return new Ellipse(0, 0, 200, 100);
+        });
+        op.addChoice("Line", () -> {
+            return new Line(0, 0, 200, 100);
+        });
+        op.addChoice("Path (H)", () -> {
+            Path t = new Path();
+            t.getElements().addAll(
+                new MoveTo(0.0, 0),
+                new LineTo(100, 10),
+                new LineTo(110, 45),
+                new LineTo(10, 50),
+                new ClosePath()
+            );
+            return t;
+        });
+        op.addChoice("Path (V)", () -> {
+            Path t = new Path();
+            t.getElements().addAll(
+                new MoveTo(50, 0),
+                new LineTo(75, 5),
+                new LineTo(80, 120),
+                new LineTo(45, 125),
+                new ClosePath()
+            );
+            return t;
+        });
+        op.addChoice("Polygon", () -> {
+            return new Polygon(0, 0, 200, 100, 250, 200, 200, 210, 100, -30, 20, 205);
+        });
+        op.addChoice("Polyline", () -> {
+            return new Polyline(0, 0, 200, 100, 250, 200, 200, 210, 100, -30, 20, 205);
+        });
+        // TODO quad curve, svgpath?
+        op.addChoice("Rectangle", () -> {
+            return new Rectangle(0, 0, 400, 200);
+        });
+        op.addChoice("Text", () -> {
+            Text t = new Text("Text");
+            t.setFont(Font.font("System", FontWeight.BOLD, 48));
+            return t;
+        });
         op.selectFirst();
 
         return new HBox(op, stroke, fill);
@@ -164,6 +225,13 @@ public class ShapePage extends TestPaneBase {
             inity = ty;
         }
 
+        public void reset() {
+            tx = 0;
+            ty = 0;
+            translate(shape1);
+            translate(shape2);
+        }
+
         public void handleEvent(MouseEvent ev, Shape s) {
             if (s == null) {
                 return;
@@ -179,6 +247,7 @@ public class ShapePage extends TestPaneBase {
                     stack.getChildren().remove(result);
                 }
                 result = op.op(shape1, shape2);
+                result.setFill(FX.alpha(Color.BLACK, 0.5));
                 stack.getChildren().add(result);
             }
         }
@@ -239,6 +308,7 @@ public class ShapePage extends TestPaneBase {
         pos2.translate(shape2);
 
         result = op.op(shape1, shape2);
+        result.setFill(FX.alpha(Color.BLACK, 0.5));
         return new Node[] { shape1, shape2, result };
     }
 
@@ -255,5 +325,16 @@ public class ShapePage extends TestPaneBase {
         } else {
             pos1.handleEvent(ev, shape1);
         }
+    }
+
+    void reset() {
+        pos1.reset();
+        pos2.reset();
+    }
+
+    ContextMenu createPopupMenu() {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Reset Transform", this::reset);
+        return m;
     }
 }
