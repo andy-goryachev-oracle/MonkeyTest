@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -45,6 +46,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -251,13 +253,30 @@ public class FX {
      */
     // https://github.com/andy-goryachev/MP3Player/blob/8b0ff12460e19850b783b961f214eacf5e1cdaf8/src/goryachev/fx/FX.java#L1251
     public static void setPopupMenu(Node owner, Supplier<ContextMenu> generator) {
+        setPopupMenuLocal(owner, generator);
+    }
+
+    public static void setPopupMenu(Node owner, Function<PickResult,ContextMenu> generator) {
+        setPopupMenuLocal(owner, generator);
+    }
+
+    private static void setPopupMenuLocal(Node owner, Object generator) {
         if (owner == null) {
             throw new NullPointerException("cannot attach popup menu to null");
         }
 
         owner.setOnContextMenuRequested((ev) -> {
             if (generator != null) {
-                ContextMenu m = generator.get();
+                ContextMenu m;
+                if (generator instanceof Supplier sup) {
+                    m = (ContextMenu)sup.get();
+                } else if (generator instanceof Function func) {
+                    PickResult pick = ev.getPickResult();
+                    m = (ContextMenu)func.apply(pick);
+                } else {
+                    m = null;
+                }
+
                 if (m != null) {
                     if (m.getItems().size() > 0) {
                         Platform.runLater(() -> {
@@ -278,8 +297,8 @@ public class FX {
                         ev.consume();
                     }
                 }
+                ev.consume();
             }
-            ev.consume();
         });
     }
 
