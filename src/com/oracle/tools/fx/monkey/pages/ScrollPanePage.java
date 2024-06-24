@@ -86,20 +86,6 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
         setOptions(op);
     }
 
-//        new Dimension2D(50, 50),
-//        new Dimension2D(100, 100),
-//        new Dimension2D(1000, 1000),
-//        new Dimension2D(5000, 5000),
-//        new Dimension2D(5000, 50)
-
-//    private void updatePrefSize(Dimension2D d) {
-//        double w = d.getWidth();
-//        double h = d.getHeight();
-//        content.setPrefSize(w, h);
-//        String s = "Preferred size: " + w + " x " + h;
-//        content.setText(s);
-//    }
-
     @Override
     public void nullSkin() {
         control.setSkin(null);
