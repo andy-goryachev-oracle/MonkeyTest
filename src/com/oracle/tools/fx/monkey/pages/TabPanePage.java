@@ -24,6 +24,11 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -37,6 +42,8 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TabPane.TabDragPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.TabPaneSkin;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
@@ -44,6 +51,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -65,16 +73,12 @@ public class TabPanePage extends TestPaneBase implements HasSkinnable {
                 return v;
             }
         };
-        // TODO graphic, other Tab propertis in the context menu
-        control.getTabs().addAll(
-            new Tab("One", mkContent("Tab One Content")),
-            new Tab("Two", mkContent("Tab Two Content")),
-            new Tab("Three", mkContent("Tab Three Content")),
-            new Tab("Four", mkContent("Tab Four Content"))
-        );
+
+        // TODO other Tab propertis in the context menu
 
         OptionPane op = new OptionPane();
         op.section("TabPane");
+        op.option("Tabs:", createTabsOption("tabs", control.getTabs()));
         op.option(new BooleanOption("rotateGraphic", "rotate graphic", control.rotateGraphicProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option("Side:", new EnumOption<Side>("side", true, Side.class, control.sideProperty()));
@@ -89,6 +93,59 @@ public class TabPanePage extends TestPaneBase implements HasSkinnable {
 
         setContent(control);
         setOptions(op);
+    }
+
+    private Node createTabsOption(String name, ObservableList<Tab> items) {
+        ObjectSelector<List<Tab>> s = new ObjectSelector<>(name, (v) -> {
+            items.setAll(v);
+        });
+        s.addChoice("<empty>", List.of());
+        s.addChoiceSupplier("1 Tab", tabs(1, false));
+        s.addChoiceSupplier("2 Tabs", tabs(2, false));
+        s.addChoiceSupplier("10 Tabs", tabs(10, false));
+        s.addChoiceSupplier("200 Tabs", tabs(200, false));
+        s.addChoiceSupplier("1,000 Tabs", tabs(1_000, false));
+        s.addChoiceSupplier("1 Tab with Graphic", tabs(1, true));
+        s.addChoiceSupplier("2 Tabs with Graphic", tabs(2, true));
+        s.addChoiceSupplier("10 Tabs with Graphic", tabs(10, true));
+        s.addChoiceSupplier("200 Tabs with Graphic", tabs(200, true));
+        s.select(2);
+        return s;
+    }
+
+    private Supplier<List<Tab>> tabs(int count, boolean graphic) {
+        return () -> {
+            Random r = new Random();
+            ArrayList<Tab> ts = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                Node n = mkContent("Content_" + i);
+                String name = "T_" + i;
+                Tab t = new Tab(name, n);
+                if (graphic) {
+                    Image im;
+                    switch (r.nextInt(5)) {
+                    case 0:
+                        im = ImageTools.createImage(name, 70, 20);
+                        break;
+                    case 1:
+                        im = ImageTools.createImage(name, 20, 70);
+                        break;
+                    case 3:
+                        im = ImageTools.createImage(20, 20);
+                        break;
+                    default:
+                        im = null;
+                        break;
+                    }
+
+                    if (im != null) {
+                        t.setGraphic(new ImageView(im));
+                    }
+                }
+                ts.add(t);
+            }
+            return ts;
+        };
     }
 
     private Node mkContent(String text) {

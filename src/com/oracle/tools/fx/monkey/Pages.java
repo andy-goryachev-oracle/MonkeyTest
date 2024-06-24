@@ -61,6 +61,7 @@ public class Pages {
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
             // TODO Separator
+            new DemoPage("Shape", ShapePage::new),
             // TODO Slider
             new DemoPage("Spinner", SpinnerPage::new),
             // TODO SplitPane
