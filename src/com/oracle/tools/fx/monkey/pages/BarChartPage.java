@@ -35,6 +35,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.input.PickResult;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.XYChartPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -71,8 +72,10 @@ public class BarChartPage extends XYChartPageBase {
     }
 
     ContextMenu createMenu(PickResult p) {
-        Series<String, Number> s = findSeries(p.getIntersectedNode());
-        XYChart.Data<String, Number> d = findData(s, p.getIntersectedNode());
+        Node nd = p.getIntersectedNode();
+
+        Series<String, Number> s = findSeries(nd);
+        XYChart.Data<String, Number> d = findData(s, nd);
         // FIX this is incorrect - styles remain after modifying the list
         // we may need to iterate over all the data (?) and query data.getNode() perhaps?
         // or maybe add a listener to each node??
@@ -89,6 +92,8 @@ public class BarChartPage extends XYChartPageBase {
 
         FX.item(m, "Add Duplicate Category", this::addDuplicateCategory);
         FX.item(m, "Add Series with Duplicate Category", this::addDuplicateSeries);
+        FX.separator(m);
+        FX.item(m, "Properties...", () -> PropertiesMonitor.open(nd));
         return m;
     }
 

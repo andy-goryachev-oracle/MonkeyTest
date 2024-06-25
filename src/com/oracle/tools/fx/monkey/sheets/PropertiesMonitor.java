@@ -47,6 +47,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import com.oracle.tools.fx.monkey.util.OptionWindow;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
@@ -82,6 +83,14 @@ public class PropertiesMonitor extends BorderPane {
         table.setShowRoot(false);
         table.setRoot(collectProperties(owner));
         setCenter(table);
+    }
+
+    public static void open(Node node) {
+        if (node != null) {
+            String name = node.getClass().getSimpleName();
+            PropertiesMonitor p = new PropertiesMonitor(node);
+            OptionWindow.open(node, "Properties: " + name, 800, 900, p);
+        }
     }
 
     private TreeTableCell createCell() {

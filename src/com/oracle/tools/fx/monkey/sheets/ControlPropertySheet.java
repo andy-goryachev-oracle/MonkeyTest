@@ -36,7 +36,6 @@ import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.OptionWindow;
 
 /**
  * Control Property Sheet.
@@ -98,16 +97,7 @@ public class ControlPropertySheet {
         if (m.getItems().size() > 0) {
             FX.separator(m);
         }
-        FX.item(m, "Show Properties Monitor...", () -> openPropertiesMonitor(source));
-    }
-
-    private static void openPropertiesMonitor(Node source) {
-        if (source == null) {
-            return;
-        }
-        String name = source.getClass().getSimpleName();
-        PropertiesMonitor p = new PropertiesMonitor(source);
-        OptionWindow.open(source, "Properties: " + name, 800, 900, p);
+        FX.item(m, "Show Properties Monitor...", () -> PropertiesMonitor.open(source));
     }
 
     static class Picker implements EventHandler<ContextMenuEvent> {

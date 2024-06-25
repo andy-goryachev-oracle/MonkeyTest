@@ -71,18 +71,24 @@ public class FX {
         return m;
     }
 
-    public static final MenuItem menuItem(String text, Runnable r) {
-        MenuItem m = new MenuItem(text);
-        if (r != null) {
-            m.setOnAction((ev) -> r.run());
+    public static final MenuItem menuItem(String text, Runnable action) {
+        MenuItem mi = new MenuItem(text);
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
+            mi.setOnAction((ev) -> action.run());
         }
-        return m;
+        return mi;
     }
 
     public static MenuItem item(MenuBar b, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
         applyMnemonic(mi);
-        mi.setOnAction((ev) -> action.run());
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
+            mi.setOnAction((ev) -> action.run());
+        }
         lastMenu(b).getItems().add(mi);
         return mi;
     }
@@ -144,7 +150,9 @@ public class FX {
     public static MenuItem item(ContextMenu cm, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
         applyMnemonic(mi);
-        if (action != null) {
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
             mi.setOnAction((ev) -> action.run());
         }
         cm.getItems().add(mi);
