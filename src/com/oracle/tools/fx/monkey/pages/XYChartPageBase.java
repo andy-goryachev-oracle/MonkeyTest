@@ -65,7 +65,7 @@ public abstract class XYChartPageBase extends TestPaneBase {
         XYChart.Series s = new XYChart.Series();
         s.setName(name);
         for (int i = 0; i < 12; i++) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             s.getData().add(new XYChart.Data(i, v));
         }
         return s;
@@ -76,7 +76,7 @@ public abstract class XYChartPageBase extends TestPaneBase {
         XYChart.Series s = new XYChart.Series();
         s.setName(name);
         for (int i = 0; i < 12; i++) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             s.getData().add(new XYChart.Data("c" + i, v));
         }
         return s;
@@ -119,14 +119,14 @@ public abstract class XYChartPageBase extends TestPaneBase {
         boolean atIndexZero = rnd.nextBoolean();
 
         if (chart() instanceof BarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             add(s.getData(), atIndexZero, new XYChart.Data("c" + sz, v));
         } else if (chart() instanceof StackedBarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             add(s.getData(), atIndexZero, new XYChart.Data("c" + sz, v));
         } else {
             int i = rnd.nextInt(100);
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             add(s.getData(), atIndexZero, new XYChart.Data(i, v));
         }
     }
@@ -163,13 +163,13 @@ public abstract class XYChartPageBase extends TestPaneBase {
         }
 
         if (chart() instanceof BarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setXValue("c" + v);
         } else if (chart() instanceof StackedBarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setXValue("c" + v);
         } else {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setXValue(v);
         }
     }
@@ -186,13 +186,13 @@ public abstract class XYChartPageBase extends TestPaneBase {
         }
 
         if (chart() instanceof BarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setYValue(v);
         } else if (chart() instanceof StackedBarChart b) {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setYValue(v);
         } else {
-            int v = rnd.nextInt(50);
+            int v = rnd.nextInt(50) - 25;
             ((XYChart.Data)s.getData().get(1)).setYValue(v);
         }
     }
