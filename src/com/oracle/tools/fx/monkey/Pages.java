@@ -58,6 +58,7 @@ public class Pages {
             new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
             // TODO RadioButton
+            new DemoPage("ScatterChart", ScatterChartPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
             // TODO Separator
