@@ -247,6 +247,7 @@ public class ShapePage extends TestPaneBase {
                     stack.getChildren().remove(result);
                 }
                 result = op.op(shape1, shape2);
+                init(result);
                 result.setFill(FX.alpha(Color.BLACK, 0.5));
                 stack.getChildren().add(result);
             }
@@ -283,7 +284,12 @@ public class ShapePage extends TestPaneBase {
             return clear();
         }
 
+        // shape 1
+
         shape1 = sup1.get();
+        pos1.translate(shape1);
+        init(shape1);
+
         if (stroke1.isSelected()) {
             shape1.setStroke(Color.RED);
             shape1.setStrokeLineCap(StrokeLineCap.ROUND);
@@ -293,9 +299,13 @@ public class ShapePage extends TestPaneBase {
             shape1.setStrokeWidth(0);
         }
         shape1.setFill(fill1.isSelected() ? FX.alpha(Color.RED, 0.5) : null);
-        pos1.translate(shape1);
-        
+
+        // shape 2
+
         shape2 = sup2.get();
+        pos2.translate(shape2);
+        init(shape2);
+
         if (stroke2.isSelected()) {
             shape2.setStroke(Color.GREEN);
             shape2.setStrokeLineCap(StrokeLineCap.ROUND);
@@ -305,11 +315,19 @@ public class ShapePage extends TestPaneBase {
             shape2.setStrokeWidth(0);
         }
         shape2.setFill(fill2.isSelected() ? FX.alpha(Color.GREEN, 0.5) : null);
-        pos2.translate(shape2);
+
+        // result
 
         result = op.op(shape1, shape2);
+        init(result);
         result.setFill(FX.alpha(Color.BLACK, 0.5));
         return new Node[] { shape1, shape2, result };
+    }
+
+    private static void init(Node n) {
+        //n.setManaged(false);
+        n.setLayoutX(0);
+        n.setLayoutY(0);
     }
 
     void handleMousePressed(MouseEvent ev) {
