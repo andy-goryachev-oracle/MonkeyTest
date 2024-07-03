@@ -42,7 +42,7 @@ public class PropertiesMenu {
         OptionPane op = new OptionPane();
         if(n instanceof Button t) {
             name = "Button";
-            ButtonPropertySheet.appendTo(op, t);
+            ButtonsPropertySheet.appendTo(op, t);
         } else if(n instanceof CheckBox t) {
             name = "CheckBox";
             CheckBoxPropertySheet.appendTo(op, t);

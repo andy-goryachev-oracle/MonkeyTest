@@ -66,9 +66,9 @@ public class TextPage extends TestPaneBase {
 
         hitInfo = new Label();
 
-        showChars = new BooleanOption("showChars", "show characters", () -> updateShowCharacters());
+        showChars = new BooleanOption("showChars", "show characters", (v) -> updateShowCharacters(v));
 
-        wrap = new BooleanOption("wrap", "wrap width", () -> updateWrap());
+        wrap = new BooleanOption("wrap", "wrap width", (v) -> updateWrap(v));
 
         OptionPane op = new OptionPane();
         op.section("Text");
@@ -105,20 +105,20 @@ public class TextPage extends TestPaneBase {
         setContent(scroll);
         setOptions(op);
 
-        updateWrap();
-        updateShowCharacters();
+        updateWrap(false);
+        updateShowCharacters(false);
     }
 
-    private void updateShowCharacters() {
-        if (showChars.getValue()) {
+    private void updateShowCharacters(boolean on) {
+        if (on) {
             ShowCharacterRuns.createFor(text);
         } else {
             ShowCharacterRuns.remove(text);
         }
     }
 
-    private void updateWrap() {
-        if (wrap.getValue()) {
+    private void updateWrap(boolean on) {
+        if (on) {
             text.wrappingWidthProperty().bind(scroll.viewportBoundsProperty().map((b) -> b.getWidth()));
         } else {
             text.wrappingWidthProperty().unbind();

@@ -26,8 +26,9 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Insets;
 import javafx.scene.AccessibleAttribute;
-import javafx.scene.control.Button;
-import javafx.scene.control.skin.ButtonSkin;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.skin.ToggleButtonSkin;
 import javafx.scene.layout.HBox;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.ButtonsPropertySheet;
@@ -36,15 +37,15 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * Button Page.
+ * ToggleButton Page.
  */
-public class ButtonPage extends TestPaneBase implements HasSkinnable {
-    private final Button control;
+public class ToggleButtonPage extends TestPaneBase implements HasSkinnable {
+    private final ToggleButton control;
 
-    public ButtonPage() {
-        super("ButtonPage");
+    public ToggleButtonPage() {
+        super("ToggleButtonPage");
 
-        control = new Button("Button") {
+        control = new ToggleButton("Toggle Button") {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -53,12 +54,17 @@ public class ButtonPage extends TestPaneBase implements HasSkinnable {
             }
         };
 
+        ToggleButton b2 = new ToggleButton("B2");
+        ToggleButton b3 = new ToggleButton("B3");
+
+        ToggleGroup group = new ToggleGroup();
+        group.getToggles().addAll(b2, b3);
+
         OptionPane op = new OptionPane();
-        ButtonsPropertySheet.appendTo(op, control);
+        ButtonsPropertySheet.appendTo(op, control, group);
 
-        HBox p = new HBox(4, control);
+        HBox p = new HBox(4, control, b2, b3);
         p.setPadding(new Insets(4));
-
         setContent(p);
         setOptions(op);
     }
@@ -70,6 +76,6 @@ public class ButtonPage extends TestPaneBase implements HasSkinnable {
 
     @Override
     public void newSkin() {
-        control.setSkin(new ButtonSkin(control));
+        control.setSkin(new ToggleButtonSkin(control));
     }
 }

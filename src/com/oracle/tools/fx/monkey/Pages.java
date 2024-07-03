@@ -57,7 +57,7 @@ public class Pages {
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
             // TODO ProgressIndicator
-            // TODO RadioButton
+            new DemoPage("RadioButton", RadioButtonPage::new),
             new DemoPage("ScatterChart", ScatterChartPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
@@ -75,7 +75,7 @@ public class Pages {
             new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("TextFlow", TextFlowPage::new),
             new DemoPage("TitledPane", TitledPanePage::new),
-            // TODO ToggleButton
+            new DemoPage("ToggleButton", ToggleButtonPage::new),
             new DemoPage("ToolBar", ToolBarPage::new),
             new DemoPage("Tooltip", TooltipPage::new),
             // TODO in tables: Cell, DateCell, IndexedCell* ?

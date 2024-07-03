@@ -104,9 +104,9 @@ public class TextFlowPage extends TestPaneBase {
             }
         });
 
-        showChars = new BooleanOption("showChars", "show characters", () -> updateShowCharacters());
+        showChars = new BooleanOption("showChars", "show characters", (v) -> updateShowCharacters(v));
 
-        showCaretPaths = new BooleanOption("showCaretPaths", "show caret paths", () -> updateShowCaretPaths());
+        showCaretPaths = new BooleanOption("showCaretPaths", "show caret paths", (v) -> updateShowCaretPaths(v));
 
         OptionPane op = new OptionPane();
         op.section("TextFlow");
@@ -235,16 +235,16 @@ public class TextFlowPage extends TestPaneBase {
         return sb.toString();
     }
 
-    private void updateShowCaretPaths() {
-        if (showCaretPaths.getValue()) {
+    private void updateShowCaretPaths(boolean on) {
+        if (on) {
             ShowCaretPaths.createFor(textFlow);
         } else {
             ShowCaretPaths.remove(textFlow);
         }
     }
 
-    private void updateShowCharacters() {
-        if (showChars.getValue()) {
+    private void updateShowCharacters(boolean on) {
+        if (on) {
             ShowCharacterRuns.createFor(textFlow);
         } else {
             ShowCharacterRuns.remove(textFlow);

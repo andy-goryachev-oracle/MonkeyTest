@@ -22,21 +22,17 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.sheets;
-
-import javafx.scene.control.Button;
-import com.oracle.tools.fx.monkey.options.BooleanOption;
-import com.oracle.tools.fx.monkey.util.OptionPane;
+package com.oracle.tools.fx.monkey.util;
 
 /**
- * Button property sheet.
+ * Equivalent of Consumer<Boolean> but with primitive value.
  */
-public class ButtonPropertySheet {
-    public static void appendTo(OptionPane op, Button n) {
-        op.section("Button");
-        op.option(new BooleanOption("cancelButton", "cancel button", n.cancelButtonProperty()));
-        op.option(new BooleanOption("defaultButton", "default button", n.defaultButtonProperty()));
-
-        LabeledPropertySheet.appendTo(op, "Labeled", false, n);
-    }
+@FunctionalInterface
+public interface BooleanConsumer {
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param value the input argument
+     */
+    public void consume(boolean value);
 }
