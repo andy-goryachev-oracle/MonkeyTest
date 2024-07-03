@@ -25,6 +25,8 @@
 package com.oracle.tools.fx.monkey.sheets;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -43,12 +45,18 @@ public class ButtonsPropertySheet {
         LabeledPropertySheet.appendTo(op, "Labeled", false, n);
     }
 
-    public static void appendTo(OptionPane op, ToggleButton n, ToggleGroup g) {
-        op.section("ToggleButton");
-        op.option(new BooleanOption("selectedButton", "selected", n.selectedProperty()));
-        op.option(new BooleanOption("toggleGroup", "part of a toggle group", (v) -> {
-            n.setToggleGroup(v ? g : null);
-        }));
+    public static void appendTo(OptionPane op, CheckBox n) {
+        op.section("CheckBox");
+        op.option(new BooleanOption("allowIndeterminate", "allow indeterminate", n.allowIndeterminateProperty()));
+        op.option(new BooleanOption("indeterminate", "indeterminate", n.indeterminateProperty()));
+        op.option(new BooleanOption("selected", "selected", n.selectedProperty()));
+
+        LabeledPropertySheet.appendTo(op, "Labeled", false, n);
+    }
+
+    public static void appendTo(OptionPane op, Hyperlink n) {
+        op.section("Hyperlink");
+        op.option(new BooleanOption("visited", "visited", n.visitedProperty()));
 
         LabeledPropertySheet.appendTo(op, "Labeled", false, n);
     }
@@ -56,9 +64,22 @@ public class ButtonsPropertySheet {
     public static void appendTo(OptionPane op, RadioButton n, ToggleGroup g) {
         op.section("RadioButton");
         op.option(new BooleanOption("selectedButton", "selected", n.selectedProperty()));
-        op.option(new BooleanOption("toggleGroup", "part of a toggle group", (v) -> {
-            n.setToggleGroup(v ? g : null);
-        }));
+        if (g != null)
+            op.option(new BooleanOption("toggleGroup", "part of a toggle group", (v) -> {
+                n.setToggleGroup(v ? g : null);
+            }));
+
+        LabeledPropertySheet.appendTo(op, "Labeled", false, n);
+    }
+
+    public static void appendTo(OptionPane op, ToggleButton n, ToggleGroup g) {
+        op.section("ToggleButton");
+        op.option(new BooleanOption("selectedButton", "selected", n.selectedProperty()));
+        if (g != null) {
+            op.option(new BooleanOption("toggleGroup", "part of a toggle group", (v) -> {
+                n.setToggleGroup(v ? g : null);
+            }));
+        }
 
         LabeledPropertySheet.appendTo(op, "Labeled", false, n);
     }

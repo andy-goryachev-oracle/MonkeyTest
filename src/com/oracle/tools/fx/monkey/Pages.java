@@ -46,7 +46,7 @@ public class Pages {
             new DemoPage("DatePicker", DatePickerPage::new),
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
-            // TODO Hyperlink
+            new DemoPage("Hyperlink", HyperlinkPage::new),
             // TODO InputField: DoubleField, IntegerField, WebColorField
             new DemoPage("Label", LabelPage::new),
             new DemoPage("LineChart", LineChartPage::new),

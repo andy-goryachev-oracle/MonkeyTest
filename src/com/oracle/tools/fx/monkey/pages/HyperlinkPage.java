@@ -26,8 +26,8 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Insets;
 import javafx.scene.AccessibleAttribute;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.skin.CheckBoxSkin;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.skin.HyperlinkSkin;
 import javafx.scene.layout.HBox;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.sheets.ButtonsPropertySheet;
@@ -36,15 +36,15 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * CheckBox Page.
+ * Hyperlink Page.
  */
-public class CheckBoxPage extends TestPaneBase implements HasSkinnable {
-    private final CheckBox control;
+public class HyperlinkPage extends TestPaneBase implements HasSkinnable {
+    private final Hyperlink control;
 
-    public CheckBoxPage() {
-        super("CheckBoxPage");
+    public HyperlinkPage() {
+        super("HyperlinkPage");
 
-        control = new CheckBox("CheckBox") {
+        control = new Hyperlink("Hyperlink") {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -69,6 +69,6 @@ public class CheckBoxPage extends TestPaneBase implements HasSkinnable {
 
     @Override
     public void newSkin() {
-        control.setSkin(new CheckBoxSkin(control));
+        control.setSkin(new HyperlinkSkin(control));
     }
 }
