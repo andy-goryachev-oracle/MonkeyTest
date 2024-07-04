@@ -150,6 +150,7 @@ public class MainWindow extends Stage {
         FX.item(m3, "Submenu Item 1");
         FX.item(m3, "Submenu Item 2");
         FX.item(m3, "Submenu Item 3");
+        FX.item(m3, "Submenu Item 4");
         // Tools
         FX.menu(m, "_Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
