@@ -388,4 +388,30 @@ public class FX {
     public static Color alpha(Color c, double alpha) {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
     }
+
+    public static Menu menu(Menu menu, String text) {
+        Menu m = new Menu(text);
+        applyMnemonic(m);
+        menu.getItems().add(m);
+        return m;
+    }
+
+    public static MenuItem item(Menu m, String text) {
+        MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
+        m.getItems().add(mi);
+        return mi;
+    }
+
+    public static MenuItem item(Menu m, String text, Runnable action) {
+        MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
+            mi.setOnAction((ev) -> action.run());
+        }
+        m.getItems().add(mi);
+        return mi;
+    }
 }
