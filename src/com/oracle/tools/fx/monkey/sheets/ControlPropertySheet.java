@@ -33,6 +33,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.PickResult;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -86,18 +87,20 @@ public class ControlPropertySheet {
             public void show(Node anchor, double screenX, double screenY) {
                 PickResult pick = picker.getPickResult();
                 getItems().clear();
-                populate(this, pick.getIntersectedNode());
+                populate(this, pick);
                 super.show(anchor, screenX, screenY);
             }
         };
     }
 
-    private static void populate(ContextMenu m, Node source) {
+    private static void populate(ContextMenu m, PickResult pick) {
+        Node source = pick.getIntersectedNode();
         TypeSpecificContextMenu.populate(m, source);
         if (m.getItems().size() > 0) {
             FX.separator(m);
         }
         FX.item(m, "Show Properties Monitor...", () -> PropertiesMonitor.open(source));
+        FX.item(m, "Accessibility Attributes...", () -> AccessibilityPropertyViewer.open(pick));
     }
 
     static class Picker implements EventHandler<ContextMenuEvent> {
