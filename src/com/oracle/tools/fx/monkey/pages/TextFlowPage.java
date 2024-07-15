@@ -29,6 +29,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
@@ -44,7 +45,9 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
+import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -77,6 +80,7 @@ public class TextFlowPage extends TestPaneBase {
             }
         };
         textFlow.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+        FX.setPopupMenu(textFlow, this::createPopupMenu);
 
         pickResult = new Label();
 
@@ -249,5 +253,11 @@ public class TextFlowPage extends TestPaneBase {
         } else {
             ShowCharacterRuns.remove(textFlow);
         }
+    }
+
+    private ContextMenu createPopupMenu(PickResult pick) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Accessibility Attributes", () -> AccessibilityPropertyViewer.open(pick));
+        return m;
     }
 }
