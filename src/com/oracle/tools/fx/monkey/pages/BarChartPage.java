@@ -137,16 +137,16 @@ public class BarChartPage extends XYChartPageBase {
             var dd = d.get(0).getData();
             if (dd.size() > 0) {
                 var v = dd.get(0);
-                dd.add(new XYChart.Data(v.getXValue(), v.getYValue().doubleValue() + 1.0));
+                dd.add(new XYChart.Data(v.getXValue(), randomValue()));
             }
         }
     }
 
     void addDuplicateSeries() {
         ObservableList<XYChart.Data<String, Number>> list = FXCollections.observableArrayList();
-        list.add(new XYChart.Data<>("1", 1));
-        list.add(new XYChart.Data<>("1", 2));
-        list.add(new XYChart.Data<>("2", 3));
+        list.add(new XYChart.Data<>("1", randomValue()));
+        list.add(new XYChart.Data<>("1", randomValue()));
+        list.add(new XYChart.Data<>("2", randomValue()));
         if (chart.getData().size() > 0) {
             chart.getData().getFirst().setData(list);
         }
