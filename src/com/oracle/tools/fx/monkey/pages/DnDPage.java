@@ -145,6 +145,15 @@ public class DnDPage extends TestPaneBase {
 
     private ObjectOption<Image> createImageOption() {
         ObjectOption<Image> op = new ObjectOption<>("image", dragImage);
+        op.addChoice("<null>", null);
+        op.addChoice("1x1", ImageTools.createImage(1, 1));
+        op.addChoice("16 x 16", ImageTools.createImage(16, 16));
+        op.addChoice("32 x 32", ImageTools.createImage(32, 32));
+        op.addChoice("64 x 64", ImageTools.createImage(64, 64));
+        op.addChoiceSupplier("128 x 16", () -> ImageTools.createImage(128, 16));
+        op.addChoiceSupplier("16 x 128", () -> ImageTools.createImage(16, 128));
+        op.addChoiceSupplier("256 x 256", () -> ImageTools.createImage(256, 256));
+        op.addChoiceSupplier("4096 x 4096", () -> ImageTools.createImage(4096, 4096));
         op.addChoiceSupplier("<snapshot>", () -> {
             try {
                 // FIX windows throws Errors if this check is not done
@@ -155,16 +164,7 @@ public class DnDPage extends TestPaneBase {
             }
             return null;
         });
-        op.addChoice("<null>", null);
-        op.addChoice("1x1", ImageTools.createImage(1, 1));
-        op.addChoice("16 x 16", ImageTools.createImage(16, 16));
-        op.addChoice("32 x 32", ImageTools.createImage(32, 32));
-        op.addChoice("64 x 64", ImageTools.createImage(64, 64));
-        op.addChoiceSupplier("128 x 16", () -> ImageTools.createImage(128, 16));
-        op.addChoiceSupplier("16 x 128", () -> ImageTools.createImage(16, 128));
-        op.addChoiceSupplier("256 x 256", () -> ImageTools.createImage(256, 256));
-        op.addChoiceSupplier("4096 x 4096", () -> ImageTools.createImage(4096, 4096));
-        op.selectInitialValue();
+        op.selectFirst();
         return op;
     }
 
