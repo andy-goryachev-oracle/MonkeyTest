@@ -44,6 +44,7 @@ public class Pages {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
             new DemoPage("DatePicker", DatePickerPage::new),
+            new DemoPage("Drag and Drop", DnDPage::new),
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
             new DemoPage("Hyperlink", HyperlinkPage::new),

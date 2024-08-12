@@ -41,6 +41,7 @@ public class GraphicOption extends ObjectOption<Node> {
         addChoice("Wide", ImageTools.createImageView(128, 16));
         addChoice("Tall", ImageTools.createImageView(16, 128));
         addChoice("Large", ImageTools.createImageView(256, 256));
+        // TODO include active content (see tooltip)
 
         selectInitialValue();
     }
