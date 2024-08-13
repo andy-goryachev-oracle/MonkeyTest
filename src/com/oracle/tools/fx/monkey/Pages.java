@@ -66,6 +66,7 @@ public class Pages {
             new DemoPage("Shape", ShapePage::new),
             // TODO Slider
             new DemoPage("Spinner", SpinnerPage::new),
+            new DemoPage("SplitMenuButton", SplitMenuButtonPage::new),
             // TODO SplitPane
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),

@@ -31,9 +31,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.skin.MenuButtonSkin;
+import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.skin.SplitMenuButtonSkin;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.LabeledPropertySheet;
@@ -43,15 +43,15 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
- * MenuButton Page.
+ * SplitMenuButton Page.
  */
-public class MenuButtonPage extends TestPaneBase implements HasSkinnable {
-    private final MenuButton control;
+public class SplitMenuButtonPage extends TestPaneBase implements HasSkinnable {
+    private final SplitMenuButton control;
 
-    public MenuButtonPage() {
-        super("MenuButtonPage");
+    public SplitMenuButtonPage() {
+        super("SplitMenuButtonPage");
 
-        control = new MenuButton() {
+        control = new SplitMenuButton() {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -60,11 +60,11 @@ public class MenuButtonPage extends TestPaneBase implements HasSkinnable {
             }
         };
 
-        control.setText("Menu Button");
+        control.setText("Split Menu Button");
         control.getItems().add(new MenuItem("Edit"));
 
         OptionPane op = new OptionPane();
-        op.section("MenuButton");
+        op.section("SplitMenuButton");
         op.option("Items:", createItemsOptions("items", control.getItems()));
         op.option("Popup Side:", new EnumOption<Side>("popupSide", true, Side.class, control.popupSideProperty()));
         LabeledPropertySheet.appendTo(op, "ButtonBase", false, control);
@@ -101,6 +101,6 @@ public class MenuButtonPage extends TestPaneBase implements HasSkinnable {
 
     @Override
     public void newSkin() {
-        control.setSkin(new MenuButtonSkin(control));
+        control.setSkin(new SplitMenuButtonSkin(control));
     }
 }
