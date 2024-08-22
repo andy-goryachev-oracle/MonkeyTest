@@ -37,6 +37,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -60,21 +61,21 @@ public class PropertiesMonitor extends BorderPane {
         table = new TreeTableView<>();
         table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         {
-            TreeTableColumn<Entry,String> c = new TreeTableColumn<>("Name");
+            TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Name");
             c.setCellFactory((tc) -> createCell());
             c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getName()));
             c.setPrefWidth(120);
             table.getColumns().add(c);
         }
         {
-            TreeTableColumn<Entry,String> c = new TreeTableColumn<>("Type");
+            TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Type");
             c.setCellFactory((tc) -> createCell());
             c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getType()));
             c.setPrefWidth(100);
             table.getColumns().add(c);
         }
         {
-            TreeTableColumn<Entry,Object> c = new TreeTableColumn<>("Value");
+            TreeTableColumn<Entry, Object> c = new TreeTableColumn<>("Value");
             c.setCellFactory((tc) -> createCell());
             c.setCellValueFactory((f) -> f.getValue().getValue().getValue());
             c.setPrefWidth(300);
@@ -136,7 +137,7 @@ public class PropertiesMonitor extends BorderPane {
         try {
             BeanInfo inf = Introspector.getBeanInfo(n.getClass());
             PropertyDescriptor[] ps = inf.getPropertyDescriptors();
-            for (PropertyDescriptor p : ps) {
+            for (PropertyDescriptor p: ps) {
                 Entry en = createEntry(n, p);
                 if (en != null) {
                     a.add(en);
@@ -144,6 +145,7 @@ public class PropertiesMonitor extends BorderPane {
             }
 
             a.add(new Entry("styleClass", "ObservableList", n.getStyleClass()));
+            a.add(new Entry("pseudoClassStates", "ObservableSet", n.getPseudoClassStates()));
 
             Collections.sort(a, new Comparator<Entry>() {
                 @Override
@@ -167,7 +169,7 @@ public class PropertiesMonitor extends BorderPane {
         ti.setExpanded(expand);
         root.getChildren().add(ti);
 
-        for (Entry en : a) {
+        for (Entry en: a) {
             ti.getChildren().add(new TreeItem<>(en));
         }
     }
@@ -216,23 +218,28 @@ public class PropertiesMonitor extends BorderPane {
         public boolean isHeader() {
             return type == null;
         }
-        
+
         public String getName() {
             return name;
         }
 
         public SimpleObjectProperty<Object> getValue() {
-            if(value == null) {
+            if (value == null) {
                 value = new SimpleObjectProperty<>();
-                
+
                 if (prop != null) {
-                    if(prop instanceof ObservableValue p) {
+                    if (prop instanceof ObservableValue p) {
                         p.addListener((src, prev, c) -> {
                             setValue(c);
                         });
                         Object y = p.getValue();
                         setValue(p.getValue());
-                    } else if(prop instanceof ObservableList p) {
+                    } else if (prop instanceof ObservableList p) {
+                        p.addListener((Observable x) -> {
+                            setValue(p.toString());
+                        });
+                        setValue(p.toString());
+                    } else if (prop instanceof ObservableSet p) {
                         p.addListener((Observable x) -> {
                             setValue(p.toString());
                         });
@@ -244,7 +251,7 @@ public class PropertiesMonitor extends BorderPane {
         }
 
         private void setValue(Object x) {
-            if(x instanceof Node) {
+            if (x instanceof Node) {
                 // do not set nodes!
                 x = x.getClass().getSimpleName();
             }
