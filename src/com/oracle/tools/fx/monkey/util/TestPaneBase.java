@@ -39,6 +39,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
+import com.oracle.tools.fx.monkey.AppSettings;
 
 /**
  * Base class for individual control test Pane.
@@ -63,12 +64,14 @@ public class TestPaneBase extends BorderPane {
         hsplit.setBorder(Border.EMPTY);
         hsplit.setDividerPositions(1.0);
         hsplit.setOrientation(Orientation.HORIZONTAL);
+        hsplit.snapToPixelProperty().bind(AppSettings.snapSplitPanes);
 
         SplitPane vsplit = new SplitPane(hsplit, pane());
         FX.name(vsplit, "vsplit");
         vsplit.setBorder(Border.EMPTY);
         vsplit.setDividerPositions(1.0);
         vsplit.setOrientation(Orientation.VERTICAL);
+        vsplit.snapToPixelProperty().bind(AppSettings.snapSplitPanes);
 
         setCenter(vsplit);
     }

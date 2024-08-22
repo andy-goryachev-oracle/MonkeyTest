@@ -135,6 +135,8 @@ public class MainWindow extends Stage {
         // Page
         FX.menu(m, "_Page");
         FX.item(m, "Reload Current Page", this::reloadCurrentPage);
+        FX.separator(m);
+        FX.checkItem(m, "Snapped Split Panes", AppSettings.snapSplitPanes);
         // Skin
         FX.menu(m, "_Skin");
         FX.item(m, "Set New Skin", this::newSkin);
