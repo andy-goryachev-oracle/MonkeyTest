@@ -37,11 +37,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -141,18 +138,6 @@ public class MainWindow extends Stage {
         FX.menu(m, "_Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
-        // Menu
-        Menu m2 = FX.menu(m, "_Menu");
-        ToggleGroup g = new ToggleGroup();
-        FX.radio(m, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
-        FX.radio(m, "RadioMenuItem 2", KeyCombination.keyCombination("Shortcut+2"), g);
-        FX.radio(m, "RadioMenuItem 3", KeyCombination.keyCombination("Shortcut+3"), g);
-        FX.separator(m);
-        Menu m3 = FX.menu(m2, "_Submenu");
-        FX.item(m3, "Submenu Item 1");
-        FX.item(m3, "Submenu Item 2");
-        FX.item(m3, "Submenu Item 3");
-        FX.item(m3, "Submenu Item 4");
         // Tools
         FX.menu(m, "_Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);

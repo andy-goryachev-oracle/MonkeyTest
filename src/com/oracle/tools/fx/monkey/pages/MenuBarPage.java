@@ -30,14 +30,22 @@ import java.util.function.Supplier;
 import javafx.collections.ObservableList;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.skin.MenuBarSkin;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
+import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -74,32 +82,58 @@ public class MenuBarPage extends TestPaneBase implements HasSkinnable {
         return () -> {
             ArrayList<Menu> rv = new ArrayList(count);
             for (int i = 0; i < count; i++) {
-                Menu m = mkMenu(String.valueOf(i + 1), 5);
+                Menu m = mkMenu(String.valueOf(i + 1));
                 rv.add(m);
             }
             return rv;
         };
     }
 
-    private Menu mkMenu(String name, int count) {
+    private Menu mkMenu(String name) {
         Menu m = new Menu("Menu" + name);
-        for (int i = 0; i < count; i++) {
-            m.getItems().add(new MenuItem("Item" + (i + 1)));
-        }
+        ToggleGroup g = new ToggleGroup();
+        m.getItems().addAll(
+            new MenuItem("MenuItem 1"),
+            new MenuItem("MenuItem 2"),
+            new MenuItem("MenuItem 3"),
+            new SeparatorMenuItem(),
+            radio("RadioMenuItem 1", g),
+            radio("RadioMenuItem 2", g),
+            radio("RadioMenuItem 3", g),
+            new SeparatorMenuItem(),
+            new CheckMenuItem("CheckMenuItem 1"),
+            new CheckMenuItem("CheckMenuItem 2"),
+            new CheckMenuItem("CheckMenuItem 3", ImageTools.createImageView(16, 16)),
+            new SeparatorMenuItem(),
+            new CustomMenuItem(new Button("CustomMenuItem 1")),
+            new CustomMenuItem(new Button("CustomMenuItem 2 (auto hide)"), true),
+            new CustomMenuItem(new Button("CustomMenuItem 3 (auto hide off)"), false)
+        );
+        Menu m2 = FX.menu(m, "_Submenu");
+        FX.item(m2, "Submenu Item 1");
+        FX.item(m2, "Submenu Item 2");
+        FX.item(m2, "Submenu Item 3");
+        FX.item(m2, "Submenu Item 4");
         return m;
+    }
+
+    private MenuItem radio(String text, ToggleGroup g) {
+        RadioMenuItem mi = new RadioMenuItem(text);
+        mi.setToggleGroup(g);
+        return mi;
     }
 
     private Supplier<List<Menu>> createInvisibleDisabled() {
         return () -> {
             ArrayList<Menu> rv = new ArrayList();
             Menu m;
-            rv.add(m = mkMenu("1", 5));
-            rv.add(m = mkMenu("2", 5));
+            rv.add(m = mkMenu("1"));
+            rv.add(m = mkMenu("2"));
             m.setVisible(false);
-            rv.add(m = mkMenu("3", 5));
-            rv.add(m = mkMenu("4", 5));
+            rv.add(m = mkMenu("3"));
+            rv.add(m = mkMenu("4"));
             m.setDisable(true);
-            rv.add(m = mkMenu("5", 5));
+            rv.add(m = mkMenu("5"));
             return rv;
         };
     }

@@ -117,6 +117,7 @@ public class TestPaneBase extends BorderPane {
             setRight(null);
         } else {
             ScrollPane sp = new ScrollPane(n);
+            sp.setMinViewportWidth(10);
             sp.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
             sp.setHbarPolicy(ScrollBarPolicy.NEVER);
             setRight(sp);
