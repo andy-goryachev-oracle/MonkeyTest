@@ -108,7 +108,7 @@ public class DoubleOption extends ComboBox<Object> {
         select(value, true);
     }
 
-    private void select(Number value, boolean initial) {
+    public void select(Number value, boolean initial) {
         List<Object> items = getItems();
         int sz = items.size();
         for (int i = 0; i < sz; i++) {

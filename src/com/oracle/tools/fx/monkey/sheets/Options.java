@@ -29,6 +29,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -107,6 +109,20 @@ public class Options {
         d.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
         d.addChoice("NaN", Double.NaN);
         d.selectInitialValue();
+        return d;
+    }
+
+    public static Node doubleOption(String name, Property<Number> p) {
+        DoubleOption d = new DoubleOption(name, p);
+        d.addChoice("0", Double.valueOf(0));
+        d.addChoice("10", 10.0);
+        d.addChoice("33.3", 33.3);
+        d.addChoice("100", 100.0);
+        d.addChoice("Double.MAX_VALUE", Double.MAX_VALUE);
+        d.addChoice("Double.MIN_VALUE", Double.MIN_VALUE);
+        d.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
+        d.addChoice("NaN", Double.NaN);
+        d.select(p.getValue(), true);
         return d;
     }
 
@@ -195,5 +211,29 @@ public class Options {
         d.addChoice("<default: " + defaultValue + ">", defaultValue);
         d.selectInitialValue();
         return d;
+    }
+
+    public static Node boundsOption(String name, ObjectProperty<Bounds> p) {
+        Bounds[] bounds = {
+            b(0, 0, 0, 0),
+            b(0, 0, 10, 10),
+            b(0, 0, 1000, 1000),
+            b(-500, -500, 1000, 1000)
+        };
+
+        ObjectOption<Bounds> op = new ObjectOption<>(name, p);
+        op.addChoice("<null>", null);
+        for(Bounds b: bounds) {
+            String s =
+                "@" + b.getMinX() + "," + b.getMinY() +
+                "  [" + b.getWidth() + "x" + b.getHeight() + "]";
+            op.addChoice(s, b);
+        }
+        op.selectInitialValue();
+        return op;
+    }
+
+    private static Bounds b(double x, double y, double w, double h) {
+        return new BoundingBox(x, y, 0.0, w, h, 0.0);
     }
 }
