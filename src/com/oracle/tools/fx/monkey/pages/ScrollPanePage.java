@@ -115,13 +115,13 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
         op.addChoiceSupplier("1,000 x 1,000", mk(1_000, 1_000));
         op.addChoiceSupplier("1,000 x 50", mk(1_000, 50));
         op.addChoiceSupplier("50 x 1,000", mk(50, 1_000));
-        op.addChoiceSupplier("Panel", this::createPanel);
+        op.addChoiceSupplier("Panel", () -> createPanel(true));
         op.addChoice("<null>", null);
         op.select(3);
         return op;
     }
 
-    private Node createPanel() {
+    private Node createPanel(boolean innerScroll) {
         TextField loginField = new TextField();
         PasswordField passField = new PasswordField();
         Button button = new Button("Login");
@@ -138,6 +138,11 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
         r++;
         p.add(spacer, 1, r);
         p.add(button, 2, r);
+        if (innerScroll) {
+            r++;
+            p.add(new ScrollPane(createPanel(false)), 1, r, 2, 2);
+        }
+
         GridPane.setHgrow(loginField, Priority.ALWAYS);
         GridPane.setHgrow(passField, Priority.ALWAYS);
         GridPane.setHgrow(spacer, Priority.ALWAYS);
