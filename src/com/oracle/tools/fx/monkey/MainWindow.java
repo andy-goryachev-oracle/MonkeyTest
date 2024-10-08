@@ -45,6 +45,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
 import com.oracle.tools.fx.monkey.tools.EmbeddedFxTextArea;
@@ -146,6 +147,7 @@ public class MainWindow extends Stage {
         FX.item(m, "JTextArea/JTextField Embedded in SwingNode", this::openJTextArea);
         FX.item(m, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(m, "Native to ASCII", this::openNative2Ascii);
+        FX.item(m, "Platform Preferences Monitor", this::openPlatformPreferencesMonitor);
         FX.item(m, "System Info", this::openSystemInfo);
         // Logs
         FX.menu(m, "_Logging");
@@ -281,5 +283,9 @@ public class MainWindow extends Stage {
         if (n instanceof HasSkinnable s) {
             s.newSkin();
         }
+    }
+
+    void openPlatformPreferencesMonitor() {
+        PropertiesMonitor.openPreferences(this);
     }
 }
