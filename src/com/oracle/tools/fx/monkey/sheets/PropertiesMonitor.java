@@ -168,7 +168,7 @@ public class PropertiesMonitor extends BorderPane {
             BeanInfo inf = Introspector.getBeanInfo(n.getClass());
             PropertyDescriptor[] ps = inf.getPropertyDescriptors();
             for (PropertyDescriptor p: ps) {
-                Entry en = createEntry(n, p);
+                Entry en = createEntry(n.getClass(), n, p);
                 if (en != null) {
                     a.add(en);
                 }
@@ -193,23 +193,23 @@ public class PropertiesMonitor extends BorderPane {
         ti.setExpanded(expand);
         root.getChildren().add(ti);
 
-        sort(a);
-
-        for (Entry en: a) {
-            ti.getChildren().add(new TreeItem<>(en));
-        }
+        addSorted(ti, a);
     }
 
-    private static void sort(ArrayList<Entry> a) {
+    static void addSorted(TreeItem<Entry> item, ArrayList<Entry> a) {
         Collections.sort(a, new Comparator<Entry>() {
             @Override
             public int compare(Entry a, Entry b) {
                 return a.getName().compareTo(b.getName());
             }
         });
+
+        for (Entry en: a) {
+            item.getChildren().add(new TreeItem<>(en));
+        }
     }
 
-    private static Entry createEntry(Node n, PropertyDescriptor pd) {
+    private static Entry createEntry(Class<?> cs, Object n, PropertyDescriptor pd) {
         Class<?> t = pd.getPropertyType();
         if (t == null) {
             return null;
@@ -223,7 +223,7 @@ public class PropertiesMonitor extends BorderPane {
         String name = pd.getName();
         String pname = name + "Property";
         try {
-            Method m = n.getClass().getMethod(pname);
+            Method m = cs.getMethod(pname);
             if (m != null) {
                 Object v = m.invoke(n);
                 if (v instanceof ObservableValue val) {
@@ -313,23 +313,49 @@ public class PropertiesMonitor extends BorderPane {
             super(null);
 
             Platform.Preferences pref = Platform.getPreferences();
-            ArrayList<Entry> a = new ArrayList<>();
-            for (String k: pref.keySet()) {
-                Object v = pref.get(k);
-                SimpleObjectProperty p = new SimpleObjectProperty(v);
-                String type = v == null ? "<null>" : v.getClass().getSimpleName();
-                Entry en = new Entry(k, type, p);
-                props.put(k, en);
-                a.add(en);
-            }
-            sort(a);
+
+            // FIX remove later
+            pref.reducedMotionProperty().addListener((s,p,c) -> {
+                System.out.println("reducedMotionProperty:" + c);
+            });
+            pref.reducedTransparencyProperty().addListener((s,p,c) -> {
+                System.out.println("reducedTransparencyProperty:" + c);
+            });
 
             TreeItem<Entry> ti = new TreeItem<>(new Entry("Platform.Preferences", null, null));
             ti.setExpanded(true);
             getChildren().add(ti);
+            {
+                ArrayList<Entry> a = new ArrayList<>();
+                try {
+                    BeanInfo inf = Introspector.getBeanInfo(Platform.Preferences.class);
+                    PropertyDescriptor[] ps = inf.getPropertyDescriptors();
+                    for (PropertyDescriptor p: ps) {
+                        Entry en = createEntry(Platform.Preferences.class, pref, p);
+                        if (en != null) {
+                            a.add(en);
+                        }
+                    }
+                } catch (IntrospectionException e) {
+                    e.printStackTrace();
+                }
+                addSorted(ti, a);
+            }
 
-            for (Entry en: a) {
-                ti.getChildren().add(new TreeItem<>(en));
+            ti = new TreeItem<>(new Entry("All Properties", null, null));
+            ti.setExpanded(true);
+            getChildren().add(ti);
+            {
+                ArrayList<Entry> a = new ArrayList<>();
+                for (String k: pref.keySet()) {
+                    Object v = pref.get(k);
+                    SimpleObjectProperty p = new SimpleObjectProperty(v);
+                    String type = v == null ? "<null>" : v.getClass().getSimpleName();
+                    Entry en = new Entry(k, type, p);
+                    props.put(k, en);
+                    a.add(en);
+                }
+                addSorted(ti, a);
             }
 
             pref.addListener(this);
@@ -346,7 +372,7 @@ public class PropertiesMonitor extends BorderPane {
             Entry en = props.get(key);
             if (en != null) {
                 Object v = Platform.getPreferences().get(key);
-                if(v != null) {
+                if (v != null) {
                     en.type = v.getClass().getSimpleName();
                 }
                 ((SimpleObjectProperty)en.prop).set(v);
