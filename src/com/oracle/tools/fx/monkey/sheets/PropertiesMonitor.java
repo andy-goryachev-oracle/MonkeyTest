@@ -55,12 +55,12 @@ import com.oracle.tools.fx.monkey.util.OptionWindow;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * Monitors Public Properties
+ * Monitors Public Properties or Platform Preferences.
  */
 public class PropertiesMonitor extends BorderPane {
     private final TreeTableView<Entry> table;
 
-    private PropertiesMonitor(TreeItem<Entry> root) {
+    private PropertiesMonitor(TreeItem<Entry> root, Runnable onHiding) {
         table = new TreeTableView<>();
         table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         {
@@ -88,21 +88,21 @@ public class PropertiesMonitor extends BorderPane {
         table.setRoot(root);
         setCenter(table);
 
-        // disconnect listeners
-        if (root instanceof Runnable r) {
+        // disconnect listeners on window hiding
+        if (onHiding != null) {
             sceneProperty().addListener((s, p, scene) -> {
                 if (scene != null) {
                     if (scene.getWindow() == null) {
                         scene.windowProperty().addListener((s2, p2, win) -> {
                             if (win != null) {
                                 win.setOnHiding((ev) -> {
-                                    r.run();
+                                    onHiding.run();
                                 });
                             }
                         });
                     } else {
                         scene.getWindow().setOnHiding((ev) -> {
-                            r.run();
+                            onHiding.run();
                         });
                     }
                 }
@@ -114,13 +114,14 @@ public class PropertiesMonitor extends BorderPane {
         if (node != null) {
             String name = node.getClass().getSimpleName();
             TreeItem<Entry> root = collectProperties(node);
-            PropertiesMonitor p = new PropertiesMonitor(root);
+            PropertiesMonitor p = new PropertiesMonitor(root, null);
             OptionWindow.open(node, "Properties: " + name, 800, 900, p);
         }
     }
 
     public static void openPreferences(Object parent) {
-        PropertiesMonitor p = new PropertiesMonitor(new PrefRoot());
+        PrefRoot root = new PrefRoot();
+        PropertiesMonitor p = new PropertiesMonitor(root, root::disconnect);
         OptionWindow.open(parent, "Platform Preferences Monitor", 1190, 900, p);
     }
 
@@ -303,9 +304,10 @@ public class PropertiesMonitor extends BorderPane {
         }
     }
 
+    // for use with Platform Preferences
     static class PrefRoot
         extends TreeItem<Entry>
-        implements Runnable, MapChangeListener<String, Object>
+        implements MapChangeListener<String, Object>
     {
         private HashMap<String,Entry> props = new HashMap<>();
 
@@ -313,14 +315,6 @@ public class PropertiesMonitor extends BorderPane {
             super(null);
 
             Platform.Preferences pref = Platform.getPreferences();
-
-            // FIX remove later
-            pref.reducedMotionProperty().addListener((s,p,c) -> {
-                System.out.println("reducedMotionProperty:" + c);
-            });
-            pref.reducedTransparencyProperty().addListener((s,p,c) -> {
-                System.out.println("reducedTransparencyProperty:" + c);
-            });
 
             TreeItem<Entry> ti = new TreeItem<>(new Entry("Platform.Preferences", null, null));
             ti.setExpanded(true);
@@ -336,7 +330,7 @@ public class PropertiesMonitor extends BorderPane {
                             a.add(en);
                         }
                     }
-                } catch (IntrospectionException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 addSorted(ti, a);
@@ -361,8 +355,7 @@ public class PropertiesMonitor extends BorderPane {
             pref.addListener(this);
         }
 
-        @Override
-        public void run() {
+        public void disconnect() {
             Platform.getPreferences().removeListener(this);
         }
 
