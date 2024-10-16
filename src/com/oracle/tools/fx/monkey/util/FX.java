@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.application.Platform;
@@ -97,6 +98,16 @@ public class FX {
         CheckMenuItem mi = new CheckMenuItem(name);
         mi.selectedProperty().bindBidirectional(prop);
         lastMenu(b).getItems().add(mi);
+        return mi;
+    }
+
+    public static CheckMenuItem checkItem(ContextMenu m, String name, boolean selected, Consumer<Boolean> client) {
+        CheckMenuItem mi = new CheckMenuItem(name);
+        mi.setSelected(selected);
+        mi.selectedProperty().addListener((s, p, on) -> {
+            client.accept(on);
+        });
+        m.getItems().add(mi);
         return mi;
     }
 

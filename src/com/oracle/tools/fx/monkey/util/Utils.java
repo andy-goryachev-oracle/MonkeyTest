@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.text.DecimalFormat;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import javafx.application.Platform;
@@ -42,6 +43,8 @@ import javafx.stage.Window;
  * Monkey Tester Utilities
  */
 public class Utils {
+    private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("0.###");
+
     public static boolean isBlank(Object x) {
         if(x == null) {
             return true;
@@ -93,5 +96,26 @@ public class Utils {
         p.setCenter(textField);
 
         showDialog(owner, windowName, title, p);
+    }
+
+    public static String fmt(double v) {
+        return DOUBLE_FORMAT.format(v);
+    }
+
+    public static String simpleName(Object x) {
+        if (x == null) {
+            return "<null>";
+        }
+        Class<?> c = (x instanceof Class) ? (Class<?>)x : x.getClass();
+        String s = c.getSimpleName();
+        if (!isBlank(s)) {
+            return s;
+        }
+        s = c.getName();
+        int ix = s.lastIndexOf('.');
+        if (ix < 0) {
+            return s;
+        }
+        return s.substring(ix + 1);
     }
 }

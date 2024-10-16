@@ -43,7 +43,6 @@ public class TypeSpecificContextMenu {
         if(menu != null) {
             FX.item(m, "Set Menu Invisible", () -> menu.setVisible(false));
         }
-        System.out.println(source);
     }
 
     // MenuBarButton is not accessible, so we can't get an instance of Menu directly.

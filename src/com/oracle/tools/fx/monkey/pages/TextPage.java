@@ -50,6 +50,7 @@ import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
+import com.oracle.tools.fx.monkey.util.StdoutMouseListener;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
@@ -139,7 +140,13 @@ public class TextPage extends TestPaneBase {
 
     private ContextMenu createPopupMenu(PickResult pick) {
         ContextMenu m = new ContextMenu();
-        FX.item(m, "Accessibility Attributes", () -> AccessibilityPropertyViewer.open(pick));
+        FX.item(m, "Accessibility Attributes", () -> {
+            AccessibilityPropertyViewer.open(pick);
+        });
+        StdoutMouseListener.attach(m, text);
+        if (text != pick.getIntersectedNode()) {
+            StdoutMouseListener.attach(m, pick.getIntersectedNode());
+        }
         return m;
     }
 }
