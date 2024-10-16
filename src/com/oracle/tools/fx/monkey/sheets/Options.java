@@ -132,6 +132,7 @@ public class Options {
 
     public static Node background(Node owner, String name, Property<Background> p) {
         ObjectOption<Background> op = new ObjectOption<>(name, p);
+        op.addChoice("<null>", null);
         op.addChoiceSupplier("Black", () -> {
             return Background.fill(Color.BLACK);
         });
@@ -164,7 +165,6 @@ public class Options {
             );
             return Background.fill(g);
         });
-        op.addChoice("<null>", null);
         op.selectInitialValue();
         return op;
     }
