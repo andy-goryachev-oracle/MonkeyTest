@@ -26,24 +26,18 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
-import javafx.geometry.Insets;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.TextField;
 import javafx.scene.control.skin.ScrollPaneSkin;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.CustomPane;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -115,37 +109,9 @@ public class ScrollPanePage extends TestPaneBase implements HasSkinnable {
         op.addChoiceSupplier("1,000 x 1,000", mk(1_000, 1_000));
         op.addChoiceSupplier("1,000 x 50", mk(1_000, 50));
         op.addChoiceSupplier("50 x 1,000", mk(50, 1_000));
-        op.addChoiceSupplier("Panel", () -> createPanel(true));
+        op.addChoiceSupplier("Panel", CustomPane::create);
         op.addChoice("<null>", null);
         op.select(3);
         return op;
-    }
-
-    private Node createPanel(boolean innerScroll) {
-        TextField loginField = new TextField();
-        PasswordField passField = new PasswordField();
-        Button button = new Button("Login");
-        Label spacer = new Label();
-
-        GridPane p = new GridPane(10, 5);
-        p.setPadding(new Insets(20));
-        int r = 0;
-        p.add(new Label("Login:"), 0, r);
-        p.add(loginField, 1, r, 2, 1);
-        r++;
-        p.add(new Label("Password:"), 0, r);
-        p.add(passField, 1, r, 2, 1);
-        r++;
-        p.add(spacer, 1, r);
-        p.add(button, 2, r);
-        if (innerScroll) {
-            r++;
-            p.add(new ScrollPane(createPanel(false)), 1, r, 2, 2);
-        }
-
-        GridPane.setHgrow(loginField, Priority.ALWAYS);
-        GridPane.setHgrow(passField, Priority.ALWAYS);
-        GridPane.setHgrow(spacer, Priority.ALWAYS);
-        return p;
     }
 }

@@ -43,14 +43,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
+import com.oracle.tools.fx.monkey.tools.CustomStage;
 import com.oracle.tools.fx.monkey.tools.EmbeddedFxTextArea;
 import com.oracle.tools.fx.monkey.tools.EmbeddedJTextAreaWindow;
 import com.oracle.tools.fx.monkey.tools.KeyboardEventViewer;
+import com.oracle.tools.fx.monkey.tools.ModalWindow;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -139,6 +142,13 @@ public class MainWindow extends Stage {
         FX.menu(m, "_Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
+        // Stage
+        FX.menu(m, "Sta_ge");
+        FX.item(m, "Decorated", () -> openStage(StageStyle.DECORATED));
+        FX.item(m, "Transparent", () -> openStage(StageStyle.TRANSPARENT));
+        FX.item(m, "Utility", () -> openStage(StageStyle.UTILITY));
+        FX.item(m, "Undecorated", () -> openStage(StageStyle.UNDECORATED));
+        FX.item(m, "Unified", () -> openStage(StageStyle.UNIFIED));
         // Tools
         FX.menu(m, "_Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
@@ -287,5 +297,9 @@ public class MainWindow extends Stage {
 
     void openPlatformPreferencesMonitor() {
         PropertiesMonitor.openPreferences(this);
+    }
+
+    void openStage(StageStyle style) {
+        new CustomStage(style).show();
     }
 }

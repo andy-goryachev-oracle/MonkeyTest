@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey;
+package com.oracle.tools.fx.monkey.tools;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
