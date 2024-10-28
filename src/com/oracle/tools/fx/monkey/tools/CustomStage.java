@@ -26,6 +26,8 @@ package com.oracle.tools.fx.monkey.tools;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import javafx.application.ConditionalFeature;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -59,7 +61,13 @@ public class CustomStage extends Stage {
 
     void setContent(Parent n) {
         if (getStyle() == StageStyle.EXTENDED) {
+            if (!Platform.isSupported(ConditionalFeature.EXTENDED_WINDOW)) {
+                System.err.println("CustomStage: ConditionalFeature.EXTENDED_WINDOW is not supported!");
+            }
+
             HeaderBar h = new HeaderBar();
+            h.setStyle("-fx-background-color:salmon;");
+            //h.setPrefHeight(30); // TODO want a special setting by default
             h.setLeading(new Label("Leading"));
             h.setCenter(new Label("Center"));
             h.setTrailing(new Label("Trailing"));
