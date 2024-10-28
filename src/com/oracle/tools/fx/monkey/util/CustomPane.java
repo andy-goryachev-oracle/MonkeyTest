@@ -28,9 +28,12 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 /**
@@ -43,7 +46,11 @@ public class CustomPane extends GridPane {
         TextField loginField = new TextField();
         PasswordField passField = new PasswordField();
         Button button = new Button("Login");
-        Label spacer = new Label();
+        RadioButton rb1 = new RadioButton("1");
+        RadioButton rb2 = new RadioButton("2");
+        RadioButton rb3 = new RadioButton("3");
+        new ToggleGroup().getToggles().addAll(rb1, rb2, rb3);
+        HBox spacer = new HBox(10, rb1, rb2, rb3);
 
         setPadding(new Insets(20));
         int r = 0;
