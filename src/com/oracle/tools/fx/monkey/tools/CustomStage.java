@@ -29,9 +29,12 @@ import java.util.Comparator;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -55,6 +58,15 @@ public class CustomStage extends Stage {
     }
 
     void setContent(Parent n) {
+        if (getStyle() == StageStyle.EXTENDED) {
+            HeaderBar h = new HeaderBar();
+            h.setLeading(new Label("Leading"));
+            h.setCenter(new Label("Center"));
+            h.setTrailing(new Label("Trailing"));
+            BorderPane p = new BorderPane(n);
+            p.setTop(h);
+            n = p;
+        }
         Scene sc = new Scene(n);
         sc.setOnContextMenuRequested(this::createPopupMenu);
         setScene(sc);
