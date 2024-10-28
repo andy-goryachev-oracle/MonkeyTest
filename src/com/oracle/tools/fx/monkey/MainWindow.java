@@ -43,7 +43,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
@@ -144,11 +143,7 @@ public class MainWindow extends Stage {
         FX.item(m, "<null> Skin", this::nullSkin);
         // Stage
         FX.menu(m, "Sta_ge");
-        FX.item(m, "Decorated", () -> openStage(StageStyle.DECORATED));
-        FX.item(m, "Transparent", () -> openStage(StageStyle.TRANSPARENT));
-        FX.item(m, "Utility", () -> openStage(StageStyle.UTILITY));
-        FX.item(m, "Undecorated", () -> openStage(StageStyle.UNDECORATED));
-        FX.item(m, "Unified", () -> openStage(StageStyle.UNIFIED));
+        CustomStage.addMenu(m);
         // Tools
         FX.menu(m, "_Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
@@ -297,9 +292,5 @@ public class MainWindow extends Stage {
 
     void openPlatformPreferencesMonitor() {
         PropertiesMonitor.openPreferences(this);
-    }
-
-    void openStage(StageStyle style) {
-        new CustomStage(style).show();
     }
 }

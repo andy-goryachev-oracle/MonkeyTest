@@ -24,9 +24,12 @@
  */
 package com.oracle.tools.fx.monkey.tools;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
@@ -76,5 +79,21 @@ public class CustomStage extends Stage {
     void setUiPanel() {
         CustomPane p = CustomPane.create();
         setContent(p);
+    }
+
+    public static void addMenu(MenuBar m) {
+        StageStyle[] styles = StageStyle.values();
+        Arrays.sort(styles, new Comparator<StageStyle>() {
+            @Override
+            public int compare(StageStyle a, StageStyle b) {
+                return a.toString().compareTo(b.toString());
+            }
+        });
+
+        for (StageStyle st: styles) {
+            FX.item(m, st.toString(), () -> {
+                new CustomStage(st).show();
+            });
+        }
     }
 }
