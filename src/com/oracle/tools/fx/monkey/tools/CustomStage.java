@@ -37,6 +37,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HeaderBar;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -66,8 +67,8 @@ public class CustomStage extends Stage {
             }
 
             HeaderBar h = new HeaderBar();
+            h.setOnContextMenuRequested((ev) -> createHeaderPopupMenu(ev, h));
             h.setStyle("-fx-background-color:salmon;");
-            //h.setPrefHeight(30); // TODO want a special setting by default
             h.setLeading(new Label("Leading"));
             h.setCenter(new Label("Center"));
             h.setTrailing(new Label("Trailing"));
@@ -80,6 +81,19 @@ public class CustomStage extends Stage {
         setScene(sc);
     }
 
+    void createHeaderPopupMenu(ContextMenuEvent ev, HeaderBar h) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Preferred Height: USE_COMPUTED_SIZE", () -> h.setPrefHeight(Region.USE_COMPUTED_SIZE));
+        FX.item(m, "10", () -> h.setPrefHeight(10));
+        FX.item(m, "100", () -> h.setPrefHeight(100));
+        FX.item(m, "1,000", () -> h.setPrefHeight(1_000));
+        FX.separator(m);
+        FX.item(m, "leftSystemInset=" + h.getLeftSystemInset());
+        FX.item(m, "rightSystemInset=" + h.getRightSystemInset());
+        m.show(this, ev.getScreenX(), ev.getScreenY());
+        ev.consume();
+    }
+
     void createPopupMenu(ContextMenuEvent ev) {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Irregular Shape", this::setIrregularShape);
@@ -87,6 +101,7 @@ public class CustomStage extends Stage {
         FX.separator(m);
         FX.item(m, "Close", this::hide);
         m.show(this, ev.getScreenX(), ev.getScreenY());
+        ev.consume();
     }
 
     void setIrregularShape() {
