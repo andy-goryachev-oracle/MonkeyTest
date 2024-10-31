@@ -48,6 +48,7 @@ import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.LayoutInfoVisualizer;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
@@ -61,12 +62,11 @@ import com.oracle.tools.fx.monkey.util.Utils;
 public class TextFlowPage extends TestPaneBase {
     private final ActionSelector contentOption;
     private final FontOption fontOption;
-    private final BooleanOption showChars;
-    private final BooleanOption showCaretPaths;
     private final Label pickResult;
     private final Label hitInfo;
     private final Label hitInfo2;
     private final TextFlow textFlow;
+    private final LayoutInfoVisualizer visualizer;
 
     public TextFlowPage() {
         super("TextFlowPage");
@@ -88,6 +88,8 @@ public class TextFlowPage extends TestPaneBase {
 
         hitInfo2 = new Label();
 
+        visualizer = new LayoutInfoVisualizer();
+
         contentOption = new ActionSelector("content");
         contentOption.addButton("Edit", () -> {
             new EnterTextDialog(this, getText(), (s) -> {
@@ -108,10 +110,6 @@ public class TextFlowPage extends TestPaneBase {
             }
         });
 
-        showChars = new BooleanOption("showChars", "show characters", (v) -> updateShowCharacters(v));
-
-        showCaretPaths = new BooleanOption("showCaretPaths", "show caret paths", (v) -> updateShowCaretPaths(v));
-
         OptionPane op = new OptionPane();
         op.section("TextFlow");
         op.option("Content:", contentOption);
@@ -121,8 +119,11 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
 
         op.separator();
-        op.option(showChars);
-        op.option(showCaretPaths);
+        op.option(new BooleanOption("showCarets", "show carets ", visualizer.showCaret));
+        op.option(new BooleanOption("showLines", "show text lines ", visualizer.showLines));
+        op.option(new BooleanOption("showBounds", "show bounds ", visualizer.showLayoutBounds));
+        // TODO range shapes
+        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.showLayoutBounds));
 
         op.separator();
         op.option("Pick Result:", pickResult);
@@ -135,6 +136,7 @@ public class TextFlowPage extends TestPaneBase {
         setOptions(op);
 
         fontOption.selectSystemFont();
+        visualizer.attach(null, textFlow);
     }
 
     private void setContent(String text) {
