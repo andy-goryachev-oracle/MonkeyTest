@@ -67,7 +67,7 @@ public class TextFlowPage extends TestPaneBase {
     private final Label hitInfo;
     private final Label hitInfo2;
     private final TextFlow textFlow;
-    private final BorderPane pane;
+    private final BorderPane container;
     private final LayoutInfoVisualizer visualizer;
 
     public TextFlowPage() {
@@ -119,13 +119,11 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         op.option("Tab Size:", Options.tabSize("tabSize", textFlow.tabSizeProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
-
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", "show caret and range", visualizer.showCaretAndRange));
         op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
         op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
         op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));
-
         op.separator();
         op.option("Pick Result:", pickResult);
         op.option("Text.hitTest:", hitInfo2);
@@ -133,13 +131,13 @@ public class TextFlowPage extends TestPaneBase {
 
         RegionPropertySheet.appendTo(op, textFlow);
 
-        pane = new BorderPane(textFlow);
+        container = new BorderPane(textFlow);
 
-        setContent(pane);
+        setContent(container);
         setOptions(op);
 
         fontOption.selectSystemFont();
-        visualizer.attach(pane, textFlow);
+        visualizer.attach(container, textFlow);
     }
 
     private void setContent(String text) {

@@ -96,13 +96,12 @@ public class LayoutInfoVisualizer {
         showCaretAndRange.addListener((p) -> updateCaretAndRange());
     }
 
-    public void attach(Text t) {
+    public void attach(Pane parent, Text t) {
+        this.parent = parent;
+        owner.set(t);
     }
 
     public void attach(Pane parent, TextFlow t) {
-        if (parent == null) {
-            parent = (Pane)t.getParent();
-        }
         this.parent = parent;
         owner.set(t);
     }
@@ -113,7 +112,6 @@ public class LayoutInfoVisualizer {
                 animation = new Timeline(
                     new KeyFrame(Duration.millis(100), (ev) -> refresh())
                 );
-                // FIX
                 animation.setCycleCount(Timeline.INDEFINITE);
                 animation.setDelay(Duration.millis(20));
                 animation.play();
@@ -282,7 +280,6 @@ public class LayoutInfoVisualizer {
         int i = 0;
         for (TextLineInfo line : lines) {
             Rectangle2D b = line.bounds();
-            // FIX point?
             Color c = color(i++);
             Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
             r.setFill(c);
