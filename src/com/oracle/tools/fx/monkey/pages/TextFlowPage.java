@@ -33,6 +33,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
@@ -66,6 +67,7 @@ public class TextFlowPage extends TestPaneBase {
     private final Label hitInfo;
     private final Label hitInfo2;
     private final TextFlow textFlow;
+    private final BorderPane pane;
     private final LayoutInfoVisualizer visualizer;
 
     public TextFlowPage() {
@@ -119,11 +121,10 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
 
         op.separator();
-        op.option(new BooleanOption("showCarets", "show carets ", visualizer.showCaret));
-        op.option(new BooleanOption("showLines", "show text lines ", visualizer.showLines));
-        op.option(new BooleanOption("showBounds", "show bounds ", visualizer.showLayoutBounds));
-        // TODO range shapes
-        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.showLayoutBounds));
+        op.option(new BooleanOption("showCaretAndRange", "show caret and range", visualizer.showCaretAndRange));
+        op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
+        op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
+        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));
 
         op.separator();
         op.option("Pick Result:", pickResult);
@@ -132,11 +133,13 @@ public class TextFlowPage extends TestPaneBase {
 
         RegionPropertySheet.appendTo(op, textFlow);
 
-        setContent(textFlow);
+        pane = new BorderPane(textFlow);
+
+        setContent(pane);
         setOptions(op);
 
         fontOption.selectSystemFont();
-        visualizer.attach(null, textFlow);
+        visualizer.attach(pane, textFlow);
     }
 
     private void setContent(String text) {
