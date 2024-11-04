@@ -40,6 +40,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -56,8 +57,27 @@ import javafx.util.Duration;
 
 /**
  * Visualizes text geometry available via LayoutInfo API.
+ *
+ * show caret and shape modifiers:
+ * caret:
+ * - SHIFT: legacy caret API
+ * - no modifiers: new caret API
+ *
+ * selection (click and drag):
+ * - SHIFT: new selection API
+ * - SHORTCUT: new strike-through API
+ * - OPTION: new underline API
+ * - no modifiers: legacy selection API
+ * 
+ * https://bugs.openjdk.org/browse/JDK-8341670 [Text,TextFlow] Public API for Text Layout Info (Enhancement - P4)
+ * https://bugs.openjdk.org/browse/JDK-8341672: [Text/TextFlow] getRangeInfo (Enhancement - P4)
+ * https://bugs.openjdk.org/browse/JDK-8341671: [Text/TextFlow] getCaretInfo (Enhancement - P4)
+ * https://bugs.openjdk.org/browse/JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border
+ * https://bugs.openjdk.org/browse/JDK-8317120 RFE: TextFlow.rangeShape() ignores lineSpacing
+ * https://bugs.openjdk.org/browse/JDK-8317122 RFE: TextFlow.preferredHeight ignores lineSpacing
  */
 public class LayoutInfoVisualizer {
+
     public final SimpleBooleanProperty showCaretAndRange = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLines = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLayoutBounds = new SimpleBooleanProperty();
@@ -73,6 +93,13 @@ public class LayoutInfoVisualizer {
     private Group lines;
     private EventHandler<MouseEvent> mouseListener;
     private int startIndex;
+    private boolean useSelectionShape;
+    private boolean useStrikeThroughShape;
+    private boolean useUnderlineShape;
+    private boolean useLegacy;
+
+    /** FIX JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border */
+    private static final boolean CORRECT_FOR_8341438_BUG = true;
 
     private static final double CARET_VIEW_ORDER = 1000;
     private static final double RANGE_VIEW_ORDER = 1010;
@@ -188,7 +215,11 @@ public class LayoutInfoVisualizer {
                 boundsPath.setManaged(false);
                 parent.getChildren().add(boundsPath);
             }
-            boundsPath.getElements().setAll(createBoundsShapes());
+
+            LayoutInfo la = layoutInfo();
+            List<Rectangle2D> rs = List.of(la.getBounds(includeLineSpace.get()));
+            PathElement[] ps = toPathElementsArray(rs);
+            boundsPath.getElements().setAll(ps);
         } else {
             if (boundsPath != null) {
                 parent.getChildren().remove(boundsPath);
@@ -237,7 +268,14 @@ public class LayoutInfoVisualizer {
 
     private HitInfo hitInfo(MouseEvent ev) {
         Node n = owner.get();
-        Point2D p = n.screenToLocal(ev.getScreenX(), ev.getScreenY());
+        double x = ev.getScreenX();
+        double y = ev.getScreenY();
+        if (CORRECT_FOR_8341438_BUG) {
+            Insets m = ((Region)n).getInsets();
+            x -= m.getLeft(); // TODO rtl?
+            y -= m.getTop();
+        }
+        Point2D p = n.screenToLocal(x, y);
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
@@ -246,19 +284,15 @@ public class LayoutInfoVisualizer {
         return null;
     }
 
-    private void append(ArrayList<PathElement> a, Rectangle2D r) {
-        a.add(new MoveTo(r.getMinX(), r.getMinY()));
-        a.add(new LineTo(r.getMaxX(), r.getMinY()));
-        a.add(new LineTo(r.getMaxX(), r.getMaxY()));
-        a.add(new LineTo(r.getMinX(), r.getMaxY()));
-        a.add(new LineTo(r.getMinX(), r.getMinY()));
-    }
-
-    private PathElement[] createBoundsShapes() {
-        LayoutInfo la = layoutInfo();
+    private static PathElement[] toPathElementsArray(List<Rectangle2D> rs) {
         ArrayList<PathElement> a = new ArrayList<>();
-        Rectangle2D r = la.getBounds(includeLineSpace.get());
-        append(a, r);
+        for (Rectangle2D r : rs) {
+            a.add(new MoveTo(r.getMinX(), r.getMinY()));
+            a.add(new LineTo(r.getMaxX(), r.getMinY()));
+            a.add(new LineTo(r.getMaxX(), r.getMaxY()));
+            a.add(new LineTo(r.getMinX(), r.getMaxY()));
+            a.add(new LineTo(r.getMinX(), r.getMinY()));
+        }
         return a.toArray(PathElement[]::new);
     }
 
@@ -293,35 +327,70 @@ public class LayoutInfoVisualizer {
     private PathElement[] createRange(int start, int end) {
         Node n = owner.get();
         if (n instanceof Text t) {
-            return fix_8341438(t.rangeShape(start, end), 0.0, 0.0);
+            if (useSelectionShape) {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
+            } else if (useStrikeThroughShape) {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            } else if (useUnderlineShape) {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            } else if (useLegacy) {
+                return t.rangeShape(start, end);
+            }
         } else if (n instanceof TextFlow t) {
-            Insets m = t.getInsets();
-            double dx = m.getLeft(); // FIX rtl?
-            double dy = m.getTop();
-            return fix_8341438(t.rangeShape(start, end), dx, dy);
+            if (useSelectionShape) {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
+            } else if (useStrikeThroughShape) {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            } else if (useUnderlineShape) {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            } else if (useLegacy) {
+                return fix_8341438(t.rangeShape(start, end));
+            }
         }
         return new PathElement[0];
     }
 
-    // FIX JDK-8341438
-    private static PathElement[] fix_8341438(PathElement[] es, double dx, double dy) {
-        PathElement[] rv = new PathElement[es.length];
-        for(int i=0; i<es.length; i++) {
-            PathElement em = es[i];
-            PathElement shifted;
-            if(em instanceof MoveTo v) {
-                shifted = new MoveTo(v.getX() + dx, v.getY() + dy);
-            } else if(em instanceof LineTo v) {
-                shifted = new LineTo(v.getX() + dx, v.getY() + dy);
-            } else {
-                shifted = em;
-            }
-            rv[i] = shifted;
-        }
-        return rv;
+    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.selectionShape(start, end, includeLineSpace.get());
+        return toPathElementsArray(rs);
     }
 
-    private PathElement[] createCaretShape(CaretInfo ci) {
+    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.strikeThroughShape(start, end);
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.underlineShape(start, end);
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] fix_8341438(PathElement[] es) {
+        Insets m = ((TextFlow)owner.get()).getInsets();
+        double dx = m.getLeft(); // FIX rtl?
+        double dy = m.getTop();
+
+        if (CORRECT_FOR_8341438_BUG) {
+            PathElement[] rv = new PathElement[es.length];
+            for (int i = 0; i < es.length; i++) {
+                PathElement em = es[i];
+                PathElement shifted;
+                if (em instanceof MoveTo v) {
+                    shifted = new MoveTo(v.getX() + dx, v.getY() + dy);
+                } else if (em instanceof LineTo v) {
+                    shifted = new LineTo(v.getX() + dx, v.getY() + dy);
+                } else {
+                    shifted = em;
+                }
+                rv[i] = shifted;
+            }
+            return rv;
+        } else {
+            return es;
+        }
+    }
+
+    private static PathElement[] createCaretShape(CaretInfo ci) {
         ArrayList<PathElement> a = new ArrayList<>();
         for (int i = 0; i < ci.getPartCount(); i++) {
             Rectangle2D r = ci.getPartAt(i);
@@ -331,21 +400,51 @@ public class LayoutInfoVisualizer {
         return a.toArray(PathElement[]::new);
     }
 
-    void handleMouseEvent(MouseEvent ev) {
-        HitInfo h = hitInfo(ev);
-        LayoutInfo la = layoutInfo();
-        CaretInfo ci = la.caretInfo(h.getCharIndex(), h.isLeading());
-        caretPath.getElements().setAll(createCaretShape(ci));
+    private PathElement[] createCaretShapeLegacy(int charIndex, boolean leading) {
+        Node n = owner.get();
+        if (n instanceof Text t) {
+            return t.caretShape(charIndex, leading);
+        } else if(n instanceof TextFlow t) {
+            return fix_8341438(t.caretShape(charIndex, leading));
+        }
+        return new PathElement[0];
+    }
 
+    void handleMouseEvent(MouseEvent ev) {
+        // caret
+        HitInfo h = hitInfo(ev);
+        int charIndex = h.getCharIndex();
+        boolean leading = h.isLeading();
+        if (ev.isShiftDown()) {
+            caretPath.getElements().setAll(createCaretShapeLegacy(charIndex, leading));
+        } else {
+            LayoutInfo la = layoutInfo();
+            CaretInfo ci = la.caretInfo(charIndex, leading);
+            caretPath.getElements().setAll(createCaretShape(ci));
+        }
+
+        // range
         var t = ev.getEventType();
         if (t == MouseEvent.MOUSE_PRESSED) {
             startIndex = h.getInsertionIndex();
+            useSelectionShape = ev.isShiftDown();
+            useStrikeThroughShape = ev.isShortcutDown();
+            useUnderlineShape = ev.isAltDown();
+            useLegacy = (!useSelectionShape) && (!useStrikeThroughShape) && (!useUnderlineShape);
+            ev.consume();
+
+            if (useSelectionShape) System.out.println("new selection API"); // FIX
+            if (useStrikeThroughShape) System.out.println("new strike-through API"); // FIX
+            if (useUnderlineShape) System.out.println("new underline API"); // FIX
+            if (useLegacy) System.out.println("legacy API"); // FIX
         } else if (t == MouseEvent.MOUSE_DRAGGED) {
             int end = h.getInsertionIndex();
             PathElement[] es = createRange(startIndex, end);
             rangePath.getElements().setAll(es);
+            ev.consume();
         } else if (t == MouseEvent.MOUSE_RELEASED) {
             rangePath.getElements().clear();
+            ev.consume();
         }
     }
 }
