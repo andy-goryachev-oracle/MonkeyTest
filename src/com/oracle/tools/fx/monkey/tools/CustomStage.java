@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -50,7 +51,7 @@ import com.oracle.tools.fx.monkey.util.FX;
  * Custom Stage Tester.
  */
 public class CustomStage extends Stage {
-    public CustomStage(StageStyle style) {
+    public CustomStage(StageStyle style, NodeOrientation ori) {
         super(style);
 
         setTitle("Stage [" + style + "]");
@@ -58,6 +59,7 @@ public class CustomStage extends Stage {
         setHeight(500);
 
         setUiPanel();
+        getScene().setNodeOrientation(ori);
     }
 
     void setContent(Parent n) {
@@ -127,7 +129,8 @@ public class CustomStage extends Stage {
 
         for (StageStyle st: styles) {
             FX.item(m, st.toString(), () -> {
-                new CustomStage(st).show();
+                NodeOrientation ori = m.getEffectiveNodeOrientation();
+                new CustomStage(st, ori).show();
             });
         }
     }
