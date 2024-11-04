@@ -270,15 +270,15 @@ public class LayoutInfoVisualizer {
         Node n = owner.get();
         double x = ev.getScreenX();
         double y = ev.getScreenY();
-        if (CORRECT_FOR_8341438_BUG) {
-            Insets m = ((Region)n).getInsets();
-            x -= m.getLeft(); // TODO rtl?
-            y -= m.getTop();
-        }
         Point2D p = n.screenToLocal(x, y);
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
+            if (CORRECT_FOR_8341438_BUG) {
+                Insets m = ((Region)n).getInsets();
+                x -= m.getLeft(); // TODO rtl?
+                y -= m.getTop();
+            }
             return t.hitTest(p);
         }
         return null;
