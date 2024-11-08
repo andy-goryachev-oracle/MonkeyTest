@@ -325,6 +325,11 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createRange(int start, int end) {
+        if (end < start) {
+            int tmp = end;
+            end = start;
+            start = tmp;
+        }
         Node n = owner.get();
         if (n instanceof Text t) {
             if (useSelectionShape) {
