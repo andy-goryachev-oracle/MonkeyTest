@@ -120,7 +120,8 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Tab Size:", Options.tabSize("tabSize", textFlow.tabSizeProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         op.separator();
-        op.option(new BooleanOption("showCaretAndRange", "show caret and range", visualizer.showCaretAndRange));
+        op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
+        op.option(new BooleanOption("useLegacyAPI", "(use TextFlow API)", visualizer.legacyAPI));
         op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
         op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
         op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));

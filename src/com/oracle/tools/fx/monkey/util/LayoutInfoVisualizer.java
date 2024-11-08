@@ -78,25 +78,27 @@ import javafx.util.Duration;
  */
 public class LayoutInfoVisualizer {
 
+    public final SimpleBooleanProperty legacyAPI = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showCaretAndRange = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLines = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLayoutBounds = new SimpleBooleanProperty();
     public final SimpleBooleanProperty includeLineSpace = new SimpleBooleanProperty();
 
     private Pane parent;
-    private final BooleanBinding isAnimated;
+    private final BooleanBinding isAnimating;
     private final SimpleObjectProperty<Node> owner = new SimpleObjectProperty<>();
     private Timeline animation;
     private Path boundsPath;
     private Path caretPath;
-    private Path rangePath;
+    private Path selectionPath;
+    private Path strikeThroughPath;
+    private Path underlinePath;
     private Group lines;
     private EventHandler<MouseEvent> mouseListener;
     private int startIndex;
     private boolean useSelectionShape;
     private boolean useStrikeThroughShape;
     private boolean useUnderlineShape;
-    private boolean useLegacy;
 
     /** FIX JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border */
     private static final boolean CORRECT_FOR_8341438_BUG = true;
@@ -107,7 +109,7 @@ public class LayoutInfoVisualizer {
     private static final double BOUNDS_VIEW_ORDER = 1030;
 
     public LayoutInfoVisualizer() {
-        isAnimated = Bindings.createBooleanBinding(() -> {
+        isAnimating = Bindings.createBooleanBinding(() -> {
                 return
                     (owner.get() != null) &&
                     (
@@ -119,7 +121,7 @@ public class LayoutInfoVisualizer {
             showLines,
             showLayoutBounds
         );
-        isAnimated.addListener((p) -> update());
+        isAnimating.addListener((p) -> update());
         showCaretAndRange.addListener((p) -> updateCaretAndRange());
     }
 
@@ -133,8 +135,17 @@ public class LayoutInfoVisualizer {
         owner.set(t);
     }
 
+    public String caretOptionText() {
+        String ctrl = FX.isMac() ? "command" : "ctrl";
+        return String.format("caret and range (shift: strike-through, %s: underline)", ctrl);
+    }
+
+    Node owner() {
+        return owner.get();
+    }
+
     void update() {
-        if (isAnimated.get()) {
+        if (isAnimating.get()) {
             if (animation == null) {
                 animation = new Timeline(
                     new KeyFrame(Duration.millis(100), (ev) -> refresh())
@@ -169,25 +180,45 @@ public class LayoutInfoVisualizer {
                 parent.getChildren().add(caretPath);
             }
 
-            // range
-            if (rangePath == null) {
-                rangePath = new Path();
-                rangePath.setStrokeWidth(0);
-                rangePath.setFill(Color.rgb(0, 128, 255, 0.3));
-                rangePath.setManaged(false);
-                rangePath.setViewOrder(RANGE_VIEW_ORDER);
-                parent.getChildren().add(rangePath);
+            // selection
+            if (selectionPath == null) {
+                selectionPath = new Path();
+                selectionPath.setStrokeWidth(0);
+                selectionPath.setFill(Color.rgb(0, 128, 255, 0.3));
+                selectionPath.setManaged(false);
+                selectionPath.setViewOrder(RANGE_VIEW_ORDER);
+                parent.getChildren().add(selectionPath);
+            }
+
+            // strike through
+            if (strikeThroughPath == null) {
+                strikeThroughPath = new Path();
+                strikeThroughPath.setStrokeWidth(0);
+                strikeThroughPath.setFill(Color.rgb(0, 128, 0, 0.3));
+                strikeThroughPath.setManaged(false);
+                strikeThroughPath.setViewOrder(RANGE_VIEW_ORDER);
+                parent.getChildren().add(strikeThroughPath);
+            }
+
+            // underline
+            if (underlinePath == null) {
+                underlinePath = new Path();
+                underlinePath.setStrokeWidth(0);
+                underlinePath.setFill(Color.rgb(0, 0, 0, 0.3));
+                underlinePath.setManaged(false);
+                underlinePath.setViewOrder(RANGE_VIEW_ORDER);
+                parent.getChildren().add(underlinePath);
             }
 
             // mouse
             if (mouseListener == null) {
                 mouseListener = this::handleMouseEvent;
-                owner.get().addEventHandler(MouseEvent.ANY, mouseListener);
+                owner().addEventHandler(MouseEvent.ANY, mouseListener);
             }
         } else {
             // mouse
             if (mouseListener != null) {
-                owner.get().removeEventHandler(MouseEvent.ANY, mouseListener);
+                owner().removeEventHandler(MouseEvent.ANY, mouseListener);
                 mouseListener = null;
             }
 
@@ -197,10 +228,22 @@ public class LayoutInfoVisualizer {
                 caretPath = null;
             }
 
-            // range
-            if (rangePath != null) {
-                parent.getChildren().remove(rangePath);
-                rangePath = null;
+            // selection
+            if (selectionPath != null) {
+                parent.getChildren().remove(selectionPath);
+                selectionPath = null;
+            }
+
+            // strike through
+            if (strikeThroughPath != null) {
+                parent.getChildren().remove(strikeThroughPath);
+                strikeThroughPath = null;
+            }
+
+            // underline
+            if (underlinePath == null) {
+                parent.getChildren().remove(underlinePath);
+                underlinePath = null;
             }
         }
     }
@@ -247,7 +290,7 @@ public class LayoutInfoVisualizer {
     }
 
     private LayoutInfo layoutInfo() {
-        Node n = owner.get();
+        Node n = owner();
         if (n instanceof Text t) {
             return t.getLayoutInfo();
         } else if (n instanceof TextFlow t) {
@@ -257,7 +300,7 @@ public class LayoutInfoVisualizer {
     }
 
     private int getTextLength() {
-        Node n = owner.get();
+        Node n = owner();
         if (n instanceof Text t) {
             return t.getText().length();
         } else if (n instanceof TextFlow t) {
@@ -267,7 +310,7 @@ public class LayoutInfoVisualizer {
     }
 
     private HitInfo hitInfo(MouseEvent ev) {
-        Node n = owner.get();
+        Node n = owner();
         double x = ev.getScreenX();
         double y = ev.getScreenY();
         Point2D p = n.screenToLocal(x, y);
@@ -275,9 +318,8 @@ public class LayoutInfoVisualizer {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
             if (CORRECT_FOR_8341438_BUG) {
-                Insets m = ((Region)n).getInsets();
-                x -= m.getLeft(); // TODO rtl?
-                y -= m.getTop();
+                Insets m = t.getInsets();
+                p = p.subtract(m.getLeft(), m.getTop()); // TODO rtl?
             }
             return t.hitTest(p);
         }
@@ -324,54 +366,8 @@ public class LayoutInfoVisualizer {
         return a;
     }
 
-    private PathElement[] createRange(int start, int end) {
-        if (end < start) {
-            int tmp = end;
-            end = start;
-            start = tmp;
-        }
-        Node n = owner.get();
-        if (n instanceof Text t) {
-            if (useSelectionShape) {
-                return createSelectionShape(t.getLayoutInfo(), start, end);
-            } else if (useStrikeThroughShape) {
-                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
-            } else if (useUnderlineShape) {
-                return createUnderlineShape(t.getLayoutInfo(), start, end);
-            } else if (useLegacy) {
-                return t.rangeShape(start, end);
-            }
-        } else if (n instanceof TextFlow t) {
-            if (useSelectionShape) {
-                return createSelectionShape(t.getLayoutInfo(), start, end);
-            } else if (useStrikeThroughShape) {
-                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
-            } else if (useUnderlineShape) {
-                return createUnderlineShape(t.getLayoutInfo(), start, end);
-            } else if (useLegacy) {
-                return fix_8341438(t.rangeShape(start, end));
-            }
-        }
-        return new PathElement[0];
-    }
-
-    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.selectionShape(start, end, includeLineSpace.get());
-        return toPathElementsArray(rs);
-    }
-
-    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.strikeThroughShape(start, end);
-        return toPathElementsArray(rs);
-    }
-
-    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.underlineShape(start, end);
-        return toPathElementsArray(rs);
-    }
-
     private PathElement[] fix_8341438(PathElement[] es) {
-        Insets m = ((TextFlow)owner.get()).getInsets();
+        Insets m = ((TextFlow)owner()).getInsets();
         double dx = m.getLeft(); // FIX rtl?
         double dy = m.getTop();
 
@@ -405,12 +401,23 @@ public class LayoutInfoVisualizer {
         return a.toArray(PathElement[]::new);
     }
 
-    private PathElement[] createCaretShapeLegacy(int charIndex, boolean leading) {
-        Node n = owner.get();
+    private PathElement[] createCaretShape(int charIndex, boolean leading) {
+        boolean legacy = legacyAPI.get();
+        Node n = owner();
         if (n instanceof Text t) {
-            return t.caretShape(charIndex, leading);
-        } else if(n instanceof TextFlow t) {
-            return fix_8341438(t.caretShape(charIndex, leading));
+            if (legacy) {
+                return t.caretShape(charIndex, leading);
+            } else {
+                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
+                return createCaretShape(ci);
+            }
+        } else if (n instanceof TextFlow t) {
+            if (legacy) {
+                return fix_8341438(t.caretShape(charIndex, leading));
+            } else {
+                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
+                return createCaretShape(ci);
+            }
         }
         return new PathElement[0];
     }
@@ -420,36 +427,119 @@ public class LayoutInfoVisualizer {
         HitInfo h = hitInfo(ev);
         int charIndex = h.getCharIndex();
         boolean leading = h.isLeading();
-        if (ev.isShiftDown()) {
-            caretPath.getElements().setAll(createCaretShapeLegacy(charIndex, leading));
-        } else {
-            LayoutInfo la = layoutInfo();
-            CaretInfo ci = la.caretInfo(charIndex, leading);
-            caretPath.getElements().setAll(createCaretShape(ci));
-        }
+        caretPath.getElements().setAll(createCaretShape(charIndex, leading));
 
         // range
         var t = ev.getEventType();
         if (t == MouseEvent.MOUSE_PRESSED) {
             startIndex = h.getInsertionIndex();
-            useSelectionShape = ev.isShiftDown();
-            useStrikeThroughShape = ev.isShortcutDown();
-            useUnderlineShape = ev.isAltDown();
-            useLegacy = (!useSelectionShape) && (!useStrikeThroughShape) && (!useUnderlineShape);
+            // drag: selection, drag+shift: stroke-through, drag+shortcut:underline
+            useSelectionShape = !ev.isShiftDown() && !ev.isShortcutDown();
+            useStrikeThroughShape = ev.isShiftDown() && !ev.isShortcutDown();
+            useUnderlineShape = !ev.isShiftDown() && ev.isShortcutDown();
             ev.consume();
-
-            if (useSelectionShape) System.out.println("new selection API"); // FIX
-            if (useStrikeThroughShape) System.out.println("new strike-through API"); // FIX
-            if (useUnderlineShape) System.out.println("new underline API"); // FIX
-            if (useLegacy) System.out.println("legacy API"); // FIX
         } else if (t == MouseEvent.MOUSE_DRAGGED) {
+            int start = startIndex;
             int end = h.getInsertionIndex();
-            PathElement[] es = createRange(startIndex, end);
-            rangePath.getElements().setAll(es);
+            if (end < start) {
+                int tmp = end;
+                end = start;
+                start = tmp;
+            }
+
+            if (useSelectionShape) {
+                PathElement[] es = createSelectionShape(start, end);
+                selectionPath.getElements().setAll(es);
+            }
+
+            if (useStrikeThroughShape) {
+                PathElement[] es = createStrikeThroughShape(start, end);
+                strikeThroughPath.getElements().setAll(es);
+            }
+
+            if (useUnderlineShape) {
+                PathElement[] es = createUnderlineShape(start, end);
+                underlinePath.getElements().setAll(es);
+            }
+
             ev.consume();
         } else if (t == MouseEvent.MOUSE_RELEASED) {
-            rangePath.getElements().clear();
+            selectionPath.getElements().clear();
+            strikeThroughPath.getElements().clear();
+            underlinePath.getElements().clear();
             ev.consume();
         }
+    }
+
+    private PathElement[] createSelectionShape(int start, int end) {
+        boolean legacy = legacyAPI.get();
+        Node n = owner();
+        if (n instanceof Text t) {
+            if (legacy) {
+                return t.rangeShape(start, end);
+            } else {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
+            }
+        } else if (n instanceof TextFlow t) {
+            if (legacy) {
+                return fix_8341438(t.rangeShape(start, end));
+            } else {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
+            }
+        }
+        return new PathElement[0];
+    }
+
+    private PathElement[] createStrikeThroughShape(int start, int end) {
+        boolean legacy = legacyAPI.get();
+        Node n = owner();
+        if (n instanceof Text t) {
+            if (legacy) {
+                return t.strikeThroughShape(start, end);
+            } else {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            }
+        } else if (n instanceof TextFlow t) {
+            if (legacy) {
+                return fix_8341438(t.underlineShape(start, end));
+            } else {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            }
+        }
+        return new PathElement[0];
+    }
+
+    private PathElement[] createUnderlineShape(int start, int end) {
+        boolean legacy = legacyAPI.get();
+        Node n = owner();
+        if (n instanceof Text t) {
+            if (legacy) {
+                return t.underlineShape(start, end);
+            } else {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            }
+        } else if (n instanceof TextFlow t) {
+            if (legacy) {
+                return fix_8341438(t.underlineShape(start, end));
+            } else {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            }
+        }
+        return new PathElement[0];
+    }
+
+    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.selectionShape(start, end, includeLineSpace.get());
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.strikeThroughShape(start, end);
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.underlineShape(start, end);
+        return toPathElementsArray(rs);
     }
 }
