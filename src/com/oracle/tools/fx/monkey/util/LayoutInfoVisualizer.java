@@ -194,7 +194,7 @@ public class LayoutInfoVisualizer {
             if (strikeThroughPath == null) {
                 strikeThroughPath = new Path();
                 strikeThroughPath.setStrokeWidth(0);
-                strikeThroughPath.setFill(Color.rgb(0, 128, 0, 0.3));
+                strikeThroughPath.setFill(Color.rgb(0, 128, 0, 0.7));
                 strikeThroughPath.setManaged(false);
                 strikeThroughPath.setViewOrder(RANGE_VIEW_ORDER);
                 parent.getChildren().add(strikeThroughPath);
