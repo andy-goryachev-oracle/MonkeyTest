@@ -501,7 +501,7 @@ public class LayoutInfoVisualizer {
             }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
-                return fix_8341438(t.underlineShape(start, end));
+                return fix_8341438(t.strikeThroughShape(start, end));
             } else {
                 return createStrikeThroughShape(t.getLayoutInfo(), start, end);
             }

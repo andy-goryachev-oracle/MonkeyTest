@@ -75,7 +75,7 @@ public class TextFlowPage extends TestPaneBase {
 
         textFlow = new TextFlow() {
             @Override
-            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object ... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
                 Loggers.accessibility.log(a, v);
                 return v;
