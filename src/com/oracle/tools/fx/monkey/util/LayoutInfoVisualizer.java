@@ -101,8 +101,7 @@ public class LayoutInfoVisualizer {
     private boolean useUnderlineShape;
 
     /** FIX JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border */
-    // show the problem in the legacy code
-    private static final boolean CORRECT_FOR_8341438_BUG = false;
+    private static final boolean CORRECT_FOR_8341438_BUG = true;
 
     private static final double CARET_VIEW_ORDER = 1000;
     private static final double RANGE_VIEW_ORDER = 1010;
@@ -318,6 +317,8 @@ public class LayoutInfoVisualizer {
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
+            // FIX this has impact on the new LayoutInfo API:
+            // we probably should create a system property to enable the legacy behavior
             if (CORRECT_FOR_8341438_BUG) {
                 Insets m = t.getInsets();
                 p = p.subtract(m.getLeft(), m.getTop()); // TODO rtl?
