@@ -170,10 +170,11 @@ public class TextFlowPage extends TestPaneBase {
         return new Node[] {
             t("Rich Text: ", f),
             t("BOLD ", f, "-fx-font-weight:bold;"),
-            t("BOLD ", f, "-fx-font-weight:bold;"),
+            t("BOLD900 ", f, "-fx-font-weight:900;"),
             t("BOLD ", f, "-fx-font-weight:bold;"),
             t("italic ", f, "-fx-font-style:italic;"),
             t("underline ", f, "-fx-underline:true;"),
+            t("strike-through ", f, "-fx-strikethrough:true;"),
             t("The quick brown fox jumped over the lazy dog ", f),
             t("The quick brown fox jumped over the lazy dog ", f),
             t("The quick brown fox jumped over the lazy dog ", f),
@@ -187,10 +188,11 @@ public class TextFlowPage extends TestPaneBase {
         return new Node[] {
             t("Rich Text: ", f),
             t("BOLD ", f, "-fx-font-weight:bold;"),
-            t("BOLD ", f, "-fx-font-weight:100; -fx-scale-x:200%;"),
-            t("BOLD ", f, "-fx-font-weight:900;"),
+            t("Weight100-Scale200% ", f, "-fx-font-weight:100; -fx-scale-x:200%;"),
+            t("BOLD900 ", f, "-fx-font-weight:900;"),
             t("italic ", f, "-fx-font-style:italic;"),
             t("underline ", f, "-fx-underline:true;"),
+            t("strike-through ", f, "-fx-strikethrough:true;"),
             t(TextTemplates.TWO_EMOJIS, f),
             t(TextTemplates.CLUSTERS, f)
         };
