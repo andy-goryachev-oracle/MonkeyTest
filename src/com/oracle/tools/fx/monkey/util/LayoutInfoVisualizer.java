@@ -395,8 +395,8 @@ public class LayoutInfoVisualizer {
 
     private static PathElement[] createCaretShape(CaretInfo ci) {
         ArrayList<PathElement> a = new ArrayList<>();
-        for (int i = 0; i < ci.getPartCount(); i++) {
-            Rectangle2D r = ci.getPartAt(i);
+        for (int i = 0; i < ci.getSegmentCount(); i++) {
+            Rectangle2D r = ci.getSegmentAt(i);
             a.add(new MoveTo(r.getMinX(), r.getMinY()));
             a.add(new LineTo(r.getMaxX(), r.getMaxY()));
         }
