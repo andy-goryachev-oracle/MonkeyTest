@@ -231,6 +231,16 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return cs.asList();
         });
+        s.addChoiceSupplier("200", () -> {
+            var cs = columnBuilder();
+            for (int i = 1; i < 200; i++) {
+                cs.col("C" + i);
+                if(i % 2 == 0) {
+                    cs.pref(30 + i);
+                }
+            }
+            return cs.asList();
+        });
         s.addChoice("Fixed in the Middle", columnBuilder().
             col("C1").
             col("C2").
