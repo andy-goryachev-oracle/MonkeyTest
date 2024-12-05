@@ -70,6 +70,7 @@ public class Pages {
             // TODO SplitPane
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),
+            new DemoPage("Stage", StagePage::new),
             new DemoPage("TableView", TableViewPage::new),
             new DemoPage("TabPane", TabPanePage::new),
             new DemoPage("Text", TextPage::new),

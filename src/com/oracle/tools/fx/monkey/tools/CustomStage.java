@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.tools;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
@@ -54,29 +55,38 @@ public class CustomStage extends Stage {
         setUiPanel();
     }
 
-    void setContent(Parent n) {
+    private void setContent(Parent n) {
         Scene sc = new Scene(n);
         sc.setOnContextMenuRequested(this::createPopupMenu);
         setScene(sc);
     }
 
-    void createPopupMenu(ContextMenuEvent ev) {
+    private void createPopupMenu(ContextMenuEvent ev) {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Irregular Shape", this::setIrregularShape);
         FX.item(m, "UI Panel", this::setUiPanel);
+        FX.item(m, "Empty", this::setEmpty);
+        FX.separator(m);
+        FX.item(m, "Size to Scene", this::sizeToScene);
+        FX.item(m, "To Back", this::toBack);
+        FX.item(m, "To Front", this::toFront);
         FX.separator(m);
         FX.item(m, "Close", this::hide);
         m.show(this, ev.getScreenX(), ev.getScreenY());
     }
 
-    void setIrregularShape() {
+    private void setEmpty() {
+        setContent(new Group());
+    }
+
+    private void setIrregularShape() {
         Circle c = new Circle(100, Color.SALMON);
         StackPane g = new StackPane(c);
         g.setBackground(Background.fill(Color.TRANSPARENT));
         setContent(g);
     }
 
-    void setUiPanel() {
+    private void setUiPanel() {
         CustomPane p = CustomPane.create();
         setContent(p);
     }

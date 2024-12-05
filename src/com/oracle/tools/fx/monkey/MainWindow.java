@@ -48,7 +48,6 @@ import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
-import com.oracle.tools.fx.monkey.tools.CustomStage;
 import com.oracle.tools.fx.monkey.tools.EmbeddedFxTextArea;
 import com.oracle.tools.fx.monkey.tools.EmbeddedJTextAreaWindow;
 import com.oracle.tools.fx.monkey.tools.KeyboardEventViewer;
@@ -141,9 +140,6 @@ public class MainWindow extends Stage {
         FX.menu(m, "_Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
-        // Stage
-        FX.menu(m, "Sta_ge");
-        CustomStage.addMenu(m);
         // Tools
         FX.menu(m, "_Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
