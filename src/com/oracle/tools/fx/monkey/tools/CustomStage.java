@@ -33,6 +33,10 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -57,6 +61,7 @@ public class CustomStage extends Stage {
 
     private void setContent(Parent n) {
         Scene sc = new Scene(n);
+        sc.setFill(Color.TRANSPARENT);
         sc.setOnContextMenuRequested(this::createPopupMenu);
         setScene(sc);
     }
@@ -80,8 +85,9 @@ public class CustomStage extends Stage {
     }
 
     private void setIrregularShape() {
-        Circle c = new Circle(100, Color.SALMON);
+        Circle c = new Circle(100, Color.RED);
         StackPane g = new StackPane(c);
+        g.setBorder(new Border(new BorderStroke(Color.rgb(0, 0, 0, 0.3), BorderStrokeStyle.SOLID, null, new BorderWidths(4))));
         g.setBackground(Background.fill(Color.TRANSPARENT));
         setContent(g);
     }
