@@ -10,7 +10,7 @@ This is a testing tool developed to support manual ad-hoc testing of individual 
 JavaFX SDK is required to build the tool.  You can use a JavaFX SDK that you build or you can download the JavaFX SDK.
 The latest SDK can be found here:
 
-https://jdk.java.net/javafx21/
+https://jdk.java.net/
 
 
 ## Build

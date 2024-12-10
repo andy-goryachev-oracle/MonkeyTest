@@ -88,7 +88,7 @@ public class TextTemplates {
         return sb.toString();
     }
 
-    private static String loremIpsum() {
+    public static String loremIpsum() {
         return
             """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pellentesque habitant morbi tristique senectus et netus et malesuada. Nunc eget lorem dolor sed viverra ipsum. Vulputate enim nulla aliquet porttitor lacus. Platea dictumst quisque sagittis purus sit amet volutpat consequat. Vestibulum rhoncus est pellentesque elit ullamcorper dignissim cras tincidunt. Turpis egestas pretium aenean pharetra magna. Ultricies mi quis hendrerit dolor magna eget est lorem ipsum. Vitae et leo duis ut diam quam. Tincidunt nunc pulvinar sapien et. Laoreet sit amet cursus sit amet dictum sit amet.
