@@ -33,8 +33,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -51,6 +57,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import com.oracle.tools.fx.monkey.util.OptionWindow;
 import com.oracle.tools.fx.monkey.util.Utils;
 
@@ -58,29 +65,32 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * Monitors Public Properties or Platform Preferences.
  */
 public class PropertiesMonitor extends BorderPane {
+    private static final long HIGHLIGHT_DURATION = 3_000;
     private final TreeTableView<Entry> table;
+    private static Timeline timeline;
+    private static HashSet<Entry> highlighted = new HashSet<>();
 
     private PropertiesMonitor(TreeItem<Entry> root, Runnable onHiding) {
         table = new TreeTableView<>();
         table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Name");
-            c.setCellFactory((tc) -> createCell());
+            c.setCellFactory((tc) -> createCell(false));
             c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getName()));
             c.setPrefWidth(120);
             table.getColumns().add(c);
         }
         {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Type");
-            c.setCellFactory((tc) -> createCell());
+            c.setCellFactory((tc) -> createCell(false));
             c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getType()));
             c.setPrefWidth(100);
             table.getColumns().add(c);
         }
         {
             TreeTableColumn<Entry, Object> c = new TreeTableColumn<>("Value");
-            c.setCellFactory((tc) -> createCell());
-            c.setCellValueFactory((f) -> f.getValue().getValue().getValue());
+            c.setCellFactory((tc) -> createCell(true));
+            c.setCellValueFactory((f) -> f.getValue().getValue().valueProperty());
             c.setPrefWidth(300);
             table.getColumns().add(c);
         }
@@ -125,7 +135,7 @@ public class PropertiesMonitor extends BorderPane {
         OptionWindow.open(parent, "Platform Preferences Monitor", 1190, 900, p);
     }
 
-    private TreeTableCell createCell() {
+    private TreeTableCell createCell(boolean trackChanges) {
         return new TreeTableCell<Object, Object>() {
             @Override
             protected void updateItem(Object item, boolean empty) {
@@ -144,8 +154,20 @@ public class PropertiesMonitor extends BorderPane {
                 Object x = getTableRow().getItem();
                 if (x instanceof Entry en) {
                     boolean hdr = en.isHeader();
+                    backgroundProperty().unbind();                    
                     setBackground(hdr ? Background.fill(Color.rgb(0, 0, 0, 0.1)) : null);
                     setStyle(hdr ? "-fx-font-weight:bold;" : "-fx-font-weight:normal;");
+                    if (trackChanges) {
+                        backgroundProperty().bind(Bindings.createObjectBinding(
+                            () -> {
+                                return
+                                    en.highlightedProperty().get() ?
+                                    Background.fill(Color.rgb(255, 255, 0, 0.5)) :
+                                    null;
+                            },
+                            en.highlightedProperty())
+                        );
+                    }
                 }
             }
         };
@@ -239,16 +261,73 @@ public class PropertiesMonitor extends BorderPane {
         return null;
     }
 
+    private static void highlight(Entry en) {
+        if (en.setHighlight()) {
+            highlighted.add(en);
+            if (timeline == null) {
+                timeline = new Timeline(
+                    new KeyFrame(Duration.millis(250), (ev) -> {
+                        clearExpiredHighlights();
+                    }));
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+            }
+        }
+    }
+
+    private static void clearExpiredHighlights() {
+        Iterator<Entry> it = highlighted.iterator();
+        while (it.hasNext()) {
+            Entry en = it.next();
+            if (en.checkHighlightExpired()) {
+                it.remove();
+            }
+        }
+        if (highlighted.isEmpty()) {
+            timeline.stop();
+            timeline = null;
+        }
+    }
+
+    // a name-value or a header
     static class Entry {
         private final String name;
-        String type;
+        private String type;
         private final Observable prop;
         private SimpleObjectProperty<Object> value;
+        private SimpleBooleanProperty highlighted;
+        private long expiration = -1;
 
         public Entry(String name, String type, Observable p) {
             this.name = name;
             this.type = type;
             this.prop = p;
+        }
+
+        public SimpleBooleanProperty highlightedProperty() {
+            if (highlighted == null) {
+                highlighted = new SimpleBooleanProperty();
+            }
+            return highlighted;
+        }
+
+        public boolean setHighlight() {
+            if(expiration < 0) {
+                // suppress first initialization
+                expiration = 0;
+                return false;
+            }
+            highlightedProperty().set(true);
+            expiration = System.currentTimeMillis() + HIGHLIGHT_DURATION;
+            return true;
+        }
+
+        public boolean checkHighlightExpired() {
+            if (System.currentTimeMillis() >= expiration) {
+                highlightedProperty().set(false);
+                return true;
+            }
+            return false;
         }
 
         public boolean isHeader() {
@@ -259,7 +338,7 @@ public class PropertiesMonitor extends BorderPane {
             return name;
         }
 
-        public SimpleObjectProperty<Object> getValue() {
+        public SimpleObjectProperty<Object> valueProperty() {
             if (value == null) {
                 value = new SimpleObjectProperty<>();
 
@@ -285,17 +364,22 @@ public class PropertiesMonitor extends BorderPane {
             }
             return value;
         }
-
+        
         private void setValue(Object x) {
             if (x instanceof Node) {
                 // do not set nodes!
                 x = x.getClass().getSimpleName();
             }
-            value.set(x);
+            valueProperty().set(x);
+            highlight(this);
         }
 
         public String getType() {
             return type;
+        }
+
+        public void setType(String s) {
+            type = s;
         }
 
         @Override
@@ -366,9 +450,9 @@ public class PropertiesMonitor extends BorderPane {
             if (en != null) {
                 Object v = Platform.getPreferences().get(key);
                 if (v != null) {
-                    en.type = v.getClass().getSimpleName();
+                    en.setType(v.getClass().getSimpleName());
                 }
-                ((SimpleObjectProperty)en.prop).set(v);
+                en.setValue(v);
             }
         }
     }
