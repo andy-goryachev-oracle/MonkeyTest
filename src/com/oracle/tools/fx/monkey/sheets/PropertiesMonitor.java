@@ -70,14 +70,14 @@ public class PropertiesMonitor extends BorderPane {
     private static Timeline timeline;
     private static HashSet<Entry> highlighted = new HashSet<>();
 
-    private PropertiesMonitor(TreeItem<Entry> root, Runnable onHiding) {
+    private PropertiesMonitor(boolean wideKey, TreeItem<Entry> root, Runnable onHiding) {
         table = new TreeTableView<>();
         table.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Name");
             c.setCellFactory((tc) -> createCell(false));
             c.setCellValueFactory((f) -> new SimpleStringProperty(f.getValue().getValue().getName()));
-            c.setPrefWidth(120);
+            c.setPrefWidth(wideKey ? 300 : 120);
             table.getColumns().add(c);
         }
         {
@@ -124,14 +124,14 @@ public class PropertiesMonitor extends BorderPane {
         if (node != null) {
             String name = node.getClass().getSimpleName();
             TreeItem<Entry> root = collectProperties(node);
-            PropertiesMonitor p = new PropertiesMonitor(root, null);
+            PropertiesMonitor p = new PropertiesMonitor(false, root, null);
             OptionWindow.open(node, "Properties: " + name, 800, 900, p);
         }
     }
 
     public static void openPreferences(Object parent) {
         PrefRoot root = new PrefRoot();
-        PropertiesMonitor p = new PropertiesMonitor(root, root::disconnect);
+        PropertiesMonitor p = new PropertiesMonitor(true, root, root::disconnect);
         OptionWindow.open(parent, "Platform Preferences Monitor", 1190, 900, p);
     }
 
@@ -151,6 +151,7 @@ public class PropertiesMonitor extends BorderPane {
                     super.setText(item.toString());
                     super.setGraphic(null);
                 }
+
                 Object x = getTableRow().getItem();
                 if (x instanceof Entry en) {
                     boolean hdr = en.isHeader();
