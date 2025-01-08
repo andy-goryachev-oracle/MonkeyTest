@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -112,7 +112,6 @@ public class VBoxPage extends TestPaneBase {
             FX.item(m, "min height=" + r.getMinHeight());
             FX.item(m, "pref height=" + r.getPrefHeight());
             FX.item(m, "max height=" + r.getMaxHeight());
-            m.show(r, ev.getScreenX(), ev.getScreenY());
             FX.separator(m);
             FX.item(m, "Show Properties Monitor...", () -> {
                 PropertiesMonitor.open(r);
@@ -120,6 +119,8 @@ public class VBoxPage extends TestPaneBase {
             FX.item(m, "Delete", () -> {
                 box.getChildren().remove(r);
             });
+
+            m.show(r, ev.getScreenX(), ev.getScreenY());
         });
         return r;
     }

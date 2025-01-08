@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,8 +30,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
 
 /**
@@ -322,8 +329,35 @@ public class PaneContentOptions {
                 d().
                 build();
         });
+        s.addChoiceSupplier("1000 text nodes", () -> {
+            return manyTextNodes();
+        });
         s.selectFirst();
         return s;
+    }
+
+    private static List<Node> manyTextNodes() {
+        TextFlow f = new TextFlow();
+        for (int i = 0; i < 1000; i++) {
+            Text t = new Text(i + " ");
+            t.setFill(i % 2 == 0 ? Color.BLACK : Color.GREEN);
+            t.getStyleClass().add("T1000");
+            f.getChildren().add(t);
+
+            t.setOnContextMenuRequested((ev) -> {
+                ContextMenu m = new ContextMenu();
+                FX.item(m, "Show Properties Monitor...", () -> {
+                    PropertiesMonitor.open(t);
+                });
+                FX.item(m, "Delete", () -> {
+                    if (t.getParent() instanceof Pane p) {
+                        p.getChildren().remove(t);
+                    }
+                });
+                m.show(t, ev.getScreenX(), ev.getScreenY());
+            });
+        }
+        return List.of(f);
     }
 
     public static abstract class Builder {
