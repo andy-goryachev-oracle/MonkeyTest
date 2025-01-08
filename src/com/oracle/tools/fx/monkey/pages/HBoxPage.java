@@ -42,6 +42,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -67,7 +68,6 @@ public class HBoxPage extends TestPaneBase {
             }
         };
 
-        // TODO menu button
         Button addButton = FX.button("Add Item", () -> {
             addItem(box.getChildren());
         });
@@ -113,6 +113,13 @@ public class HBoxPage extends TestPaneBase {
             FX.item(m, "pref width=" + r.getPrefWidth());
             FX.item(m, "max width=" + r.getMaxWidth());
             m.show(r, ev.getScreenX(), ev.getScreenY());
+            FX.separator(m);
+            FX.item(m, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(r);
+            });
+            FX.item(m, "Delete", () -> {
+                box.getChildren().remove(r);
+            });
         });
         return r;
     }
