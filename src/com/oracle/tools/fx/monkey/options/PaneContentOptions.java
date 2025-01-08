@@ -257,6 +257,58 @@ public class PaneContentOptions {
                 d().pref(30).
                 build();
         });
+        s.addChoiceSupplier("48 items, pref=20", () -> {
+            return b.get().
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                d().pref(20).
+                build();
+        });
         s.addChoiceSupplier("various", () -> {
             return b.get().
                 d().pref(100).
