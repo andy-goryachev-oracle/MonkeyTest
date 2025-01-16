@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -42,6 +42,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -67,7 +68,6 @@ public class VBoxPage extends TestPaneBase {
             }
         };
 
-        // TODO menu button
         Button addButton = FX.button("Add Item", () -> {
             addItem(box.getChildren());
         });
@@ -112,6 +112,14 @@ public class VBoxPage extends TestPaneBase {
             FX.item(m, "min height=" + r.getMinHeight());
             FX.item(m, "pref height=" + r.getPrefHeight());
             FX.item(m, "max height=" + r.getMaxHeight());
+            FX.separator(m);
+            FX.item(m, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(r);
+            });
+            FX.item(m, "Delete", () -> {
+                box.getChildren().remove(r);
+            });
+
             m.show(r, ev.getScreenX(), ev.getScreenY());
         });
         return r;
