@@ -73,7 +73,7 @@ public class SliderPage extends TestPaneBase implements HasSkinnable {
         op.option(new BooleanOption("valueChanging", "value changing", control.valueChangingProperty()));
         op.option(new BooleanOption("showTickLabels", "show tick labels", control.showTickLabelsProperty()));
         op.option(new BooleanOption("showTickMarks", "show tick marks", control.showTickMarksProperty()));
-        op.option(new BooleanOption("snapToTicks", "snapToTicks", control.snapToTicksProperty()));
+        op.option(new BooleanOption("snapToTicks", "snap to ticks", control.snapToTicksProperty()));
         ControlPropertySheet.appendTo(op, control);
 
         setContent(control);
