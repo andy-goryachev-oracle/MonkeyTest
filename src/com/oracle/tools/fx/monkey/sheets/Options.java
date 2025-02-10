@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,10 +31,13 @@ import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -164,6 +167,10 @@ public class Options {
                 0, 0, 50, 50, false
             );
             return Background.fill(g);
+        });
+        op.addChoiceSupplier("Negative Insets", () -> {
+            BackgroundFill f = new BackgroundFill(Color.rgb(0, 0, 255, 0.5), new CornerRadii(10), new Insets(-10, -10, -10, -10));
+            return new Background(f);
         });
         op.selectInitialValue();
         return op;
