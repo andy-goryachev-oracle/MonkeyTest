@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -48,7 +48,6 @@ public class Pages {
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
             new DemoPage("Hyperlink", HyperlinkPage::new),
-            // TODO InputField: DoubleField, IntegerField, WebColorField
             new DemoPage("Label", LabelPage::new),
             new DemoPage("LineChart", LineChartPage::new),
             new DemoPage("ListView", ListViewPage::new),
@@ -57,17 +56,16 @@ public class Pages {
             new DemoPage("Pagination", PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
-            // TODO ProgressIndicator
+            new DemoPage("ProgressIndicator", ProgressIndicatorPage::new),
             new DemoPage("RadioButton", RadioButtonPage::new),
             new DemoPage("ScatterChart", ScatterChartPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
-            // TODO Separator
+            new DemoPage("Separator", SeparatorPage::new),
             new DemoPage("Shape", ShapePage::new),
-            // TODO Slider
+            new DemoPage("Slider", SliderPage::new),
             new DemoPage("Spinner", SpinnerPage::new),
             new DemoPage("SplitMenuButton", SplitMenuButtonPage::new),
-            new DemoPage("Slider", SliderPage::new),
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),
             new DemoPage("Stage", StagePage::new),
@@ -81,7 +79,6 @@ public class Pages {
             new DemoPage("ToggleButton", ToggleButtonPage::new),
             new DemoPage("ToolBar", ToolBarPage::new),
             new DemoPage("Tooltip", TooltipPage::new),
-            // TODO in tables: Cell, DateCell, IndexedCell* ?
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("VBox", VBoxPage::new),
