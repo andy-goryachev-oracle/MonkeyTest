@@ -37,7 +37,7 @@ public class Pages {
             new DemoPage("BarChart", BarChartPage::new),
             new DemoPage("BubbleChart", BubbleChartPage::new),
             new DemoPage("Button", ButtonPage::new),
-            // TODO ButtonBar
+            new DemoPage("ButtonBar", ButtonBarPage::new),
             new DemoPage("Canvas", CanvasPage::new),
             new DemoPage("CheckBox", CheckBoxPage::new),
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
