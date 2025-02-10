@@ -68,7 +68,7 @@ public class SliderPage extends TestPaneBase implements HasSkinnable {
         op.option("Max:", DoubleOption.of("max", control.maxProperty(), 100.0));
         op.option("Min:", DoubleOption.of("min", control.minProperty(), 0.0));
         op.option("Minor Tick Count:", new IntOption("minorTickUnit", 0, Integer.MAX_VALUE, control.minorTickCountProperty()));
-        op.option("Orientation:", new EnumOption("orientation", true, Orientation.class, control.orientationProperty()));
+        op.option("Orientation:", new EnumOption<>("orientation", true, Orientation.class, control.orientationProperty()));
         op.option("Value:", DoubleOption.of("value", control.valueProperty(), 0.0));
         op.option(new BooleanOption("valueChanging", "value changing", control.valueChangingProperty()));
         op.option(new BooleanOption("showTickLabels", "show tick labels", control.showTickLabelsProperty()));
