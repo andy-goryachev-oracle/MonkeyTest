@@ -67,7 +67,7 @@ public class Pages {
             // TODO Slider
             new DemoPage("Spinner", SpinnerPage::new),
             new DemoPage("SplitMenuButton", SplitMenuButtonPage::new),
-            // TODO SplitPane
+            new DemoPage("Slider", SliderPage::new),
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),
             new DemoPage("Stage", StagePage::new),
