@@ -51,6 +51,7 @@ public class Pages {
             new DemoPage("Label", LabelPage::new),
             new DemoPage("LineChart", LineChartPage::new),
             new DemoPage("ListView", ListViewPage::new),
+            new DemoPage("MediaPlayer", MediaPlayerPage::new),
             new DemoPage("MenuBar", MenuBarPage::new),
             new DemoPage("MenuButton", MenuButtonPage::new),
             new DemoPage("Pagination", PaginationPage::new),
