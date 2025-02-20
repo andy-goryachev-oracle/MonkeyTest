@@ -26,6 +26,8 @@ package com.oracle.tools.fx.monkey.pages;
 
 import java.io.File;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -56,7 +58,20 @@ public class MediaPlayerPage extends TestPaneBase {
     private String sourceURI;
     private Media media;
     private MediaPlayer player;
-    //private final SimpleObjectProperty<Duration> currentTime = new SimpleObjectProperty<>();
+    private final SimpleBooleanProperty autoPlay = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty mute = new SimpleBooleanProperty();
+    private final SimpleDoubleProperty volume = new SimpleDoubleProperty(1.0);
+    // TODO
+    //  setAudioSpectrumInterval(double)
+    //  setAudioSpectrumListener(AudioSpectrumListener)
+    //  setAudioSpectrumNumBands(int)
+    //  setAudioSpectrumThreshold(int)
+    //  setBalance(double)
+    //  setCycleCount(int)
+    //  setRate(double)
+    //  setStartTime(Duration)
+    //  setStopTime(Duration)
+    //  setVolume(double)
 
     public MediaPlayerPage() {
         super("MediaPlayerPage");
@@ -83,10 +98,11 @@ public class MediaPlayerPage extends TestPaneBase {
         });
 
         OptionPane op = new OptionPane();
+        // media
         op.section("Media");
         op.option("Source URI:", createSourceOption("source"));
         op.option(new HBox(5, playButton, stopButton));
-        // url, file
+        // player
         op.section("MediaPlayer");
         op.option("Current Time:", currentTime);
         op.option("Status:", status);
@@ -94,14 +110,15 @@ public class MediaPlayerPage extends TestPaneBase {
 //            setAudioSpectrumListener(AudioSpectrumListener)
 //            setAudioSpectrumNumBands(int)
 //            setAudioSpectrumThreshold(int)
-//            setAutoPlay(boolean)
+        op.option(new BooleanOption("autoPlay", "auto play", autoPlay));
 //            setBalance(double)
 //            setCycleCount(int)
-//            setMute(boolean)
+        op.option(new BooleanOption("mute", "mute", mute));
 //            setRate(double)
 //            setStartTime(Duration)
 //            setStopTime(Duration)
-//            setVolume(double)
+        op.option("Volume:", DoubleOption.of("volume", volume, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0));
+        // view
         op.section("MediaView");
         op.option("Fit Height:", DoubleOption.of("fitHeight", mediaView.fitHeightProperty(), -1.0, 10.0, 100.0, 500.0));
         op.option("Fit Width:", DoubleOption.of("fitWidth", mediaView.fitWidthProperty(), -1.0, 10.0, 100.0, 500.0));
@@ -110,17 +127,6 @@ public class MediaPlayerPage extends TestPaneBase {
 //            setViewport(Rectangle2D)
         op.option("X:", DoubleOption.of("x", mediaView.xProperty(), -10.0, 0.0, 10));
         op.option("Y:", DoubleOption.of("y", mediaView.yProperty(), -10.0, 0.0, 10));
-        
-//        op.option("Font Scale:", DoubleOption.of("fontScale", webView.fontScaleProperty(), 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0));
-//        op.option("Font Smoothing:", new EnumOption<>("fontSmoothing", FontSmoothingType.class, webView.fontSmoothingTypeProperty()));
-//        op.option("Max Height", Options.tabPaneConstraints("maxHeight", webView.maxHeightProperty()));
-//        op.option("Max Width", Options.tabPaneConstraints("maxWidth", webView.maxWidthProperty()));
-//        op.option("Min Height", Options.tabPaneConstraints("minHeight", webView.minHeightProperty()));
-//        op.option("Min Width", Options.tabPaneConstraints("minWidth", webView.minWidthProperty()));
-//        op.option("Page Fill:", new ColorOption("textFill", webView.pageFillProperty()));
-//        op.option("Pref Height", Options.tabPaneConstraints("prefHeight", webView.prefHeightProperty()));
-//        op.option("Pref Width", Options.tabPaneConstraints("prefWidth", webView.prefWidthProperty()));
-//        op.option("Zoom:", DoubleOption.of("zoom", webView.zoomProperty(), 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0));
         NodePropertySheet.appendTo(op, mediaView);
 
         setOptions(op);
@@ -167,6 +173,19 @@ public class MediaPlayerPage extends TestPaneBase {
                     Media m = new Media(uri);
 
                     player = new MediaPlayer(m);
+                    player.autoPlayProperty().bind(autoPlay);
+                    player.muteProperty().bind(mute);
+                    player.volumeProperty().bind(volume);
+                    // TODO
+//                  setAudioSpectrumInterval(double)
+//                  setAudioSpectrumListener(AudioSpectrumListener)
+//                  setAudioSpectrumNumBands(int)
+//                  setAudioSpectrumThreshold(int)
+//                  setBalance(double)
+//                  setCycleCount(int)
+//                  setRate(double)
+//                  setStartTime(Duration)
+//                  setStopTime(Duration)
                     currentTime.textProperty().bind(Bindings.createStringBinding(() -> {
                         Duration t = player.getCurrentTime();
                         return String.valueOf(t);
@@ -175,19 +194,10 @@ public class MediaPlayerPage extends TestPaneBase {
                         MediaPlayer.Status s = player.getStatus();
                         return String.valueOf(s);
                     }, player.statusProperty()));
-                    player.setOnEndOfMedia(() -> p("ON END OF MEDIA"));
                     player.setOnError(() -> {
                         p("ON ERROR");
                         player.getError().printStackTrace();
                     });
-                    player.setOnHalted(() -> p("ON HALTED"));
-                    player.setOnPaused(() -> p("ON PAUSED"));
-                    player.setOnPlaying(() -> p("ON PLAYING"));
-                    player.setOnReady(() -> p("ON READY"));
-                    player.setOnRepeat(() -> p("ON REPEAT"));
-                    player.setOnStalled(() -> p("ON STALLED"));
-                    player.setOnStopped(() -> p("ON STOPPED"));
-                    // TODO configure player
                     mediaView.setMediaPlayer(player);
                 } catch (Throwable e) {
                     e.printStackTrace();
