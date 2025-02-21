@@ -24,6 +24,9 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
+import java.util.ArrayList;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -45,6 +48,13 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.ClosePath;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
+import javafx.scene.shape.Shape;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
@@ -242,5 +252,75 @@ public class Options {
 
     private static Bounds b(double x, double y, double w, double h) {
         return new BoundingBox(x, y, 0.0, w, h, 0.0);
+    }
+
+    public static Node shape(String name, Node n, ObjectProperty<Shape> prop) {
+        ObjectOption<Shape> op = new ObjectOption<>(name, prop);
+        op.addChoice("<null>", null);
+        op.addChoiceSupplier("Leaf", () -> new LeafShape(n));
+        op.selectInitialValue();
+        return op;
+    }
+
+    public static Node clip(String name, Node n, ObjectProperty<Node> prop) {
+        ObjectOption<Node> op = new ObjectOption<>(name, prop);
+        op.addChoice("<null>", null);
+        op.addChoiceSupplier("Ellipse", () -> {
+            return new EllipseClip(n);
+        });
+        op.selectInitialValue();
+        return op;
+    }
+
+    private static class EllipseClip extends Ellipse {
+        private final Node owner;
+        private final ObjectBinding<Bounds> binding;
+
+        public EllipseClip(Node n) {
+            this.owner = n;
+            binding = Bindings.createObjectBinding(n::getLayoutBounds, n.layoutBoundsProperty());
+            binding.addListener((p) -> {
+                update();
+            });
+            update();
+        }
+
+        private void update() {
+            Bounds b = binding.get();
+            double rx = b.getWidth() / 2.0;
+            double ry = b.getHeight() / 2.0;
+            setCenterX(rx);
+            setCenterY(ry);
+            setRadiusX(rx);
+            setRadiusY(ry);
+        }
+    }
+
+    private static class LeafShape extends Path {
+        private final Node owner;
+        private final ObjectBinding<Bounds> binding;
+
+        public LeafShape(Node n) {
+            this.owner = n;
+            binding = Bindings.createObjectBinding(n::getLayoutBounds, n.layoutBoundsProperty());
+            binding.addListener((p) -> {
+                update();
+            });
+            update();
+        }
+
+        private void update() {
+            ArrayList<PathElement> a = new ArrayList<>();
+            Bounds b = binding.get();
+            double w = b.getWidth();
+            double h = b.getHeight();
+            if ((w > 0.0) && (h > 0.0)) {
+                a.add(new MoveTo(0.0, 0.0));
+                a.add(new CubicCurveTo(0.0, 0.0, w, 0.0, w, h));
+                a.add(new CubicCurveTo(w, h, 0.0, h, 0.0, 0.0));
+                a.add(new ClosePath());
+            }
+            getElements().setAll(a);
+        }
     }
 }
