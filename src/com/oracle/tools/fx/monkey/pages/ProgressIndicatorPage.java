@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.skin.ProgressIndicatorSkin;
-import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
@@ -39,22 +38,12 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ProgressIndicator Page.
  */
 public class ProgressIndicatorPage extends TestPaneBase implements HasSkinnable {
-    private final ProgressIndicator indeterminate;
-    private final ProgressIndicator determinate;
+    private final ProgressIndicator control;
 
     public ProgressIndicatorPage() {
         super("ProgressIndicatorPage");
 
-        indeterminate = new ProgressIndicator() {
-            @Override
-            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
-                Object v = super.queryAccessibleAttribute(a, ps);
-                Loggers.accessibility.log(a, v);
-                return v;
-            }
-        };
-
-        determinate = new ProgressIndicator() {
+        control = new ProgressIndicator() {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -64,26 +53,21 @@ public class ProgressIndicatorPage extends TestPaneBase implements HasSkinnable 
         };
 
         OptionPane op = new OptionPane();
-        op.section("ProgressIndicator (Indeterminate)");
-        op.option("Progress:", DoubleOption.of("iProgress", indeterminate.progressProperty(), 0.0));
-        op.section("ProgressIndicator (Determinate)");
-        op.option("Progress:", DoubleOption.of("dProgress", determinate.progressProperty(), 0.0));
-        ControlPropertySheet.appendTo(op, indeterminate);
-        ControlPropertySheet.appendTo(op, determinate);
+        op.section("ProgressIndicator");
+        op.option("Progress:", DoubleOption.of("progress", control.progressProperty(), -1.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0));
+        ControlPropertySheet.appendTo(op, control);
 
-        setContent(new VBox(indeterminate, determinate));
+        setContent(control);
         setOptions(op);
     }
 
     @Override
     public void nullSkin() {
-        indeterminate.setSkin(null);
-        determinate.setSkin(null);
+        control.setSkin(null);
     }
 
     @Override
     public void newSkin() {
-        indeterminate.setSkin(new ProgressIndicatorSkin(indeterminate));
-        determinate.setSkin(new ProgressIndicatorSkin(determinate));
+        control.setSkin(new ProgressIndicatorSkin(control));
     }
 }
