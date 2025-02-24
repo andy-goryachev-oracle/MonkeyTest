@@ -48,7 +48,7 @@ public class Pages {
             new DemoPage("DatePicker", DatePickerPage::new),
             // TODO DialogPane
             new DemoPage("Drag and Drop", DnDPage::new),
-            // TODO FlowPane
+            new DemoPage("FlowPane", FlowPanePage::new),
             // TODO GridPane
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
