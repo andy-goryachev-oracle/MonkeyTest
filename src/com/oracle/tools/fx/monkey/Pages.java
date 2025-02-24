@@ -33,8 +33,10 @@ public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("Accordion", AccordionPage::new),
+            // TODO AnchorPane
             new DemoPage("AreaChart", AreaChartPage::new),
             new DemoPage("BarChart", BarChartPage::new),
+            new DemoPage("BorderPane", BorderPanePage::new),
             new DemoPage("BubbleChart", BubbleChartPage::new),
             new DemoPage("Button", ButtonPage::new),
             new DemoPage("ButtonBar", ButtonBarPage::new),
@@ -44,7 +46,10 @@ public class Pages {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
             new DemoPage("DatePicker", DatePickerPage::new),
+            // TODO DialogPane
             new DemoPage("Drag and Drop", DnDPage::new),
+            // TODO FlowPane
+            // TODO GridPane
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
             new DemoPage("Hyperlink", HyperlinkPage::new),
@@ -69,6 +74,7 @@ public class Pages {
             new DemoPage("SplitMenuButton", SplitMenuButtonPage::new),
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),
+            // TODO StackPane
             new DemoPage("Stage", StagePage::new),
             new DemoPage("TableView", TableViewPage::new),
             new DemoPage("TabPane", TabPanePage::new),
@@ -76,6 +82,7 @@ public class Pages {
             new DemoPage("TextArea", TextAreaPage::new),
             new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("TextFlow", TextFlowPage::new),
+            // TODO TilePane
             new DemoPage("TitledPane", TitledPanePage::new),
             new DemoPage("ToggleButton", ToggleButtonPage::new),
             new DemoPage("ToolBar", ToolBarPage::new),

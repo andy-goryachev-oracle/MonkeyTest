@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,9 +25,8 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,6 +34,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -44,6 +44,7 @@ import javafx.stage.Window;
  */
 public class Utils {
     private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("0.###");
+    private static final Random random = new Random();
 
     public static boolean isBlank(Object x) {
         if(x == null) {
@@ -117,5 +118,13 @@ public class Utils {
             return s;
         }
         return s.substring(ix + 1);
+    }
+
+    public static Color nextColor() {
+        double hue = 360 * random.nextDouble();
+        double saturation = 0.5 + 0.5 * random.nextDouble();
+        double brightness = random.nextDouble();
+        double opacity = random.nextDouble();
+        return Color.hsb(hue, saturation, brightness, opacity);
     }
 }
