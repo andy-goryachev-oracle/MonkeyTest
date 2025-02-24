@@ -31,6 +31,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
@@ -68,9 +69,8 @@ public class VBoxPage extends TestPaneBase {
             }
         };
 
-        Button addButton = FX.button("Add Item", () -> {
-            addItem(box.getChildren());
-        });
+        MenuButton addButton = new MenuButton("Add");
+        PaneContentOptions.addChildOption(addButton.getItems(), box.getChildren(), this::createMenu);
 
         Button clearButton = FX.button("Clear Items", () -> {
             box.getChildren().clear();
@@ -104,7 +104,12 @@ public class VBoxPage extends TestPaneBase {
         Region r = new Region();
         r.setPrefHeight(30);
         r.setMinHeight(10);
+        createMenu(r);
+        return r;
+    }
 
+    private void createMenu(Node n) {
+        Region r = (Region)n;
         r.setOnContextMenuRequested((ev) -> {
             ContextMenu m = new ContextMenu();
             FX.item(m, "height=" + r.getHeight());
@@ -122,7 +127,6 @@ public class VBoxPage extends TestPaneBase {
 
             m.show(r, ev.getScreenX(), ev.getScreenY());
         });
-        return r;
     }
 
     private PaneContentOptions.Builder createBuilder() {

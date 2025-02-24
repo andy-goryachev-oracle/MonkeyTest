@@ -26,6 +26,8 @@ package com.oracle.tools.fx.monkey.options;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
@@ -34,6 +36,7 @@ import javafx.geometry.VerticalDirection;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -335,8 +338,11 @@ public class PaneContentOptions {
                 d().
                 build();
         });
-        s.addChoiceSupplier("1000 text nodes", () -> {
-            return List.of(manyTextNodes(1000));
+        childChoices((text, gen) -> {
+            s.addChoiceSupplier(text, () -> {
+                Node n = gen.get();
+                return List.of(n);
+            });
         });
         s.selectFirst();
         return s;
@@ -403,57 +409,67 @@ public class PaneContentOptions {
         return n;
     }
 
-    public static Node childOption(String name, ObjectProperty<Node> p) {
+    public static void addChildOption(ObservableList<MenuItem> menu, ObservableList<Node> children, Consumer<Node> cx) {
+        childChoices((text, gen) -> {
+            MenuItem mi = new MenuItem(text);
+            mi.setOnAction((ev) -> {
+                Node n = gen.get();
+                if (cx != null) {
+                    cx.accept(n);
+                }
+                children.add(n);
+            });
+            menu.add(mi);
+        });
+    }
+
+    public static Node childOption(String name, ObjectProperty<Node> p, Consumer<Node> cx) {
         ObjectOption<Node> op = new ObjectOption<>(name, p);
         op.addChoice("<null>", null);
-        op.addChoiceSupplier("1000 text nodes", () -> {
-            return m(PaneContentOptions.manyTextNodes(1000));
-        });
-        op.addChoiceSupplier("Label", () -> {
-            return m(new Label("Label"));
-        });
-        op.addChoiceSupplier("Biased Label: DOWN", () -> {
-            return m(PaneContentOptions.verticalLabel(VerticalDirection.DOWN));
-        });
-        op.addChoiceSupplier("Biased Label: UP", () -> {
-            return m(PaneContentOptions.verticalLabel(VerticalDirection.UP));
-        });
-        op.addChoiceSupplier("Biased Label: HORIZONTAL", () -> {
-            return m(PaneContentOptions.horizontalLabel());
-        });
-        op.addChoiceSupplier("Min (200 x 100)", () -> {
-            return m(PaneContentOptions.rectangle(200, 100, -1, -1, -1, -1));
-        });
-        op.addChoiceSupplier("Pref (333.3 x 222.2)", () -> {
-            return m(PaneContentOptions.rectangle(-1, -1, 333.3, 222.2, -1, -1));
-        });
-        op.addChoiceSupplier("Max (600 x 500)", () -> {
-            return m(PaneContentOptions.rectangle(-1, -1, -1, -1, 600, 500));
-        });
-        op.addChoiceSupplier("Min (50 x 75), Pref(150 x 99)", () -> {
-            return m(PaneContentOptions.rectangle(50, 75, 150, 99, -1, -1));
-        });
-        op.addChoiceSupplier("Pref (300 x 30), Max (600 x 500)", () -> {
-            return m(PaneContentOptions.rectangle(-1, -1, 300, 30, 600, 500));
+        childChoices((text, gen) -> {
+            op.addChoiceSupplier(text, () -> {
+                Node n = gen.get();
+                if (cx != null) {
+                    cx.accept(n);
+                }
+                return n;
+            });
         });
         op.selectInitialValue();
         return op;
     }
 
-    private static Node m(Node n) {
-        n.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(n);
-            });
-            FX.item(m, "Delete", () -> {
-                if (n.getParent() instanceof Pane p) {
-                    p.getChildren().remove(n);
-                }
-            });
-            m.show(n, ev.getScreenX(), ev.getScreenY());
+    private static void childChoices(BiConsumer<String, Supplier<Node>> client) {
+        client.accept("1000 text nodes", () -> {
+            return PaneContentOptions.manyTextNodes(1000);
         });
-        return n;
+        client.accept("Label", () -> {
+            return new Label("Label");
+        });
+        client.accept("Biased Label: DOWN", () -> {
+            return verticalLabel(VerticalDirection.DOWN);
+        });
+        client.accept("Biased Label: UP", () -> {
+            return verticalLabel(VerticalDirection.UP);
+        });
+        client.accept("Biased Label: HORIZONTAL", () -> {
+            return horizontalLabel();
+        });
+        client.accept("Min (200 x 100)", () -> {
+            return rectangle(200, 100, -1, -1, -1, -1);
+        });
+        client.accept("Pref (333.3 x 222.2)", () -> {
+            return rectangle(-1, -1, 333.3, 222.2, -1, -1);
+        });
+        client.accept("Max (600 x 500)", () -> {
+            return rectangle(-1, -1, -1, -1, 600, 500);
+        });
+        client.accept("Min (50 x 75), Pref(150 x 99)", () -> {
+            return rectangle(50, 75, 150, 99, -1, -1);
+        });
+        client.accept("Pref (300 x 30), Max (600 x 500)", () -> {
+            return rectangle(-1, -1, 300, 30, 600, 500);
+        });
     }
 
     public static abstract class Builder {

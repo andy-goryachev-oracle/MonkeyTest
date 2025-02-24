@@ -24,11 +24,14 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.util.function.Consumer;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
@@ -40,15 +43,15 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * BorderPane Page.
+ * AnchorPane Page.
  */
-public class BorderPanePage extends TestPaneBase {
-    private final BorderPane pane;
+public class AnchorPanePage extends TestPaneBase {
+    private final AnchorPane pane;
 
-    public BorderPanePage() {
-        super("BorderPanePage");
+    public AnchorPanePage() {
+        super("AnchorPanePage");
 
-        pane = new BorderPane() {
+        pane = new AnchorPane() {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -57,19 +60,17 @@ public class BorderPanePage extends TestPaneBase {
             }
         };
 
-        Button clear = new Button("Remove All");
-        clear.setOnAction((ev) -> {
+        MenuButton addButton = new MenuButton("Add");
+        PaneContentOptions.addChildOption(addButton.getItems(), pane.getChildren(), this::createMenu);
+
+        Button clearButton = new Button("Remove All");
+        clearButton.setOnAction((ev) -> {
             pane.getChildren().clear();
         });
 
         OptionPane op = new OptionPane();
-        op.section("BorderPane");
-        op.option("Bottom:", PaneContentOptions.childOption("center", pane.bottomProperty(), this::createMenu));
-        op.option("Center:", PaneContentOptions.childOption("center", pane.centerProperty(), this::createMenu));
-        op.option("Left:", PaneContentOptions.childOption("left", pane.leftProperty(), this::createMenu));
-        op.option("Right:", PaneContentOptions.childOption("right", pane.rightProperty(), this::createMenu));
-        op.option("Top:", PaneContentOptions.childOption("top", pane.topProperty(), this::createMenu));
-        op.option(Utils.buttons(clear));
+        op.section("AnchorPane");
+        op.option("Children:", Utils.buttons(addButton, clearButton));
         RegionPropertySheet.appendTo(op, pane);
 
         setContent(pane);
@@ -87,7 +88,45 @@ public class BorderPanePage extends TestPaneBase {
                     p.getChildren().remove(n);
                 }
             });
+            FX.separator(m);
+            anchorMenu(m, "Set Bottom Anchor", (off) -> {
+                AnchorPane.setBottomAnchor(n, off);
+            });
+            anchorMenu(m, "Set Left Anchor", (off) -> {
+                AnchorPane.setLeftAnchor(n, off);
+            });
+            anchorMenu(m, "Set Right Anchor", (off) -> {
+                AnchorPane.setRightAnchor(n, off);
+            });
+            anchorMenu(m, "Set Top Anchor", (off) -> {
+                AnchorPane.setTopAnchor(n, off);
+            });
+            FX.item(m, "Clear Anchor", () -> {
+                AnchorPane.setBottomAnchor(n, null);
+                AnchorPane.setLeftAnchor(n, null);
+                AnchorPane.setRightAnchor(n, null);
+                AnchorPane.setTopAnchor(n, null);
+            });
             m.show(n, ev.getScreenX(), ev.getScreenY());
+        });
+    }
+
+    private static void anchorMenu(ContextMenu cm, String text, Consumer<Double> client) {
+        Menu m = FX.menu(cm, text);
+        anchor(m, client, null);
+        anchor(m, client, -100.0);
+        anchor(m, client, -50.0);
+        anchor(m, client, 0.0);
+        anchor(m, client, 50.0);
+        anchor(m, client, 100.0);
+        anchor(m, client, 200.0);
+        anchor(m, client, 300.0);
+    }
+
+    private static void anchor(Menu m, Consumer<Double> client, Double value) {
+        String name = value == null ? "<null>" : String.valueOf(value);
+        FX.item(m, name, () -> {
+            client.accept(value);
         });
     }
 }

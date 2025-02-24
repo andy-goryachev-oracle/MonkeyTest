@@ -33,7 +33,7 @@ public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("Accordion", AccordionPage::new),
-            // TODO AnchorPane
+            new DemoPage("AnchorPane", AnchorPanePage::new),
             new DemoPage("AreaChart", AreaChartPage::new),
             new DemoPage("BarChart", BarChartPage::new),
             new DemoPage("BorderPane", BorderPanePage::new),
