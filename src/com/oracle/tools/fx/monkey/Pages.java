@@ -74,7 +74,7 @@ public class Pages {
             new DemoPage("SplitMenuButton", SplitMenuButtonPage::new),
             new DemoPage("StackedAreaChart", StackedAreaChartPage::new),
             new DemoPage("StackedBarChart", StackedBarChartPage::new),
-            // TODO StackPane
+            new DemoPage("StackPane", StackPanePage::new),
             new DemoPage("Stage", StagePage::new),
             new DemoPage("TableView", TableViewPage::new),
             new DemoPage("TabPane", TabPanePage::new),

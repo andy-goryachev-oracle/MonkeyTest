@@ -46,6 +46,7 @@ import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Menus;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -113,11 +114,7 @@ public class HBoxPage extends TestPaneBase {
         Region r = (Region)n;
         r.setOnContextMenuRequested((ev) -> {
             ContextMenu m = new ContextMenu();
-            FX.item(m, "width=" + r.getWidth());
-            FX.separator(m);
-            FX.item(m, "min width=" + r.getMinWidth());
-            FX.item(m, "pref width=" + r.getPrefWidth());
-            FX.item(m, "max width=" + r.getMaxWidth());
+            Menus.sizeSubMenu(m, r);
             FX.separator(m);
             FX.item(m, "Show Properties Monitor...", () -> {
                 PropertiesMonitor.open(r);

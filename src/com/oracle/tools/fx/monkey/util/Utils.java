@@ -24,7 +24,9 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import javafx.scene.Node;
@@ -126,5 +128,12 @@ public class Utils {
         double brightness = random.nextDouble();
         double opacity = random.nextDouble();
         return Color.hsb(hue, saturation, brightness, opacity);
+    }
+
+    public static <T extends Enum> T[] withNull(Class<T> type) {
+        T[] values = type.getEnumConstants();
+        T[] a = (T[])Array.newInstance(type, values.length + 1);
+        System.arraycopy(values, 0, a, 1, values.length);
+        return a;
     }
 }

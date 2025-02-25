@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,7 +24,6 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleAttribute;
@@ -32,17 +31,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
 import com.oracle.tools.fx.monkey.Loggers;
-import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
-import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -52,16 +45,15 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * VBox Page.
- * @see HBoxPage
+ * StackPane Page.
  */
-public class VBoxPage extends TestPaneBase {
-    private final VBox box;
+public class StackPanePage extends TestPaneBase {
+    private final StackPane pane;
 
-    public VBoxPage() {
-        super("VBoxPage");
+    public StackPanePage() {
+        super("StackPanePage");
 
-        box = new VBox() {
+        pane = new StackPane() {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -71,82 +63,68 @@ public class VBoxPage extends TestPaneBase {
         };
 
         MenuButton addButton = new MenuButton("Add");
-        PaneContentOptions.addChildOption(addButton.getItems(), box.getChildren(), this::createMenu);
+        PaneContentOptions.addChildOption(addButton.getItems(), pane.getChildren(), this::createMenu);
 
         Button clearButton = FX.button("Clear Items", () -> {
-            box.getChildren().clear();
+            pane.getChildren().clear();
         });
 
         OptionPane op = new OptionPane();
-        op.section("VBox");
-        op.option("Alignment:", new EnumOption<Pos>("alignment", Pos.class, box.alignmentProperty()));
-        op.option("Children:", PaneContentOptions.createOptions(box.getChildren(), this::createBuilder));
-        op.option(Utils.buttons(addButton, clearButton));
-        op.option(new BooleanOption("fillHWidth", "fill width", box.fillWidthProperty()));
-        op.option("Spacing:", Options.spacing("spacing", box.spacingProperty()));
-        RegionPropertySheet.appendTo(op, box);
+        op.section("StackPane");
+        op.option("Alignment:", new EnumOption<>("alignment", Pos.class, pane.alignmentProperty()));
+        op.option("Children:", Utils.buttons(addButton, clearButton));
+        RegionPropertySheet.appendTo(op, pane);
 
-        BorderPane bp = new BorderPane(box);
-        bp.setPadding(new Insets(0, 10, 0, 0));
-        setContent(bp);
+        setContent(pane);
         setOptions(op);
-    }
-
-    private Region addItem(List<Node> children) {
-        boolean even = (children.size() % 2) == 0;
-        Background bg = Background.fill(even ? Color.GRAY : Color.LIGHTGRAY);
-        Region r = createRegion();
-        r.setBackground(bg);
-        children.add(r);
-        return r;
-    }
-
-    private Region createRegion() {
-        Region r = new Region();
-        r.setPrefHeight(30);
-        r.setMinHeight(10);
-        createMenu(r);
-        return r;
     }
 
     private void createMenu(Node n) {
         Region r = (Region)n;
+        // FIX multiple clicks create multiple menus??
         r.setOnContextMenuRequested((ev) -> {
             ContextMenu m = new ContextMenu();
+            m.setAutoHide(true);
+            Menus.subMenu(
+                m,
+                "Alignment",
+                (v) -> {
+                    StackPane.setAlignment(n, v);
+                },
+                () -> {
+                    return StackPane.getAlignment(n);
+                },
+                Utils.withNull(Pos.class)
+            );
+            Menus.subMenu(
+                m,
+                "Margin",
+                (v) -> {
+                    StackPane.setMargin(n, v);
+                },
+                () -> {
+                    return StackPane.getMargin(n);
+                },
+                null,
+                new Insets(0),
+                new Insets(10, 0, 0, 0),
+                new Insets(0, 10, 0, 0),
+                new Insets(0, 0, 10, 0),
+                new Insets(0, 0, 0, 10),
+                new Insets(10, 20, 30, 40)
+            );
+            FX.separator(m);
             Menus.sizeSubMenu(m, r);
             FX.separator(m);
             FX.item(m, "Show Properties Monitor...", () -> {
                 PropertiesMonitor.open(r);
             });
             FX.item(m, "Delete", () -> {
-                box.getChildren().remove(r);
+                pane.getChildren().remove(r);
             });
-
+    
             m.show(r, ev.getScreenX(), ev.getScreenY());
+            ev.consume();
         });
-    }
-
-    private PaneContentOptions.Builder createBuilder() {
-        return new PaneContentOptions.Builder(this::addItem) {
-            @Override
-            protected void setGrow(Node n, Priority p) {
-                VBox.setVgrow(n, p);
-            }
-
-            @Override
-            protected void setMin(Region r, double v) {
-                r.setMinHeight(v);
-            }
-
-            @Override
-            protected void setPref(Region r, double v) {
-                r.setPrefHeight(v);
-            }
-
-            @Override
-            protected void setMax(Region r, double v) {
-                r.setMaxHeight(v);
-            }
-        };
     }
 }
