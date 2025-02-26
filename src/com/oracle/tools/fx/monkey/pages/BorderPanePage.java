@@ -30,11 +30,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Menus;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -77,17 +79,25 @@ public class BorderPanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        n.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(n);
-            });
-            FX.item(m, "Delete", () -> {
+        FX.setPopupMenu(n, () -> {
+            ContextMenu cm = new ContextMenu();
+            Menus.alignmentSubMenu(cm, (v) -> BorderPane.setAlignment(n, v), () -> BorderPane.getAlignment(n));
+            Menus.marginSubMenu(cm, (v) -> BorderPane.setMargin(n, v), () -> BorderPane.getMargin(n));
+            if(n instanceof Region r) {
+                FX.separator(cm);
+                Menus.sizeSubMenus(cm, r);
+            }
+            FX.separator(cm);
+            FX.item(cm, "Remove", () -> {
                 if (n.getParent() instanceof Pane p) {
                     p.getChildren().remove(n);
                 }
             });
-            m.show(n, ev.getScreenX(), ev.getScreenY());
+            FX.separator(cm);
+            FX.item(cm, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
+            });
+            return cm;
         });
     }
 }

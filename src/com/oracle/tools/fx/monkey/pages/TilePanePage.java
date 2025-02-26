@@ -31,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import com.oracle.tools.fx.monkey.Loggers;
@@ -90,19 +91,25 @@ public class TilePanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        Region r = (Region)n;
-        r.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            Menus.sizeSubMenu(m, r);
-            FX.separator(m);
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(r);
+        FX.setPopupMenu(n, () -> {
+            ContextMenu cm = new ContextMenu();
+            Menus.alignmentSubMenu(cm, (v) -> TilePane.setAlignment(n, v), () -> TilePane.getAlignment(n));
+            Menus.marginSubMenu(cm, (v) -> TilePane.setMargin(n, v), () -> TilePane.getMargin(n));
+            if(n instanceof Region r) {
+                FX.separator(cm);
+                Menus.sizeSubMenus(cm, r);
+            }
+            FX.separator(cm);
+            FX.item(cm, "Remove", () -> {
+                if (n.getParent() instanceof Pane p) {
+                    p.getChildren().remove(n);
+                }
             });
-            FX.item(m, "Delete", () -> {
-                pane.getChildren().remove(r);
+            FX.separator(cm);
+            FX.item(cm, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
             });
-    
-            m.show(r, ev.getScreenX(), ev.getScreenY());
+            return cm;
         });
     }
 }

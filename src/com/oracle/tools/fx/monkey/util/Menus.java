@@ -27,11 +27,15 @@ package com.oracle.tools.fx.monkey.util;
 import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 /**
@@ -42,21 +46,18 @@ public class Menus {
 
     /**
      * Creates a submenu with the specified values.
-     *
-     * @param <T> the type
-     * @param cm the parent context nemu
-     * @param text the menu text
-     * @param setter the code to accept the chosen value
-     * @param getter the code which supplies the current value
-     * @param values the values
-     * @return the created menu instance
      */
-    public static <T> Menu subMenu(ContextMenu cm, String text, Consumer<T> setter, Supplier<T> getter, T... values) {
+    public static <T> Menu subMenu(ContextMenu cm, String text, Function<T, String> fmt, Consumer<T> setter, Supplier<T> getter, T... values) {
         // we could pass the property instead and to highlight the chosen value with a checkmark for example
         Menu m = FX.menu(cm, text);
         for (T value: values) {
             T v = getter == null ? null : getter.get();
-            String name = value == null ? "<null>" : String.valueOf(value);
+            String name;
+            if(fmt == null) {
+                name = String.valueOf(value);
+            } else {
+                name = fmt.apply(value);
+            }
             if ((getter != null) && Objects.equals(v, value)) {
                 name += " ✓";
             }
@@ -65,6 +66,27 @@ public class Menus {
             });
         }
         return m;
+    }
+
+    public static void alignmentSubMenu(ContextMenu cm, Consumer<Pos> setter, Supplier<Pos> getter) {
+        subMenu(cm, "Alignment", null, setter, getter, Utils.withNull(Pos.class));
+    }
+
+    public static void marginSubMenu(ContextMenu cm, Consumer<Insets> setter, Supplier<Insets> getter) {
+        Insets[] values = {
+            null,
+            new Insets(0),
+            new Insets(10, 0, 0, 0),
+            new Insets(0, 10, 0, 0),
+            new Insets(0, 0, 10, 0),
+            new Insets(0, 0, 0, 10),
+            new Insets(10, 20, 30, 40)
+        };
+        subMenu(cm, "Margin", Formats::formatInsets, setter, getter, values);
+    }
+
+    public static void prioritySubMenu(ContextMenu cm, String text, Consumer<Priority> setter, Supplier<Priority> getter) {
+        subMenu(cm, text, null, setter, getter, Utils.withNull(Priority.class));
     }
 
     private static void subMenu(ContextMenu cm, String text, DoubleProperty p, double[] values) {
@@ -81,7 +103,7 @@ public class Menus {
         }
     }
 
-    public static void sizeSubMenu(ContextMenu cm, Region r) {
+    public static void sizeSubMenus(ContextMenu cm, Region r) {
         double[] min = {
             Region.USE_COMPUTED_SIZE,
             Region.USE_PREF_SIZE,

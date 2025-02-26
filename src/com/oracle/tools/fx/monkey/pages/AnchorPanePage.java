@@ -33,11 +33,13 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Menus;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -78,17 +80,8 @@ public class AnchorPanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        n.setOnContextMenuRequested((ev) -> {
+        FX.setPopupMenu(n, () -> {
             ContextMenu m = new ContextMenu();
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(n);
-            });
-            FX.item(m, "Delete", () -> {
-                if (n.getParent() instanceof Pane p) {
-                    p.getChildren().remove(n);
-                }
-            });
-            FX.separator(m);
             anchorMenu(m, "Set Bottom Anchor", (off) -> {
                 AnchorPane.setBottomAnchor(n, off);
             });
@@ -108,7 +101,21 @@ public class AnchorPanePage extends TestPaneBase {
                 AnchorPane.setRightAnchor(n, null);
                 AnchorPane.setTopAnchor(n, null);
             });
-            m.show(n, ev.getScreenX(), ev.getScreenY());
+            if(n instanceof Region r) {
+                FX.separator(m);
+                Menus.sizeSubMenus(m, r);
+            }
+            FX.separator(m);
+            FX.item(m, "Delete", () -> {
+                if (n.getParent() instanceof Pane p) {
+                    p.getChildren().remove(n);
+                }
+            });
+            FX.separator(m);
+            FX.item(m, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
+            });
+            return m;
         });
     }
 

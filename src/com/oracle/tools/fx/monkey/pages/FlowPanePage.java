@@ -34,6 +34,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
@@ -89,19 +90,24 @@ public class FlowPanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        Region r = (Region)n;
-        r.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            Menus.sizeSubMenu(m, r);
-            FX.separator(m);
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(r);
+        FX.setPopupMenu(n, () -> {
+            ContextMenu cm = new ContextMenu();
+            Menus.marginSubMenu(cm, (v) -> FlowPane.setMargin(n, v), () -> FlowPane.getMargin(n));
+            if(n instanceof Region r) {
+                FX.separator(cm);
+                Menus.sizeSubMenus(cm, r);
+            }
+            FX.separator(cm);
+            FX.item(cm, "Remove", () -> {
+                if (n.getParent() instanceof Pane p) {
+                    p.getChildren().remove(n);
+                }
             });
-            FX.item(m, "Delete", () -> {
-                pane.getChildren().remove(r);
+            FX.separator(cm);
+            FX.item(cm, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
             });
-    
-            m.show(r, ev.getScreenX(), ev.getScreenY());
+            return cm;
         });
     }
 }

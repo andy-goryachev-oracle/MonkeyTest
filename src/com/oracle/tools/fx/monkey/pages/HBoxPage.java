@@ -34,7 +34,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -111,19 +113,25 @@ public class HBoxPage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        Region r = (Region)n;
-        r.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            Menus.sizeSubMenu(m, r);
-            FX.separator(m);
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(r);
+        FX.setPopupMenu(n, () -> {
+            ContextMenu cm = new ContextMenu();
+            Menus.prioritySubMenu(cm, "HGrow", (v) -> HBox.setHgrow(n, v), () -> HBox.getHgrow(n));
+            Menus.marginSubMenu(cm, (v) -> HBox.setMargin(n, v), () -> HBox.getMargin(n));
+            if(n instanceof Region r) {
+                FX.separator(cm);
+                Menus.sizeSubMenus(cm, r);
+            }
+            FX.separator(cm);
+            FX.item(cm, "Remove", () -> {
+                if (n.getParent() instanceof Pane p) {
+                    p.getChildren().remove(n);
+                }
             });
-            FX.item(m, "Delete", () -> {
-                box.getChildren().remove(r);
+            FX.separator(cm);
+            FX.item(cm, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
             });
-    
-            m.show(r, ev.getScreenX(), ev.getScreenY());
+            return cm;
         });
     }
 

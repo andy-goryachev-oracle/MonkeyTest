@@ -24,13 +24,13 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import com.oracle.tools.fx.monkey.Loggers;
@@ -80,51 +80,25 @@ public class StackPanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        Region r = (Region)n;
-        // FIX multiple clicks create multiple menus??
-        r.setOnContextMenuRequested((ev) -> {
-            ContextMenu m = new ContextMenu();
-            m.setAutoHide(true);
-            Menus.subMenu(
-                m,
-                "Alignment",
-                (v) -> {
-                    StackPane.setAlignment(n, v);
-                },
-                () -> {
-                    return StackPane.getAlignment(n);
-                },
-                Utils.withNull(Pos.class)
-            );
-            Menus.subMenu(
-                m,
-                "Margin",
-                (v) -> {
-                    StackPane.setMargin(n, v);
-                },
-                () -> {
-                    return StackPane.getMargin(n);
-                },
-                null,
-                new Insets(0),
-                new Insets(10, 0, 0, 0),
-                new Insets(0, 10, 0, 0),
-                new Insets(0, 0, 10, 0),
-                new Insets(0, 0, 0, 10),
-                new Insets(10, 20, 30, 40)
-            );
-            FX.separator(m);
-            Menus.sizeSubMenu(m, r);
-            FX.separator(m);
-            FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(r);
+        FX.setPopupMenu(n, () -> {
+            ContextMenu cm = new ContextMenu();
+            Menus.alignmentSubMenu(cm, (v) -> StackPane.setAlignment(n, v), () -> StackPane.getAlignment(n));
+            Menus.marginSubMenu(cm, (v) -> StackPane.setMargin(n, v), () -> StackPane.getMargin(n));
+            if(n instanceof Region r) {
+                FX.separator(cm);
+                Menus.sizeSubMenus(cm, r);
+            }
+            FX.separator(cm);
+            FX.item(cm, "Remove", () -> {
+                if (n.getParent() instanceof Pane p) {
+                    p.getChildren().remove(n);
+                }
             });
-            FX.item(m, "Delete", () -> {
-                pane.getChildren().remove(r);
+            FX.separator(cm);
+            FX.item(cm, "Show Properties Monitor...", () -> {
+                PropertiesMonitor.open(n);
             });
-    
-            m.show(r, ev.getScreenX(), ev.getScreenY());
-            ev.consume();
+            return cm;
         });
     }
 }
