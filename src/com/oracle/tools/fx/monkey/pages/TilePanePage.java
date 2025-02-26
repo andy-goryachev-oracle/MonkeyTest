@@ -24,34 +24,38 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import java.util.function.Consumer;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
 import com.oracle.tools.fx.monkey.Loggers;
+import com.oracle.tools.fx.monkey.options.DoubleOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.PaneContentOptions;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Menus;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
- * AnchorPane Page.
+ * TilePane Page.
  */
-public class AnchorPanePage extends TestPaneBase {
-    private final AnchorPane pane;
+public class TilePanePage extends TestPaneBase {
+    private final TilePane pane;
 
-    public AnchorPanePage() {
-        super("AnchorPanePage");
+    public TilePanePage() {
+        super("TilePanePage");
 
-        pane = new AnchorPane() {
+        pane = new TilePane() {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
@@ -63,14 +67,22 @@ public class AnchorPanePage extends TestPaneBase {
         MenuButton addButton = new MenuButton("Add");
         PaneContentOptions.addChildOption(addButton.getItems(), pane.getChildren(), this::createMenu);
 
-        Button clearButton = new Button("Remove All");
-        clearButton.setOnAction((ev) -> {
+        Button clearButton = FX.button("Clear Items", () -> {
             pane.getChildren().clear();
         });
 
         OptionPane op = new OptionPane();
-        op.section("AnchorPane");
+        op.section("FlowPane");
+        op.option("Alignment:", new EnumOption<>("alignment", Pos.class, pane.alignmentProperty()));
         op.option("Children:", Utils.buttons(addButton, clearButton));
+        op.option("HGap:", DoubleOption.of("hgap", pane.hgapProperty(), 0, 10, 20, 30, 100));
+        op.option("Orientation:", new EnumOption<>("orientation", Orientation.class, pane.orientationProperty()));
+        op.option("Pref Columns:", new IntOption("prefColumns", -1, Integer.MAX_VALUE, pane.prefColumnsProperty()));
+        op.option("Pref Rows:", new IntOption("prefRows", -1, Integer.MAX_VALUE, pane.prefRowsProperty()));
+        op.option("Pref Tile Height:", DoubleOption.of("prefTileHeight", pane.prefTileHeightProperty(), 0, 100, 200, 300, 400, 500));
+        op.option("Pref Tile Width:", DoubleOption.of("prefTileWidth", pane.prefTileWidthProperty(), 0, 100, 200, 300, 400, 500));
+        op.option("Tile Alignment:", new EnumOption<>("tileAlignment", Pos.class, pane.tileAlignmentProperty()));
+        op.option("VGap:", DoubleOption.of("vgap", pane.vgapProperty(), 0, 10, 20, 30, 100));
         RegionPropertySheet.appendTo(op, pane);
 
         setContent(pane);
@@ -78,56 +90,19 @@ public class AnchorPanePage extends TestPaneBase {
     }
 
     private void createMenu(Node n) {
-        n.setOnContextMenuRequested((ev) -> {
+        Region r = (Region)n;
+        r.setOnContextMenuRequested((ev) -> {
             ContextMenu m = new ContextMenu();
+            Menus.sizeSubMenu(m, r);
+            FX.separator(m);
             FX.item(m, "Show Properties Monitor...", () -> {
-                PropertiesMonitor.open(n);
+                PropertiesMonitor.open(r);
             });
             FX.item(m, "Delete", () -> {
-                if (n.getParent() instanceof Pane p) {
-                    p.getChildren().remove(n);
-                }
+                pane.getChildren().remove(r);
             });
-            FX.separator(m);
-            anchorMenu(m, "Set Bottom Anchor", (off) -> {
-                AnchorPane.setBottomAnchor(n, off);
-            });
-            anchorMenu(m, "Set Left Anchor", (off) -> {
-                AnchorPane.setLeftAnchor(n, off);
-            });
-            anchorMenu(m, "Set Right Anchor", (off) -> {
-                AnchorPane.setRightAnchor(n, off);
-            });
-            anchorMenu(m, "Set Top Anchor", (off) -> {
-                AnchorPane.setTopAnchor(n, off);
-            });
-            FX.separator(m);
-            FX.item(m, "Clear Anchors", () -> {
-                AnchorPane.setBottomAnchor(n, null);
-                AnchorPane.setLeftAnchor(n, null);
-                AnchorPane.setRightAnchor(n, null);
-                AnchorPane.setTopAnchor(n, null);
-            });
-            m.show(n, ev.getScreenX(), ev.getScreenY());
-        });
-    }
-
-    private static void anchorMenu(ContextMenu cm, String text, Consumer<Double> client) {
-        Menu m = FX.menu(cm, text);
-        anchor(m, client, null);
-        anchor(m, client, -100.0);
-        anchor(m, client, -50.0);
-        anchor(m, client, 0.0);
-        anchor(m, client, 50.0);
-        anchor(m, client, 100.0);
-        anchor(m, client, 200.0);
-        anchor(m, client, 300.0);
-    }
-
-    private static void anchor(Menu m, Consumer<Double> client, Double value) {
-        String name = value == null ? "<null>" : String.valueOf(value);
-        FX.item(m, name, () -> {
-            client.accept(value);
+    
+            m.show(r, ev.getScreenX(), ev.getScreenY());
         });
     }
 }

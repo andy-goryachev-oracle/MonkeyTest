@@ -46,6 +46,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
@@ -200,6 +201,7 @@ public class PropertiesMonitor extends BorderPane {
 
             a.add(new Entry("styleClass", "ObservableList", n.getStyleClass()));
             a.add(new Entry("pseudoClassStates", "ObservableSet", n.getPseudoClassStates()));
+            a.add(new Entry("properties", "ObservableMap", n.getProperties()));
 
         } catch (IntrospectionException e) {
             e.printStackTrace();
@@ -356,6 +358,11 @@ public class PropertiesMonitor extends BorderPane {
                         });
                         setValue(p.toString());
                     } else if (prop instanceof ObservableSet p) {
+                        p.addListener((Observable x) -> {
+                            setValue(p.toString());
+                        });
+                        setValue(p.toString());
+                    } else if (prop instanceof ObservableMap p) {
                         p.addListener((Observable x) -> {
                             setValue(p.toString());
                         });

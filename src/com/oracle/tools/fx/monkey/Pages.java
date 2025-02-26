@@ -82,7 +82,7 @@ public class Pages {
             new DemoPage("TextArea", TextAreaPage::new),
             new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("TextFlow", TextFlowPage::new),
-            // TODO TilePane
+            new DemoPage("TilePane", TilePanePage::new),
             new DemoPage("TitledPane", TitledPanePage::new),
             new DemoPage("ToggleButton", ToggleButtonPage::new),
             new DemoPage("ToolBar", ToolBarPage::new),
