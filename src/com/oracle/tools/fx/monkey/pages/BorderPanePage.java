@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.geometry.Pos;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -81,7 +82,7 @@ public class BorderPanePage extends TestPaneBase {
     private void createMenu(Node n) {
         FX.setPopupMenu(n, () -> {
             ContextMenu cm = new ContextMenu();
-            Menus.alignmentSubMenu(cm, (v) -> BorderPane.setAlignment(n, v), () -> BorderPane.getAlignment(n));
+            Menus.enumSubMenu(cm, "Alignment", Pos.class, true, (v) -> BorderPane.setAlignment(n, v), () -> BorderPane.getAlignment(n));
             Menus.marginSubMenu(cm, (v) -> BorderPane.setMargin(n, v), () -> BorderPane.getMargin(n));
             if(n instanceof Region r) {
                 FX.separator(cm);

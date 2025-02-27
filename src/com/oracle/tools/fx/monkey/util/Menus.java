@@ -24,26 +24,22 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 /**
  * Context Menus
  */
 public class Menus {
-    private static final DecimalFormat FORMAT = new DecimalFormat("#0");
-
     /**
      * Creates a submenu with the specified values.
      */
@@ -68,10 +64,6 @@ public class Menus {
         return m;
     }
 
-    public static void alignmentSubMenu(ContextMenu cm, Consumer<Pos> setter, Supplier<Pos> getter) {
-        subMenu(cm, "Alignment", null, setter, getter, Utils.withNull(Pos.class));
-    }
-
     public static void marginSubMenu(ContextMenu cm, Consumer<Insets> setter, Supplier<Insets> getter) {
         Insets[] values = {
             null,
@@ -85,8 +77,23 @@ public class Menus {
         subMenu(cm, "Margin", Formats::formatInsets, setter, getter, values);
     }
 
-    public static void prioritySubMenu(ContextMenu cm, String text, Consumer<Priority> setter, Supplier<Priority> getter) {
-        subMenu(cm, text, null, setter, getter, Utils.withNull(Priority.class));
+    public static <E extends Enum> void enumSubMenu(ContextMenu cm, String text, Class<E> type, boolean includeNull, Consumer<E> setter, Supplier<E> getter) {
+        E[] values = includeNull ? Utils.withNull(type) : type.getEnumConstants();
+        subMenu(cm, text, null, setter, getter, values);
+    }
+
+    public static void intSubMenu(ContextMenu cm, String text, Consumer<Integer> setter, Supplier<Integer> getter, int min, int max) {
+        ArrayList<Integer> vs = new ArrayList<>();
+        for (int i = min; i <= max; i++) {
+            vs.add(i);
+        }
+        Integer[] values = vs.toArray(Integer[]::new);
+        subMenu(cm, text, null, setter, getter, values);
+    }
+
+    public static void booleanSubMenu(ContextMenu cm, String text, Consumer<Boolean> setter, Supplier<Boolean> getter) {
+        boolean val = Boolean.TRUE.equals(getter.get());
+        FX.checkItem(cm, text, val, setter);
     }
 
     private static void subMenu(ContextMenu cm, String text, DoubleProperty p, double[] values) {
@@ -158,7 +165,7 @@ public class Menus {
         } else if (v == Double.POSITIVE_INFINITY) {
             return "INFINITY";
         }
-        return FORMAT.format(v);
+        return Formats.format2DP(v);
     }
 
     private static MenuItem item(Menu m, String text, Runnable action) {

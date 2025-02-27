@@ -49,7 +49,7 @@ public class Pages {
             // TODO DialogPane
             new DemoPage("Drag and Drop", DnDPage::new),
             new DemoPage("FlowPane", FlowPanePage::new),
-            // TODO GridPane
+            new DemoPage("GridPane", GridPanePage::new),
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
             new DemoPage("Hyperlink", HyperlinkPage::new),

@@ -114,7 +114,7 @@ public class VBoxPage extends TestPaneBase {
         FX.setPopupMenu(n, () -> {
             ContextMenu cm = new ContextMenu();
             Menus.marginSubMenu(cm, (v) -> VBox.setMargin(n, v), () -> VBox.getMargin(n));
-            Menus.prioritySubMenu(cm, "VGrow", (v) -> VBox.setVgrow(n, v), () -> VBox.getVgrow(n));
+            Menus.enumSubMenu(cm, "VGrow", Priority.class, true, (v) -> VBox.setVgrow(n, v), () -> VBox.getVgrow(n));
             if(n instanceof Region r) {
                 FX.separator(cm);
                 Menus.sizeSubMenus(cm, r);

@@ -93,7 +93,7 @@ public class TilePanePage extends TestPaneBase {
     private void createMenu(Node n) {
         FX.setPopupMenu(n, () -> {
             ContextMenu cm = new ContextMenu();
-            Menus.alignmentSubMenu(cm, (v) -> TilePane.setAlignment(n, v), () -> TilePane.getAlignment(n));
+            Menus.enumSubMenu(cm, "Alignment", Pos.class, true, (v) -> TilePane.setAlignment(n, v), () -> TilePane.getAlignment(n));
             Menus.marginSubMenu(cm, (v) -> TilePane.setMargin(n, v), () -> TilePane.getMargin(n));
             if(n instanceof Region r) {
                 FX.separator(cm);

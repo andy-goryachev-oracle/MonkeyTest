@@ -82,7 +82,7 @@ public class StackPanePage extends TestPaneBase {
     private void createMenu(Node n) {
         FX.setPopupMenu(n, () -> {
             ContextMenu cm = new ContextMenu();
-            Menus.alignmentSubMenu(cm, (v) -> StackPane.setAlignment(n, v), () -> StackPane.getAlignment(n));
+            Menus.enumSubMenu(cm, "Alignment", Pos.class, true, (v) -> StackPane.setAlignment(n, v), () -> StackPane.getAlignment(n));
             Menus.marginSubMenu(cm, (v) -> StackPane.setMargin(n, v), () -> StackPane.getMargin(n));
             if(n instanceof Region r) {
                 FX.separator(cm);
