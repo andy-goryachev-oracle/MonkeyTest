@@ -25,7 +25,6 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.List;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
@@ -33,7 +32,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -88,9 +86,7 @@ public class HBoxPage extends TestPaneBase {
 
         RegionPropertySheet.appendTo(op, box);
 
-        BorderPane bp = new BorderPane(box);
-        bp.setPadding(new Insets(0, 10, 0, 0));
-        setContent(bp);
+        setContent(box);
         setOptions(op);
     }
 
