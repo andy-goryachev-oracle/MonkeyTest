@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -346,7 +346,8 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
     private Supplier<TreeItem<DataRow>> mk(int count) {
         return () -> {
-            TreeItem<DataRow> root = new TreeItem<>();
+            // root cannot have null value JDK-8341281
+            TreeItem<DataRow> root = new TreeItem<>(new DataRow());
             for (int i = 0; i < count; i++) {
                 root.getChildren().add(new TreeItem<>(new DataRow()));
             }
