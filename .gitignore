@@ -11,18 +11,35 @@ testbin/
 **/Ensemble8/lib/
 **/Ensemble8/src/generated/resources/ensemble/search/index/write.lock
 **/nbproject/private/
+hs_err_pid*
 
 # Ignore webrevs
 /webrev/
 /webrev.zip
 
 # Ignore IntelliJ files
+.idea/artifacts
+.idea/checkstyle-idea.xml
+.idea/codeStyles/**
+.idea/compiler.xml
+.idea/copyright/profiles_settings.xml
+.idea/inspectionProfiles/**
+.idea/jarRepositories.xml
+.idea/modules
+.idea/modules.xml
+.idea/sonarlint/
 .idea/tasks.xml
 .idea/workspace.xml
-.idea/inspectionProfiles/**
-.idea/copyright/profiles_settings.xml
-.idea/codeStyles/**
-.idea/checkstyle-idea.xml
+.idea/*.iml
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/contentModel.xml
+*.iml
+*.ipr
+*.iws
 
 # Ignore the following file suffixes
 *.vcxproj.user
