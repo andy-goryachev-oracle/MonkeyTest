@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.AccessibleAttribute;
@@ -36,6 +37,7 @@ import javafx.scene.input.PickResult;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
+import javafx.scene.text.TabStopPolicy;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
@@ -44,6 +46,7 @@ import com.oracle.tools.fx.monkey.options.ActionSelector;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
+import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
@@ -118,6 +121,7 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Font:", fontOption);
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         op.option("Tab Size:", Options.tabSize("tabSize", textFlow.tabSizeProperty()));
+        op.option("Tab Stop Policy:", createTabStopPolicyOption("tabStopPolicy", textFlow.tabStopPolicyProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
@@ -265,5 +269,45 @@ public class TextFlowPage extends TestPaneBase {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Accessibility Attributes", () -> AccessibilityPropertyViewer.open(pick));
         return m;
+    }
+
+    private Node createTabStopPolicyOption(String name, ObjectProperty<TabStopPolicy> p) {
+        ObjectOption<TabStopPolicy> op = new ObjectOption<>(name, p);
+        op.addChoice("<null>", null);
+        op.addChoiceSupplier("50 px", () -> new FixedTabStopPolicy(50));
+        op.addChoiceSupplier("100 px", () -> new FixedTabStopPolicy(100));
+        op.addChoiceSupplier("200 px", () -> new FixedTabStopPolicy(200));
+        // TODO some other policy
+        op.selectInitialValue();
+        return op;
+    }
+
+    private static class FixedTabStopPolicy implements TabStopPolicy {
+        private final double tabSizeInPixels;
+
+        public FixedTabStopPolicy(double pixels) {
+            this.tabSizeInPixels = pixels;
+        }
+
+        @Override
+        public double nextTabStop(double position) {
+            return ((int)(position / tabSizeInPixels) + 1) * tabSizeInPixels;
+        }
+
+        @Override
+        public boolean equals(Object x) {
+            if (x == this) {
+                return true;
+            } else if (x instanceof FixedTabStopPolicy p) {
+                return tabSizeInPixels == p.tabSizeInPixels;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int h = FixedTabStopPolicy.class.hashCode();
+            return h * 31 + Long.hashCode(Double.doubleToLongBits(tabSizeInPixels));
+        }
     }
 }
