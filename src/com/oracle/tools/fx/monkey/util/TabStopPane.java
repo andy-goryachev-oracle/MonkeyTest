@@ -59,7 +59,7 @@ public class TabStopPane extends Pane {
         binding = Bindings.createIntegerBinding(() -> {
             requestLayout();
             return seq++;
-        }, p.tabStops(), p.defaultStops());
+        }, p.tabStops(), p.defaultStopsProperty());
     }
 
     @Override
