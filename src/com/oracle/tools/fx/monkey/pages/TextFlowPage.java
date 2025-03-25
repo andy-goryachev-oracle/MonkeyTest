@@ -56,6 +56,7 @@ import com.oracle.tools.fx.monkey.util.LayoutInfoVisualizer;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
+import com.oracle.tools.fx.monkey.util.TabStopPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -85,6 +86,9 @@ public class TextFlowPage extends TestPaneBase {
             }
         };
         textFlow.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+        textFlow.tabStopPolicyProperty().addListener((p) -> {
+            updateTabStopPolicy();
+        });
         FX.setPopupMenu(textFlow, this::createPopupMenu);
 
         pickResult = new Label();
@@ -271,43 +275,34 @@ public class TextFlowPage extends TestPaneBase {
         return m;
     }
 
-    private Node createTabStopPolicyOption(String name, ObjectProperty<TabStopPolicy> p) {
-        ObjectOption<TabStopPolicy> op = new ObjectOption<>(name, p);
+    private Node createTabStopPolicyOption(String name, ObjectProperty<TabStopPolicy> prop) {
+        ObjectOption<TabStopPolicy> op = new ObjectOption<>(name, prop);
         op.addChoice("<null>", null);
-        op.addChoiceSupplier("50 px", () -> new FixedTabStopPolicy(50));
-        op.addChoiceSupplier("100 px", () -> new FixedTabStopPolicy(100));
-        op.addChoiceSupplier("200 px", () -> new FixedTabStopPolicy(200));
-        // TODO some other policy
+        op.addChoiceSupplier("50 px", () -> fixedTabStopPolicy(50));
+        op.addChoiceSupplier("200 px", () -> fixedTabStopPolicy(200));
+        op.addChoiceSupplier("With Tab Stops", () -> {
+            TabStopPolicy p = new TabStopPolicy();
+            p.addTabStop(50);
+            p.addTabStop(100);
+            p.setDefaultStops(100);
+            return p;
+        });
         op.selectInitialValue();
         return op;
     }
 
-    private static class FixedTabStopPolicy implements TabStopPolicy {
-        private final double tabSizeInPixels;
+    private static TabStopPolicy fixedTabStopPolicy(double defaultStops) {
+        TabStopPolicy p = new TabStopPolicy();
+        p.setDefaultStops(defaultStops);
+        return p;
+    }
 
-        public FixedTabStopPolicy(double pixels) {
-            this.tabSizeInPixels = pixels;
-        }
-
-        @Override
-        public double nextTabStop(double position) {
-            return ((int)(position / tabSizeInPixels) + 1) * tabSizeInPixels;
-        }
-
-        @Override
-        public boolean equals(Object x) {
-            if (x == this) {
-                return true;
-            } else if (x instanceof FixedTabStopPolicy p) {
-                return tabSizeInPixels == p.tabSizeInPixels;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            int h = FixedTabStopPolicy.class.hashCode();
-            return h * 31 + Long.hashCode(Double.doubleToLongBits(tabSizeInPixels));
+    private void updateTabStopPolicy() {
+        TabStopPolicy p = textFlow.getTabStopPolicy();
+        if (p == null) {
+            container.setTop(null);
+        } else {
+            container.setTop(new TabStopPane(p));
         }
     }
 }
