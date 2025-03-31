@@ -24,12 +24,12 @@ ant -Djavafx.home=<JAVAFX>
 
 ## Run
 
-The tool requires JDK 21+ and JavaFX 21+.
+The tool requires JDK 23+ and JavaFX 24+.
 
 To launch, specify the path to the JavaFX SDK lib/ folder on the command line, example:
 
 ```
-java -p <JAVAFX>/javafx-sdk-21/lib/ --add-modules ALL-MODULE-PATH -jar MonkeyTester.jar
+java -p <JAVAFX>/javafx-sdk-24/lib/ --add-modules ALL-MODULE-PATH -jar MonkeyTester.jar
 ```
 
 
