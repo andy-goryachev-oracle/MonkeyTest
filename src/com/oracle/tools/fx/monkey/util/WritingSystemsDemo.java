@@ -86,6 +86,7 @@ public class WritingSystemsDemo {
         "Odia", "ଓଡ଼ିଆ",
         "Pahari", "पहाड़ी پہاڑی ",
         "Pashto", "پښتو",
+        "Polish", "Zażółć gęślą jaźń",
         "Punjabi", "ਪੰਜਾਬੀپن٘جابی",
         "Rajasthani", "राजस्थानी",
         "Russian", "Русский",
