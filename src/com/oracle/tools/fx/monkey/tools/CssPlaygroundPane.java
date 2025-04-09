@@ -208,7 +208,6 @@ public class CssPlaygroundPane extends BorderPane {
     }
 
     private static void applyStyleSheet(String styleSheet, boolean quick) {
-        //System.out.println(styleSheet);
         String ss = encode(styleSheet);
         if (ss != null) {
             for (Window w: Window.getWindows()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,7 +33,7 @@ public class TextTemplates {
     public static final String TWO_EMOJIS = "😊😇";
     public static final String CLUSTERS = "☝🏿☝🏿☝🏿🤦🏼‍♂️";
     public static final String AKKADIAN = "Akkadian:  𒀝𒅗𒁺𒌑";
-    public static final String RIGHT_TO_LEFT = "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די";
+    public static final String RIGHT_TO_LEFT = "السَّلَامُ عَلَيْكُمْ" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פוHello, world!נעם אלף בית לשון קודש. די";
 
     public static Object[] multiLineTextPairs() {
         return new Object[] {
