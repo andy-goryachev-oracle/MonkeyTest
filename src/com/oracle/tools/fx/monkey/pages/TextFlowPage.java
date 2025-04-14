@@ -284,7 +284,7 @@ public class TextFlowPage extends TestPaneBase {
         op.addChoiceSupplier("With Tab Stops", () -> {
             TabStopPolicy p = new TabStopPolicy(ref);
             p.addTabStop(50);
-            p.addTabStop(100);
+            p.addTabStop(175);
             p.setDefaultStops(100);
             return p;
         });
