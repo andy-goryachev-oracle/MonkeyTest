@@ -37,6 +37,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
@@ -148,16 +149,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
                             super.setGraphic((Node)item);
                         } else {
                             String text = item.toString();
-                            Font f = getFont();
-                            double w = getWidth() - snappedLeftInset() - snappedRightInset();
-                            double h = getHeight() - snappedTopInset() - snappedBottomInset();
-                            Canvas c = new Canvas(w, h);
-                            GraphicsContext g = c.getGraphicsContext2D();
-                            g.setFill(Color.rgb(255, 0, 0, 0.1));
-                            g.fillRect(0, 0, w, h);
-                            g.setFill(getTextFill());
-                            g.setFont(f);
-                            g.fillText(text, 0, f.getSize(), w);
+                            Canvas c = createCanvas(this, text);
                             
                             super.setText(null);
                             super.setGraphic(c);
@@ -378,12 +370,36 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         return s;
     }
 
-    private Callback<TableView<DataRow>, TableRow<DataRow>> createRowFactory(Color c) {
+    private static Callback<TableView<DataRow>, TableRow<DataRow>> createRowFactory(Color c) {
         return (v) -> {
             TableRow<DataRow> row = new TableRow<>();
             row.setBackground(Background.fill(c));
             return row;
         };
+    }
+
+    private static Callback<TableView<DataRow>, TableRow<DataRow>> createCanvasRowFactory() {
+        return (v) -> {
+            TableRow<DataRow> row = new TableRow<>();
+            Canvas c = createCanvas(row, null);
+            row.setGraphic(c);
+            row.setText(null);
+            return row;
+        };
+    }
+
+    private static Canvas createCanvas(Labeled r, String text) {
+        Font f = r.getFont();
+        double w = r.getWidth() - r.snappedLeftInset() - r.snappedRightInset();
+        double h = r.getHeight() - r.snappedTopInset() - r.snappedBottomInset();
+        Canvas c = new Canvas(w, h);
+        GraphicsContext g = c.getGraphicsContext2D();
+        g.setFill(Color.rgb(0, 255, 0, 0.1));
+        g.fillRect(0, 0, w, h);
+        g.setFill(r.getTextFill());
+        g.setFont(f);
+        g.fillText(text, 0, f.getSize(), w);
+        return c;
     }
 
     private Node createRowFactoryOptions(String name, ObjectProperty<Callback<TableView<DataRow>, TableRow<DataRow>>> p) {
@@ -392,6 +408,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoice("<default>", defaultValue);
         s.addChoice("Red Background", createRowFactory(Color.RED));
         s.addChoice("Green Background", createRowFactory(Color.GREEN));
+        s.addChoice("Canvas-based", createCanvasRowFactory());
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
