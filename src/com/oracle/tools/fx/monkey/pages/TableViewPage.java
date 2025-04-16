@@ -32,10 +32,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableRow;
@@ -45,6 +49,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
@@ -113,13 +118,54 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         setOptions(op);
     }
 
-    private ContextMenu createPopupMenu(TableColumn<?,?> tc) {
+    private ContextMenu createColumnPopupMenu(TableColumn tc) {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Add Column Before", () -> addColumn(tc, false));
         FX.item(m, "Add Column After", () -> addColumn(tc, true));
         FX.separator(m);
         FX.item(m, "Remove Column", () -> control.getColumns().remove(tc));
         FX.item(m, "Remove All Columns", () -> control.getColumns().clear());
+        FX.separator(m);
+        Menu m2 = FX.menu(m, "Cell Factory");
+        FX.item(m2, "Default", () -> tc.setCellFactory(TableColumn.DEFAULT_CELL_FACTORY));
+        FX.item(m2, "Canvas", () -> tc.setCellFactory(new Callback<TableColumn<?,?>, TableCell<?,?>>() {
+            @Override
+            public TableCell call(TableColumn param) {
+                return new TableCell() {
+                    @Override
+                    protected void updateItem(Object item, boolean empty) {
+                        if (item == getItem()) {
+                            return;
+                        }
+    
+                        super.updateItem(item, empty);
+    
+                        if (item == null) {
+                            super.setText(null);
+                            super.setGraphic(null);
+                        } else if (item instanceof Node) {
+                            super.setText(null);
+                            super.setGraphic((Node)item);
+                        } else {
+                            String text = item.toString();
+                            Font f = getFont();
+                            double w = getWidth() - snappedLeftInset() - snappedRightInset();
+                            double h = getHeight() - snappedTopInset() - snappedBottomInset();
+                            Canvas c = new Canvas(w, h);
+                            GraphicsContext g = c.getGraphicsContext2D();
+                            g.setFill(Color.rgb(255, 0, 0, 0.1));
+                            g.fillRect(0, 0, w, h);
+                            g.setFill(getTextFill());
+                            g.setFont(f);
+                            g.fillText(text, 0, f.getSize(), w);
+                            
+                            super.setText(null);
+                            super.setGraphic(c);
+                        }
+                    }
+                };
+            }
+        }));
         FX.separator(m);
         FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
         return m;
@@ -135,7 +181,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
             }
             return new SimpleObjectProperty(v);
         });
-        tc.setContextMenu(createPopupMenu(tc));
+        tc.setContextMenu(createColumnPopupMenu(tc));
         return tc;
     }
 
