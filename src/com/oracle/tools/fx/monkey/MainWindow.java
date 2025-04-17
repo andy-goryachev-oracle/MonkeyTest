@@ -57,6 +57,7 @@ import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * Monkey Tester Main Window
@@ -163,6 +164,9 @@ public class MainWindow extends Stage {
 
     private void updatePage(DemoPage p) {
         FxSettings.store(contentPane);
+        if (contentPane.getCenter() instanceof TestPaneBase t) {
+            t.deactivate();
+        }
         currentPage = p;
         contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
