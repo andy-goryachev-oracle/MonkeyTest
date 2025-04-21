@@ -46,7 +46,7 @@ public class Pages {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
             new DemoPage("DatePicker", DatePickerPage::new),
-            // TODO DialogPane
+            new DemoPage("Dialog", DialogPage::new),
             new DemoPage("Drag and Drop", DnDPage::new),
             new DemoPage("FlowPane", FlowPanePage::new),
             new DemoPage("GridPane", GridPanePage::new),

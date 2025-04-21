@@ -50,6 +50,7 @@ public class TextTemplates {
             "Newlines", "\n1\n2\n\n3\n\n\n4\n\n\n\n5\n",
             "Long CJK",  createLongCJK(),
             "Single Newline", "\n",
+            "Multi-line", "Line One.\nLine Two.\nLine Three.",
             "<empty>", "",
             "<null>", null,
        };

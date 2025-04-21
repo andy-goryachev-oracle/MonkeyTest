@@ -24,9 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,13 +39,12 @@ import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.options.TextChoiceOption;
+import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.tools.CustomStage;
-import com.oracle.tools.fx.monkey.util.BooleanConsumer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.TextTemplates;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Stage Page.
@@ -133,11 +130,11 @@ public class StagePage extends TestPaneBase {
         s.initOwner(owner.get() ? FX.getParentWindow(this) : null);
 
         // properties
-        link(fullScreen, s.fullScreenProperty(), s::setFullScreen);
+        Utils.link(fullScreen, s.fullScreenProperty(), s::setFullScreen);
         // TODO fullScreenExitCombination
         s.fullScreenExitHintProperty().bindBidirectional(fullScreenExitHint);
-        link(iconified, s.iconifiedProperty(), s::setIconified);
-        link(maximized, s.maximizedProperty(), s::setMaximized);
+        Utils.link(iconified, s.iconifiedProperty(), s::setIconified);
+        Utils.link(maximized, s.maximizedProperty(), s::setMaximized);
         s.maxHeightProperty().bindBidirectional(maxHeight);
         s.maxWidthProperty().bindBidirectional(maxWidth);
         s.minHeightProperty().bindBidirectional(minHeight);
@@ -147,7 +144,7 @@ public class StagePage extends TestPaneBase {
         s.titleProperty().bindBidirectional(title);
 
         // window
-        link(focused, s.focusedProperty(), null);
+        Utils.link(focused, s.focusedProperty(), null);
         // TODO forceIntegerRenderScale
         // TODO height, ro
         // TODO setOnXXX
@@ -156,7 +153,7 @@ public class StagePage extends TestPaneBase {
         s.renderScaleYProperty().bindBidirectional(renderScaleY);
         // TODO width, ro
         // TODO x,y
-        link(showing, s.showingProperty(), null);
+        Utils.link(showing, s.showingProperty(), null);
         return s;
     }
 
@@ -209,12 +206,7 @@ public class StagePage extends TestPaneBase {
     }
 
     private Node textChoices(String name, SimpleStringProperty p) {
-        TextChoiceOption op = new TextChoiceOption(name, true, p);
-        op.addChoice("<null>", null);
-        op.addChoice("Short", "We are now full screen");
-        op.addChoice("Multi-line", "One.\nTwo.\nThree.");
-        op.addChoice("Lorem Impsum", TextTemplates.loremIpsum());
-        return op;
+        return Options.textOption(name, true, true, p);
     }
 
     private void toggleStage() {
@@ -234,26 +226,16 @@ public class StagePage extends TestPaneBase {
         }
     }
 
+    @Override
+    public void deactivate() {
+        close();
+    }
+
     private void close() {
         if (stage != null) {
             stage.hide();
             stage = null;
             button.setSelected(false);
-        }
-    }
-
-    private static void link(BooleanProperty ui, ReadOnlyBooleanProperty main, BooleanConsumer c) {
-        main.addListener((s, p, v) -> {
-            ui.set(v);
-        });
-        if (c != null) {
-            ui.addListener((s, p, v) -> {
-                if (main.get() != v) {
-                    c.consume(v);
-                }
-            });
-            boolean val = ui.get();
-            c.consume(val);
         }
     }
 }
