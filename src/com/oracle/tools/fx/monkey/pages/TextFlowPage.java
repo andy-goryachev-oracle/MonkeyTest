@@ -38,6 +38,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
+import javafx.scene.text.TabStop;
 import javafx.scene.text.TabStopPolicy;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -49,6 +50,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
@@ -271,8 +273,14 @@ public class TextFlowPage extends TestPaneBase {
     }
 
     private ContextMenu createPopupMenu(PickResult pick) {
+        Node source = pick.getIntersectedNode();
         ContextMenu m = new ContextMenu();
-        FX.item(m, "Accessibility Attributes", () -> AccessibilityPropertyViewer.open(pick));
+        FX.item(m, "Accessibility Attributes", () -> {
+            AccessibilityPropertyViewer.open(pick);
+        });
+        FX.item(m, "Show Properties Monitor...", () -> {
+            PropertiesMonitor.open(source);
+        });
         return m;
     }
 
@@ -283,9 +291,19 @@ public class TextFlowPage extends TestPaneBase {
         op.addChoiceSupplier("200 px", () -> fixedTabStopPolicy(ref, 200));
         op.addChoiceSupplier("With Tab Stops", () -> {
             TabStopPolicy p = new TabStopPolicy(ref);
-            p.addTabStop(50);
-            p.addTabStop(175);
+            p.tabStops().setAll(
+                new TabStop(50),
+                new TabStop(175)
+            );
             p.setDefaultStops(100);
+            return p;
+        });
+        op.addChoiceSupplier("Tab Stops, w/o default stops", () -> {
+            TabStopPolicy p = new TabStopPolicy(ref);
+            p.tabStops().setAll(
+                new TabStop(50),
+                new TabStop(175)
+            );
             return p;
         });
         op.selectInitialValue();

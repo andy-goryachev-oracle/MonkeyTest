@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -46,6 +47,7 @@ import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.PaintOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.ShapePropertySheet;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -139,9 +141,13 @@ public class TextPage extends TestPaneBase {
     }
 
     private ContextMenu createPopupMenu(PickResult pick) {
+        Node source = pick.getIntersectedNode();
         ContextMenu m = new ContextMenu();
         FX.item(m, "Accessibility Attributes", () -> {
             AccessibilityPropertyViewer.open(pick);
+        });
+        FX.item(m, "Show Properties Monitor...", () -> {
+            PropertiesMonitor.open(source);
         });
         StdoutMouseListener.attach(m, text);
         if (text != pick.getIntersectedNode()) {

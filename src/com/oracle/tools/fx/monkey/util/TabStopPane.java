@@ -76,16 +76,18 @@ public class TabStopPane extends Pane {
         }
         // default stops
         double defaultStops = policy.getDefaultStops();
-        for (;; i++) {
-            pos = (1 + (int)(pos / defaultStops)) * defaultStops;
-            if (pos >= getWidth()) {
-                break;
+        if (defaultStops > 0.0) {
+            for (;; i++) {
+                pos = (1 + (int)(pos / defaultStops)) * defaultStops;
+                if (pos >= getWidth()) {
+                    break;
+                }
+                Path p = updateTick(i, pos);
+                ps.add(p);
             }
-            Path p = updateTick(i, pos);
-            ps.add(p);
+            ticks = ps;
+            getChildren().setAll(ps);
         }
-        ticks = ps;
-        getChildren().setAll(ps);
     }
 
     private Path updateTab(int ix, double position) {
