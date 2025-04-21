@@ -45,6 +45,7 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
 import com.oracle.tools.fx.monkey.sheets.RegionPropertySheet;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
@@ -262,8 +263,14 @@ public class TextFlowPage extends TestPaneBase {
     }
 
     private ContextMenu createPopupMenu(PickResult pick) {
+        Node source = pick.getIntersectedNode();
         ContextMenu m = new ContextMenu();
-        FX.item(m, "Accessibility Attributes", () -> AccessibilityPropertyViewer.open(pick));
+        FX.item(m, "Accessibility Attributes", () -> {
+            AccessibilityPropertyViewer.open(pick);
+        });
+        FX.item(m, "Show Properties Monitor...", () -> {
+            PropertiesMonitor.open(source);
+        });
         return m;
     }
 }
