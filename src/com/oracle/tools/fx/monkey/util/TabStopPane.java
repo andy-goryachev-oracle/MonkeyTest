@@ -26,9 +26,9 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.util.ArrayList;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.IntegerBinding;
+import java.util.Comparator;
+import java.util.List;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -43,30 +43,40 @@ import javafx.scene.text.TabStopPolicy;
 
 /**
  * Visual editor for a TabStopPolicy.
+ *
+ * TODO decouple tab stops here from the policy
+ * TODO drag without updating tab policy!  update policy only on mouse release
  */
 public class TabStopPane extends Pane {
     private final TabStopPolicy policy;
-    private final IntegerBinding binding;
     private int seq;
-    private ArrayList<Path> ticks = new ArrayList<>();
+    private ArrayList<Path> stops = new ArrayList<>();
+    private TabStop clickedStop;
+    private boolean dragged;
+    private static final double HALFWIDTH = 4;
 
     public TabStopPane(TabStopPolicy p) {
         this.policy = p;
         setPrefHeight(15);
         setBackground(Background.fill(Color.WHITE));
 
-        // move this to the policy maybe?
-        binding = Bindings.createIntegerBinding(() -> {
-            requestLayout();
-            return seq++;
-        }, p.tabStops(), p.defaultStopsProperty());
+        p.tabStops().subscribe(this::update);
+        p.defaultStopsProperty().subscribe(this::update);
+
+        addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
+        addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+    }
+
+    private void update() {
+        requestLayout();
     }
 
     @Override
     protected void layoutChildren() {
         int i;
         double pos = 0.0;
-        // tabs
+        // tab stops
         ArrayList<Path> ps = new ArrayList<>();
         for (i = 0; i < policy.tabStops().size(); i++) {
             TabStop t = policy.tabStops().get(i);
@@ -85,32 +95,31 @@ public class TabStopPane extends Pane {
                 Path p = updateTick(i, pos);
                 ps.add(p);
             }
-            ticks = ps;
+            stops = ps;
             getChildren().setAll(ps);
         }
     }
 
     private Path updateTab(int ix, double position) {
-        Path p = ix < ticks.size() ? ticks.get(ix) : new Path();
+        Path p = ix < stops.size() ? stops.get(ix) : new Path();
         p.setManaged(false);
         p.setStroke(Color.BLACK);
         p.setStrokeWidth(0.5);
         p.setStrokeLineJoin(StrokeLineJoin.BEVEL);
         double x = position;
-        double w2 = 4;
         double h2 = getHeight() / 2.0;
         ArrayList<PathElement> es = new ArrayList<>(5);
         es.add(new MoveTo(x, 0));
-        es.add(new LineTo(x + w2, h2));
+        es.add(new LineTo(x + HALFWIDTH, h2));
         es.add(new LineTo(x, getHeight()));
-        es.add(new LineTo(x - w2, h2));
+        es.add(new LineTo(x - HALFWIDTH, h2));
         es.add(new ClosePath());
         p.getElements().setAll(es);
         return p;
     }
 
     private Path updateTick(int ix, double position) {
-        Path p = ix < ticks.size() ? ticks.get(ix) : new Path();
+        Path p = ix < stops.size() ? stops.get(ix) : new Path();
         p.setManaged(false);
         p.setStroke(Color.BLACK);
         p.setStrokeWidth(1.0);
@@ -120,5 +129,74 @@ public class TabStopPane extends Pane {
         es.add(new LineTo(x, getHeight()));
         p.getElements().setAll(es);
         return p;
+    }
+
+    private TabStop findTabStop(double x) {
+        for (int i = 0; i < policy.tabStops().size(); i++) {
+            TabStop t = policy.tabStops().get(i);
+            if (Math.abs(t.getPosition() - x) < HALFWIDTH) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    // TODO sort + normalize (remove closely positioned tabs)
+    // but: removing close tabs while dragging should be verboten!
+    private static void sort(ArrayList<TabStop> updated) {
+        updated.sort(new Comparator<TabStop>() {
+            @Override
+            public int compare(TabStop a, TabStop b) {
+                return (int)Math.signum(a.getPosition() - b.getPosition());
+            }
+        });
+    }
+
+    private void handleMousePressed(MouseEvent ev) {
+        double x = ev.getX();
+        dragged = false;
+        clickedStop = findTabStop(x);
+    }
+
+    private void handleMouseReleased(MouseEvent ev) {
+        // was dragged? update tab stops
+        // was tabstop? remove
+        if (clickedStop == null) {
+            double x = ev.getX();
+            List<TabStop> original = policy.tabStops();
+            ArrayList<TabStop> updated = new ArrayList<>(original);
+            updated.add(new TabStop(x));
+            sort(updated);
+            policy.tabStops().setAll(updated);
+        } else {
+            if (!dragged) {
+                policy.tabStops().remove(clickedStop);
+            }
+        }
+        clickedStop = null;
+        dragged = false;
+    }
+
+    private void handleMouseDragged(MouseEvent ev) {
+        // update the tabstop being dragged
+        if (clickedStop != null) {
+            double x = ev.getX();
+            List<TabStop> original = policy.tabStops();
+            int sz = original.size();
+            ArrayList<TabStop> updated = new ArrayList<>(sz);
+            for (int i = 0; i < sz; i++) {
+                TabStop t = policy.tabStops().get(i);
+                if (t == clickedStop) {
+                    clickedStop = new TabStop(x);
+                    updated.add(clickedStop);
+                } else {
+                    updated.add(t);
+                }
+            }
+            sort(updated);
+            policy.tabStops().setAll(updated);
+            requestLayout();
+            dragged = true;
+        }
     }
 }
