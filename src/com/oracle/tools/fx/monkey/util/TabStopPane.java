@@ -28,7 +28,9 @@ package com.oracle.tools.fx.monkey.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -43,18 +45,17 @@ import javafx.scene.text.TabStopPolicy;
 
 /**
  * Visual editor for a TabStopPolicy.
- *
- * TODO decouple tab stops here from the policy
- * TODO drag without updating tab policy!  update policy only on mouse release
  */
 public class TabStopPane extends Pane {
 
     private final TabStopPolicy policy;
     private int seq;
     private List<Tick> ticks;
-    private TabStop clickedStop;
+    private Tick clickedStop;
     private boolean dragged;
+    private boolean modified;
     private static final double HALFWIDTH = 4;
+    private static final double TOO_CLOSE = 2;
 
     public TabStopPane(TabStopPolicy p) {
         this.policy = p;
@@ -82,7 +83,6 @@ public class TabStopPane extends Pane {
     // release: update policy
     private List<Tick> createTicks() {
         double width = getWidth();
-        double height = getHeight();
         double x = 0.0;
         ArrayList<Tick> ts = new ArrayList<>(16);
 
@@ -92,7 +92,7 @@ public class TabStopPane extends Pane {
             if ((x - HALFWIDTH) > width) {
                 break;
             }
-            ts.add(Tick.createTabStop(t, height));
+            ts.add(createTabStop(t));
         }
 
         // default stops
@@ -103,7 +103,7 @@ public class TabStopPane extends Pane {
                 if ((x - HALFWIDTH) > width) {
                     break;
                 }
-                ts.add(Tick.createTick(x, height));
+                ts.add(createTick(x));
             }
         }
         return ts;
@@ -123,31 +123,38 @@ public class TabStopPane extends Pane {
         }
     }
 
-    private TabStop findTabStop(double x) {
-        for (int i = 0; i < policy.tabStops().size(); i++) {
-            TabStop t = policy.tabStops().get(i);
-            if (Math.abs(t.getPosition() - x) < HALFWIDTH) {
+    private Tick findTabStop(MouseEvent ev) {
+        PickResult pick = ev.getPickResult();
+        Node n = pick.getIntersectedNode();
+        if (n instanceof Tick t) {
+            if (t.isTabStop()) {
                 return t;
             }
         }
         return null;
     }
 
-    // TODO sort + normalize (remove closely positioned tabs)
-    // but: removing close tabs while dragging should be verboten!
-    private static void sort(ArrayList<TabStop> updated) {
-        updated.sort(new Comparator<TabStop>() {
-            @Override
-            public int compare(TabStop a, TabStop b) {
-                return (int)Math.signum(a.getPosition() - b.getPosition());
+    // returns true if the current tick should be removed
+    private boolean deduplicate() {
+        double pos = clickedStop.position;
+        for (Tick t : ticks) {
+            if (t != clickedStop) {
+                if (t.isTabStop()) {
+                    if (Math.abs(pos - t.position) < TOO_CLOSE) {
+                        return true;
+                    }
+                }
             }
-        });
+        }
+        return false;
     }
 
     private void handleMousePressed(MouseEvent ev) {
         double x = ev.getX();
         dragged = false;
-        clickedStop = findTabStop(x);
+        modified = false;
+        clickedStop = findTabStop(ev);
+        ev.consume();
     }
 
     private void handleMouseReleased(MouseEvent ev) {
@@ -155,80 +162,104 @@ public class TabStopPane extends Pane {
         // was tabstop? remove
         if (clickedStop == null) {
             double x = ev.getX();
-            List<TabStop> original = policy.tabStops();
-            ArrayList<TabStop> updated = new ArrayList<>(original);
-            updated.add(new TabStop(x));
-            sort(updated);
-            policy.tabStops().setAll(updated);
+            Tick t = createTabStop(new TabStop(x));
+            getChildren().add(t);
+            ticks.add(t);
+            modified = true;
         } else {
-            if (!dragged) {
-                policy.tabStops().remove(clickedStop);
+            boolean remove = (dragged && deduplicate()) | (!dragged);
+            if (remove) {
+                getChildren().remove(clickedStop);
+                ticks.remove(clickedStop);
+                modified = true;
             }
         }
         clickedStop = null;
         dragged = false;
-        // TODO update
+        if (modified) {
+            List<TabStop> ts = toTabStops();
+            policy.tabStops().setAll(ts);
+        }
+        ev.consume();
     }
 
     private void handleMouseDragged(MouseEvent ev) {
         // update the tabstop being dragged
         if (clickedStop != null) {
             double x = ev.getX();
-            List<TabStop> original = policy.tabStops();
-            int sz = original.size();
-            ArrayList<TabStop> updated = new ArrayList<>(sz);
-            for (int i = 0; i < sz; i++) {
-                TabStop t = policy.tabStops().get(i);
-                if (t == clickedStop) {
-                    clickedStop = new TabStop(x);
-                    updated.add(clickedStop);
-                } else {
-                    updated.add(t);
-                }
-            }
-            sort(updated);
-            policy.tabStops().setAll(updated);
-            requestLayout();
+            clickedStop.position = x;
+            clickedStop.tabStop = new TabStop(x);
+            clickedStop.getElements().setAll(createTabStopPathElements(x));
             dragged = true;
+            modified = true;
+            ev.consume();
         }
+    }
+
+    private List<PathElement> createTabStopPathElements(double x) {
+        double height = getHeight();
+        double h2 = height / 2.0;
+        ArrayList<PathElement> es = new ArrayList<>(5);
+        es.add(new MoveTo(x, 0));
+        es.add(new LineTo(x + HALFWIDTH, h2));
+        es.add(new LineTo(x, height));
+        es.add(new LineTo(x - HALFWIDTH, h2));
+        es.add(new ClosePath());
+        return es;
+    }
+
+    private Tick createTabStop(TabStop tab) {
+        double x = tab.getPosition();
+        Tick t = new Tick(x);
+        t.tabStop = tab;
+        t.setStroke(Color.BLACK);
+        t.setStrokeWidth(0.5);
+        t.setStrokeLineJoin(StrokeLineJoin.BEVEL);
+        t.getElements().setAll(createTabStopPathElements(x));
+        return t;
+    }
+
+    private Tick createTick(double x) {
+        Tick t = new Tick(x);
+        t.setStroke(Color.BLACK);
+        t.setStrokeWidth(1.0);
+        ArrayList<PathElement> es = new ArrayList<>(2);
+        es.add(new MoveTo(x, 0));
+        es.add(new LineTo(x, getHeight()));
+        t.getElements().setAll(es);
+        return t;
+    }
+
+    private List<TabStop> toTabStops() {
+        ArrayList<TabStop> rv = new ArrayList<>();
+        // ticks cannot be null at this point
+        for (Tick t : ticks) {
+            if (t.isTabStop()) {
+                rv.add(t.tabStop);
+            }
+        }
+        // sort
+        rv.sort(new Comparator<TabStop>() {
+            @Override
+            public int compare(TabStop a, TabStop b) {
+                return (int)Math.signum(a.getPosition() - b.getPosition());
+            }
+        });
+        return rv;
     }
 
     private static class Tick extends Path {
         public double position;
+        public TabStop tabStop;
 
         public Tick(double position) {
             this.position = position;
             setManaged(false);
+            setPickOnBounds(true);
         }
 
-        private static Tick createTabStop(TabStop tab, double height) {
-            double x = tab.getPosition();
-            Tick t = new Tick(x);
-            t.setManaged(false);
-            t.setStroke(Color.BLACK);
-            t.setStrokeWidth(0.5);
-            t.setStrokeLineJoin(StrokeLineJoin.BEVEL);
-            double h2 = height / 2.0;
-            ArrayList<PathElement> es = new ArrayList<>(5);
-            es.add(new MoveTo(x, 0));
-            es.add(new LineTo(x + HALFWIDTH, h2));
-            es.add(new LineTo(x, height));
-            es.add(new LineTo(x - HALFWIDTH, h2));
-            es.add(new ClosePath());
-            t.getElements().setAll(es);
-            return t;
-        }
-
-        private static Tick createTick(double x, double height) {
-            Tick t = new Tick(x);
-            t.setManaged(false);
-            t.setStroke(Color.BLACK);
-            t.setStrokeWidth(1.0);
-            ArrayList<PathElement> es = new ArrayList<>(2);
-            es.add(new MoveTo(x, 0));
-            es.add(new LineTo(x, height));
-            t.getElements().setAll(es);
-            return t;
+        private boolean isTabStop() {
+            return tabStop != null;
         }
     }
 }
