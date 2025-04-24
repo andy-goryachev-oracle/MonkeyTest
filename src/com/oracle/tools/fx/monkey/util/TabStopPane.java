@@ -48,9 +48,10 @@ import javafx.scene.text.TabStopPolicy;
  * TODO drag without updating tab policy!  update policy only on mouse release
  */
 public class TabStopPane extends Pane {
+
     private final TabStopPolicy policy;
     private int seq;
-    private ArrayList<Path> stops = new ArrayList<>();
+    private List<Tick> ticks;
     private TabStop clickedStop;
     private boolean dragged;
     private static final double HALFWIDTH = 4;
@@ -62,6 +63,7 @@ public class TabStopPane extends Pane {
 
         p.tabStops().subscribe(this::update);
         p.defaultStopsProperty().subscribe(this::update);
+        widthProperty().subscribe(this::update);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         addEventHandler(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
@@ -69,66 +71,56 @@ public class TabStopPane extends Pane {
     }
 
     private void update() {
+        ticks = null;
         requestLayout();
+    }
+
+    // ticks: Paths (with TabStop in properties)
+    // init: create from policy
+    // layout: create/update paths, setAll
+    // edit: add/remove ticks, setAll
+    // release: update policy
+    private List<Tick> createTicks() {
+        double width = getWidth();
+        double height = getHeight();
+        double x = 0.0;
+        ArrayList<Tick> ts = new ArrayList<>(16);
+
+        // tab stops
+        for (TabStop t : policy.tabStops()) {
+            x = (float)t.getPosition();
+            if ((x - HALFWIDTH) > width) {
+                break;
+            }
+            ts.add(Tick.createTabStop(t, height));
+        }
+
+        // default stops
+        double defaultStops = policy.getDefaultStops();
+        if (defaultStops > 0.0) {
+            for (;;) {
+                x = nextPosition(x, defaultStops);
+                if ((x - HALFWIDTH) > width) {
+                    break;
+                }
+                ts.add(Tick.createTick(x, height));
+            }
+        }
+        return ts;
+    }
+
+    // similar to FixedTabAdvancePolicy.nextPosition()
+    private static double nextPosition(double position, double tabAdvance) {
+        double n = (position / tabAdvance);
+        return ((int)(n + Math.ulp(n)) + 1) * tabAdvance;
     }
 
     @Override
     protected void layoutChildren() {
-        int i;
-        double pos = 0.0;
-        // tab stops
-        ArrayList<Path> ps = new ArrayList<>();
-        for (i = 0; i < policy.tabStops().size(); i++) {
-            TabStop t = policy.tabStops().get(i);
-            pos = t.getPosition();
-            Path p = updateTab(i, pos);
-            ps.add(p);
+        if (ticks == null) {
+            ticks = createTicks();
+            getChildren().setAll(ticks);
         }
-        // default stops
-        double defaultStops = policy.getDefaultStops();
-        if (defaultStops > 0.0) {
-            for (;; i++) {
-                pos = (1 + (int)(pos / defaultStops)) * defaultStops;
-                if (pos >= getWidth()) {
-                    break;
-                }
-                Path p = updateTick(i, pos);
-                ps.add(p);
-            }
-            stops = ps;
-            getChildren().setAll(ps);
-        }
-    }
-
-    private Path updateTab(int ix, double position) {
-        Path p = ix < stops.size() ? stops.get(ix) : new Path();
-        p.setManaged(false);
-        p.setStroke(Color.BLACK);
-        p.setStrokeWidth(0.5);
-        p.setStrokeLineJoin(StrokeLineJoin.BEVEL);
-        double x = position;
-        double h2 = getHeight() / 2.0;
-        ArrayList<PathElement> es = new ArrayList<>(5);
-        es.add(new MoveTo(x, 0));
-        es.add(new LineTo(x + HALFWIDTH, h2));
-        es.add(new LineTo(x, getHeight()));
-        es.add(new LineTo(x - HALFWIDTH, h2));
-        es.add(new ClosePath());
-        p.getElements().setAll(es);
-        return p;
-    }
-
-    private Path updateTick(int ix, double position) {
-        Path p = ix < stops.size() ? stops.get(ix) : new Path();
-        p.setManaged(false);
-        p.setStroke(Color.BLACK);
-        p.setStrokeWidth(1.0);
-        double x = position;
-        ArrayList<PathElement> es = new ArrayList<>(2);
-        es.add(new MoveTo(x, 0));
-        es.add(new LineTo(x, getHeight()));
-        p.getElements().setAll(es);
-        return p;
     }
 
     private TabStop findTabStop(double x) {
@@ -175,6 +167,7 @@ public class TabStopPane extends Pane {
         }
         clickedStop = null;
         dragged = false;
+        // TODO update
     }
 
     private void handleMouseDragged(MouseEvent ev) {
@@ -197,6 +190,45 @@ public class TabStopPane extends Pane {
             policy.tabStops().setAll(updated);
             requestLayout();
             dragged = true;
+        }
+    }
+
+    private static class Tick extends Path {
+        public double position;
+
+        public Tick(double position) {
+            this.position = position;
+            setManaged(false);
+        }
+
+        private static Tick createTabStop(TabStop tab, double height) {
+            double x = tab.getPosition();
+            Tick t = new Tick(x);
+            t.setManaged(false);
+            t.setStroke(Color.BLACK);
+            t.setStrokeWidth(0.5);
+            t.setStrokeLineJoin(StrokeLineJoin.BEVEL);
+            double h2 = height / 2.0;
+            ArrayList<PathElement> es = new ArrayList<>(5);
+            es.add(new MoveTo(x, 0));
+            es.add(new LineTo(x + HALFWIDTH, h2));
+            es.add(new LineTo(x, height));
+            es.add(new LineTo(x - HALFWIDTH, h2));
+            es.add(new ClosePath());
+            t.getElements().setAll(es);
+            return t;
+        }
+
+        private static Tick createTick(double x, double height) {
+            Tick t = new Tick(x);
+            t.setManaged(false);
+            t.setStroke(Color.BLACK);
+            t.setStrokeWidth(1.0);
+            ArrayList<PathElement> es = new ArrayList<>(2);
+            es.add(new MoveTo(x, 0));
+            es.add(new LineTo(x, height));
+            t.getElements().setAll(es);
+            return t;
         }
     }
 }
