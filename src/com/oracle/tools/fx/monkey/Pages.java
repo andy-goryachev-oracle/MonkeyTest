@@ -62,6 +62,7 @@ public class Pages {
             new DemoPage("Pagination", PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
+            new DemoPage("ProgressBar", ProgressBarPage::new),
             new DemoPage("ProgressIndicator", ProgressIndicatorPage::new),
             new DemoPage("RadioButton", RadioButtonPage::new),
             new DemoPage("ScatterChart", ScatterChartPage::new),
