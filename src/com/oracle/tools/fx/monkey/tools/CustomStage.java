@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,6 +31,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Border;
@@ -70,6 +71,7 @@ public class CustomStage extends Stage {
         ContextMenu m = new ContextMenu();
         FX.item(m, "Irregular Shape", this::setIrregularShape);
         FX.item(m, "UI Panel", this::setUiPanel);
+        FX.item(m, "TextArea", this::setTextArea);
         FX.item(m, "Empty", this::setEmpty);
         FX.separator(m);
         FX.item(m, "Size to Scene", this::sizeToScene);
@@ -95,6 +97,10 @@ public class CustomStage extends Stage {
     private void setUiPanel() {
         CustomPane p = CustomPane.create();
         setContent(p);
+    }
+
+    private void setTextArea() {
+        setContent(new TextArea());
     }
 
     public static void addMenu(MenuBar m) {

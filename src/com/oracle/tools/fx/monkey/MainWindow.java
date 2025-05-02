@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -57,6 +57,7 @@ import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
+import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
 /**
  * Monkey Tester Main Window
@@ -163,6 +164,9 @@ public class MainWindow extends Stage {
 
     private void updatePage(DemoPage p) {
         FxSettings.store(contentPane);
+        if (contentPane.getCenter() instanceof TestPaneBase t) {
+            t.deactivate();
+        }
         currentPage = p;
         contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
@@ -286,7 +290,7 @@ public class MainWindow extends Stage {
         }
     }
 
-    void openPlatformPreferencesMonitor() {
+    private void openPlatformPreferencesMonitor() {
         PropertiesMonitor.openPreferences(this);
     }
 }

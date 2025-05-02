@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -100,11 +100,11 @@ public class ControlPropertySheet {
         if (m.getItems().size() > 0) {
             FX.separator(m);
         }
-        FX.item(m, "Show Properties Monitor...", () -> {
-            PropertiesMonitor.open(source);
-        });
         FX.item(m, "Accessibility Attributes...", () -> {
             AccessibilityPropertyViewer.open(pick);
+        });
+        FX.item(m, "Show Properties Monitor...", () -> {
+            PropertiesMonitor.open(source);
         });
         StdoutMouseListener.attach(m, c);
         if (c != source) {

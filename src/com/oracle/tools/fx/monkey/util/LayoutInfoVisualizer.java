@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -68,7 +68,7 @@ import javafx.util.Duration;
  * - SHORTCUT: new strike-through API
  * - OPTION: new underline API
  * - no modifiers: legacy selection API
- * 
+ *
  * https://bugs.openjdk.org/browse/JDK-8341670 [Text,TextFlow] Public API for Text Layout Info (Enhancement - P4)
  * https://bugs.openjdk.org/browse/JDK-8341672: [Text/TextFlow] getRangeInfo (Enhancement - P4)
  * https://bugs.openjdk.org/browse/JDK-8341671: [Text/TextFlow] getCaretInfo (Enhancement - P4)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -46,6 +46,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
@@ -155,7 +156,7 @@ public class PropertiesMonitor extends BorderPane {
                 Object x = getTableRow().getItem();
                 if (x instanceof Entry en) {
                     boolean hdr = en.isHeader();
-                    backgroundProperty().unbind();                    
+                    backgroundProperty().unbind();
                     setBackground(hdr ? Background.fill(Color.rgb(0, 0, 0, 0.1)) : null);
                     setStyle(hdr ? "-fx-font-weight:bold;" : "-fx-font-weight:normal;");
                     if (trackChanges) {
@@ -200,6 +201,7 @@ public class PropertiesMonitor extends BorderPane {
 
             a.add(new Entry("styleClass", "ObservableList", n.getStyleClass()));
             a.add(new Entry("pseudoClassStates", "ObservableSet", n.getPseudoClassStates()));
+            a.add(new Entry("properties", "ObservableMap", n.getProperties()));
 
         } catch (IntrospectionException e) {
             e.printStackTrace();
@@ -360,12 +362,17 @@ public class PropertiesMonitor extends BorderPane {
                             setValue(p.toString());
                         });
                         setValue(p.toString());
+                    } else if (prop instanceof ObservableMap p) {
+                        p.addListener((Observable x) -> {
+                            setValue(p.toString());
+                        });
+                        setValue(p.toString());
                     }
                 }
             }
             return value;
         }
-        
+
         private void setValue(Object x) {
             if (x instanceof Node) {
                 // do not set nodes!
@@ -399,9 +406,17 @@ public class PropertiesMonitor extends BorderPane {
         public PrefRoot() {
             super(null);
 
+            TreeItem<Entry> ti = new TreeItem<>(new Entry("Platform", null, null));
+            ti.setExpanded(true);
+            getChildren().add(ti);
+            {
+                Entry en = new Entry("accessibilityActive", "Boolean", Platform.accessibilityActiveProperty());
+                ti.getChildren().add(new TreeItem<>(en));
+            }
+
             Platform.Preferences pref = Platform.getPreferences();
 
-            TreeItem<Entry> ti = new TreeItem<>(new Entry("Platform.Preferences", null, null));
+            ti = new TreeItem<>(new Entry("Platform.Preferences", null, null));
             ti.setExpanded(true);
             getChildren().add(ti);
             {

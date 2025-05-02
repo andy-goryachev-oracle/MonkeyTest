@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -69,6 +69,13 @@ public class FX {
         Menu m = new Menu(text);
         applyMnemonic(m);
         b.getMenus().add(m);
+        return m;
+    }
+
+    public static Menu menu(ContextMenu cm, String text) {
+        Menu m = new Menu(text);
+        applyMnemonic(m);
+        cm.getItems().add(m);
         return m;
     }
 
@@ -170,8 +177,8 @@ public class FX {
         return mi;
     }
 
-    public static final void item(ContextMenu m, String name) {
-        item(m, name, null);
+    public static MenuItem item(ContextMenu m, String name) {
+        return item(m, name, null);
     }
 
     public static void add(GridPane p, Node n, int col, int row) {
