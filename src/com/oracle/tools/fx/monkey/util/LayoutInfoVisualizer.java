@@ -260,7 +260,7 @@ public class LayoutInfoVisualizer {
             }
 
             LayoutInfo la = layoutInfo();
-            List<Rectangle2D> rs = List.of(la.getBounds(includeLineSpace.get()));
+            List<Rectangle2D> rs = List.of(la.getLogicalBounds(includeLineSpace.get()));
             PathElement[] ps = toPathElementsArray(rs);
             boundsPath.getElements().setAll(ps);
         } else {
@@ -410,14 +410,14 @@ public class LayoutInfoVisualizer {
             if (legacy) {
                 return t.caretShape(charIndex, leading);
             } else {
-                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
+                CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
                 return createCaretShape(ci);
             }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
                 return fix_8341438(t.caretShape(charIndex, leading));
             } else {
-                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
+                CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
                 return createCaretShape(ci);
             }
         }
@@ -497,13 +497,13 @@ public class LayoutInfoVisualizer {
         Node n = owner();
         if (n instanceof Text t) {
             if (legacy) {
-                return t.strikeThroughShape(start, end);
+                return t.getStrikeThroughShape(start, end);
             } else {
                 return createStrikeThroughShape(t.getLayoutInfo(), start, end);
             }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
-                return fix_8341438(t.strikeThroughShape(start, end));
+                return fix_8341438(t.getStrikeThroughShape(start, end));
             } else {
                 return createStrikeThroughShape(t.getLayoutInfo(), start, end);
             }
@@ -531,17 +531,17 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.selectionShape(start, end, includeLineSpace.get());
+        List<Rectangle2D> rs = la.getSelectionGeometry(start, end, includeLineSpace.get());
         return toPathElementsArray(rs);
     }
 
     private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.strikeThroughShape(start, end);
+        List<Rectangle2D> rs = la.getStrikeThroughGeometry(start, end);
         return toPathElementsArray(rs);
     }
 
     private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
-        List<Rectangle2D> rs = la.underlineShape(start, end);
+        List<Rectangle2D> rs = la.getUnderlineGeometry(start, end);
         return toPathElementsArray(rs);
     }
 }
