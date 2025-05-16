@@ -35,7 +35,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TabStop;
@@ -128,7 +127,7 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Font:", fontOption);
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", textFlow.lineSpacingProperty()));
         op.option("Tab Size:", Options.tabSize("tabSize", textFlow.tabSizeProperty()));
-        op.option("Tab Stop Policy:", createTabStopPolicyOption("tabStopPolicy", textFlow, textFlow.tabStopPolicyProperty()));
+        op.option("Tab Stop Policy:", createTabStopPolicyOption("tabStopPolicy", textFlow.tabStopPolicyProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
@@ -284,13 +283,13 @@ public class TextFlowPage extends TestPaneBase {
         return m;
     }
 
-    private Node createTabStopPolicyOption(String name, Region ref, ObjectProperty<TabStopPolicy> prop) {
+    private Node createTabStopPolicyOption(String name, ObjectProperty<TabStopPolicy> prop) {
         ObjectOption<TabStopPolicy> op = new ObjectOption<>(name, prop);
         op.addChoice("<null>", null);
-        op.addChoiceSupplier("50 px", () -> fixedTabStopPolicy(ref, 50));
-        op.addChoiceSupplier("200 px", () -> fixedTabStopPolicy(ref, 200));
+        op.addChoiceSupplier("50 px", () -> fixedTabStopPolicy(50));
+        op.addChoiceSupplier("200 px", () -> fixedTabStopPolicy(200));
         op.addChoiceSupplier("With Tab Stops", () -> {
-            TabStopPolicy p = new TabStopPolicy(ref);
+            TabStopPolicy p = new TabStopPolicy();
             p.tabStops().setAll(
                 new TabStop(50),
                 new TabStop(175)
@@ -299,7 +298,7 @@ public class TextFlowPage extends TestPaneBase {
             return p;
         });
         op.addChoiceSupplier("Tab Stops, w/o default stops", () -> {
-            TabStopPolicy p = new TabStopPolicy(ref);
+            TabStopPolicy p = new TabStopPolicy();
             p.tabStops().setAll(
                 new TabStop(50),
                 new TabStop(175)
@@ -310,8 +309,8 @@ public class TextFlowPage extends TestPaneBase {
         return op;
     }
 
-    private static TabStopPolicy fixedTabStopPolicy(Region ref, double defaultStops) {
-        TabStopPolicy p = new TabStopPolicy(ref);
+    private static TabStopPolicy fixedTabStopPolicy(double defaultStops) {
+        TabStopPolicy p = new TabStopPolicy();
         p.setDefaultStops(defaultStops);
         return p;
     }
