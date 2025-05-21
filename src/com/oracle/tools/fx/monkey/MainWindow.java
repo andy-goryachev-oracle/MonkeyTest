@@ -50,6 +50,7 @@ import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.tools.CssPlaygroundPane;
 import com.oracle.tools.fx.monkey.tools.EmbeddedFxTextArea;
 import com.oracle.tools.fx.monkey.tools.EmbeddedJTextAreaWindow;
+import com.oracle.tools.fx.monkey.tools.JTextPanel;
 import com.oracle.tools.fx.monkey.tools.KeyboardEventViewer;
 import com.oracle.tools.fx.monkey.tools.ModalWindow;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
@@ -147,6 +148,7 @@ public class MainWindow extends Stage {
         FX.item(m, "CSS Playground", this::openCssPlayground);
         FX.item(m, "FX TextArea Embedded in JFXPanel", this::openJFXPanel);
         FX.item(m, "JTextArea/JTextField Embedded in SwingNode", this::openJTextArea);
+        FX.item(m, "JTextArea/JTextField in Pure Swing", this::openJTextAreaSwing);
         FX.item(m, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(m, "Native to ASCII", this::openNative2Ascii);
         FX.item(m, "Platform Preferences Monitor", this::openPlatformPreferencesMonitor);
@@ -270,6 +272,10 @@ public class MainWindow extends Stage {
             "JTextArea/JTextField Embedded in SwingNode",
             EmbeddedJTextAreaWindow::new
         );
+    }
+
+    private void openJTextAreaSwing() {
+        JTextPanel.openSwing();
     }
 
     private void openJFXPanel() {
