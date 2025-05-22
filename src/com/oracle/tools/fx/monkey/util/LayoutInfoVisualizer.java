@@ -497,13 +497,15 @@ public class LayoutInfoVisualizer {
         Node n = owner();
         if (n instanceof Text t) {
             if (legacy) {
-                return t.getStrikeThroughShape(start, end);
+                // FIX
+                // return t.getStrikeThroughShape(start, end);
             } else {
                 return createStrikeThroughShape(t.getLayoutInfo(), start, end);
             }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
-                return fix_8341438(t.getStrikeThroughShape(start, end));
+                // FIX
+                //return fix_8341438(t.getStrikeThroughShape(start, end));
             } else {
                 return createStrikeThroughShape(t.getLayoutInfo(), start, end);
             }
