@@ -55,6 +55,7 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.ShowCaretPaths;
 import com.oracle.tools.fx.monkey.util.ShowCharacterRuns;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextShapeLogic;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
@@ -66,7 +67,8 @@ public class TextFlowPage extends TestPaneBase {
     private final FontOption fontOption;
     private final Label pickResult;
     private final Label hitInfo;
-    private final Label hitInfo2;
+    private final Label hitInfoNew;
+    private final Label hitInfoText;
     private final TextFlow textFlow;
     private final BorderPane container;
     private final LayoutInfoVisualizer visualizer;
@@ -88,8 +90,8 @@ public class TextFlowPage extends TestPaneBase {
         pickResult = new Label();
 
         hitInfo = new Label();
-
-        hitInfo2 = new Label();
+        hitInfoNew = new Label();
+        hitInfoText = new Label();
 
         visualizer = new LayoutInfoVisualizer();
 
@@ -122,14 +124,15 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
-        op.option(new BooleanOption("useLegacyAPI", "(use TextFlow API)", visualizer.legacyAPI));
+        op.option("API:", new EnumOption<>("api", TextShapeLogic.class, visualizer.shapeLogic));
         op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
         op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
         op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));
         op.separator();
         op.option("Pick Result:", pickResult);
-        op.option("Text.hitTest:", hitInfo2);
+        op.option("Text.hitTest:", hitInfoText);
         op.option("TextFlow.hitTest:", hitInfo);
+        op.option("TextFlow.getHitInfo:", hitInfoNew);
 
         RegionPropertySheet.appendTo(op, textFlow);
 
@@ -215,7 +218,7 @@ public class TextFlowPage extends TestPaneBase {
     private void handleMouseEvent(MouseEvent ev) {
         PickResult pick = ev.getPickResult();
         Node n = pick.getIntersectedNode();
-        hitInfo2.setText(null);
+        hitInfoText.setText(null);
         if (n == null) {
             pickResult.setText("null");
         } else {
@@ -224,13 +227,15 @@ public class TextFlowPage extends TestPaneBase {
                 Point3D p3 = pick.getIntersectedPoint();
                 Point2D p = new Point2D(p3.getX(), p3.getY());
                 HitInfo h = t.hitTest(p);
-                hitInfo2.setText(String.valueOf(h));
+                hitInfoText.setText(String.valueOf(h));
             }
         }
 
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = textFlow.hitTest(p);
         hitInfo.setText(String.valueOf(h));
+        HitInfo h2 = textFlow.getHitInfo(p);
+        hitInfoNew.setText(String.valueOf(h2));
     }
 
     private String getText() {
