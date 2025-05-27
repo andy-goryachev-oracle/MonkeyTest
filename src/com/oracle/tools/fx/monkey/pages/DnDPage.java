@@ -44,9 +44,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
-import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
-import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -131,7 +129,7 @@ public class DnDPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.section("Source");
         op.label("Drag View Image:");
-        op.option(createImageOption());
+        op.option(Options.createImageOption(dragImage));
         op.option("Offset X:", doubleOption("offsetX", offsetX));
         op.option("Offset Y:", doubleOption("offsetY", offsetY));
         op.section("Target");
@@ -141,21 +139,6 @@ public class DnDPage extends TestPaneBase {
 
         setContent(bp);
         setOptions(op);
-    }
-
-    private ObjectOption<Image> createImageOption() {
-        ObjectOption<Image> op = new ObjectOption<>("image", dragImage);
-        op.addChoice("<null>", null);
-        op.addChoice("1x1", ImageTools.createImage(1, 1));
-        op.addChoice("16 x 16", ImageTools.createImage(16, 16));
-        op.addChoice("32 x 32", ImageTools.createImage(32, 32));
-        op.addChoice("64 x 64", ImageTools.createImage(64, 64));
-        op.addChoiceSupplier("128 x 16", () -> ImageTools.createImage(128, 16));
-        op.addChoiceSupplier("16 x 128", () -> ImageTools.createImage(16, 128));
-        op.addChoiceSupplier("256 x 256", () -> ImageTools.createImage(256, 256));
-        op.addChoiceSupplier("4096 x 4096", () -> ImageTools.createImage(4096, 4096));
-        op.selectFirst();
-        return op;
     }
 
     private Node doubleOption(String name, DoubleProperty p) {
