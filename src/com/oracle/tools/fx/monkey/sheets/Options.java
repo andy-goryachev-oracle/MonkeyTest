@@ -38,6 +38,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -94,6 +95,21 @@ public class Options {
 
     public static Node gaps(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 1, 1.5, 4, 10, 20, 33.33, 100);
+    }
+
+    public static ObjectOption<Image> createImageOption(ObjectProperty<Image> p) {
+        ObjectOption<Image> op = new ObjectOption<>("image", p);
+        op.addChoice("<null>", null);
+        op.addChoice("1x1", ImageTools.createImage(1, 1));
+        op.addChoice("16 x 16", ImageTools.createImage(16, 16));
+        op.addChoice("32 x 32", ImageTools.createImage(32, 32));
+        op.addChoice("64 x 64", ImageTools.createImage(64, 64));
+        op.addChoiceSupplier("128 x 16", () -> ImageTools.createImage(128, 16));
+        op.addChoiceSupplier("16 x 128", () -> ImageTools.createImage(16, 128));
+        op.addChoiceSupplier("256 x 256", () -> ImageTools.createImage(256, 256));
+        op.addChoiceSupplier("4096 x 4096", () -> ImageTools.createImage(4096, 4096));
+        op.selectFirst();
+        return op;
     }
 
     public static Node tabPaneConstraints(String name, DoubleProperty p) {
