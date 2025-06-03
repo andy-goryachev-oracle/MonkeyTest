@@ -53,6 +53,7 @@ public class Pages {
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HTMLEditor", HTMLEditor_Page::new),
             new DemoPage("Hyperlink", HyperlinkPage::new),
+            new DemoPage("ImageView", ImageViewPage::new),
             new DemoPage("Label", LabelPage::new),
             new DemoPage("LineChart", LineChartPage::new),
             new DemoPage("ListView", ListViewPage::new),
