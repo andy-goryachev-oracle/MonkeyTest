@@ -26,7 +26,6 @@ package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -99,11 +98,11 @@ public class TextPage extends TestPaneBase {
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
-//        op.option(new BooleanOption("useLegacyAPI", "(use Text API)", visualizer.legacyAPI));
-//        op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
-//        op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
-//        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing", visualizer.includeLineSpace));
-//        op.separator();
+        op.option(new BooleanOption("useLegacyAPI", "(use Text API)", visualizer.legacyAPI));
+        op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
+        op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
+        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing", visualizer.includeLineSpace));
+        op.separator();
         op.option(wrap);
         op.option("Text.hitTest:", hitInfo);
 

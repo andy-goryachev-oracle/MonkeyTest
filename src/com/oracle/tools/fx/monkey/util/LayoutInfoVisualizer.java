@@ -47,12 +47,12 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
-//import javafx.scene.text.CaretInfo;
+import javafx.scene.text.CaretInfo;
 import javafx.scene.text.HitInfo;
-//import javafx.scene.text.LayoutInfo;
+import javafx.scene.text.LayoutInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-//import javafx.scene.text.TextLineInfo;
+import javafx.scene.text.TextLineInfo;
 import javafx.util.Duration;
 
 /**
@@ -78,22 +78,22 @@ import javafx.util.Duration;
  */
 public class LayoutInfoVisualizer {
 
-//    public final SimpleBooleanProperty legacyAPI = new SimpleBooleanProperty();
+    public final SimpleBooleanProperty legacyAPI = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showCaretAndRange = new SimpleBooleanProperty();
-//    public final SimpleBooleanProperty showLines = new SimpleBooleanProperty();
-//    public final SimpleBooleanProperty showLayoutBounds = new SimpleBooleanProperty();
-//    public final SimpleBooleanProperty includeLineSpace = new SimpleBooleanProperty();
+    public final SimpleBooleanProperty showLines = new SimpleBooleanProperty();
+    public final SimpleBooleanProperty showLayoutBounds = new SimpleBooleanProperty();
+    public final SimpleBooleanProperty includeLineSpace = new SimpleBooleanProperty();
 
     private Pane parent;
     private final BooleanBinding isAnimating;
     private final SimpleObjectProperty<Node> owner = new SimpleObjectProperty<>();
     private Timeline animation;
-//    private Path boundsPath;
+    private Path boundsPath;
     private Path caretPath;
     private Path selectionPath;
     private Path strikeThroughPath;
     private Path underlinePath;
-//    private Group lines;
+    private Group lines;
     private EventHandler<MouseEvent> mouseListener;
     private int startIndex;
     private boolean useSelectionShape;
@@ -101,8 +101,7 @@ public class LayoutInfoVisualizer {
     private boolean useUnderlineShape;
 
     /** FIX JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border */
-    // show the problem in the legacy code
-    private static final boolean CORRECT_FOR_8341438_BUG = false;
+    private static final boolean CORRECT_FOR_8341438_BUG = true;
 
     private static final double CARET_VIEW_ORDER = 1000;
     private static final double RANGE_VIEW_ORDER = 1010;
@@ -112,16 +111,15 @@ public class LayoutInfoVisualizer {
     public LayoutInfoVisualizer() {
         isAnimating = Bindings.createBooleanBinding(() -> {
                 return
-                    (owner.get() != null);
-//                &&
-//                    (
-//                        showLines.get() ||
-//                        showLayoutBounds.get()
-//                    );
+                    (owner.get() != null) &&
+                    (
+                        showLines.get() ||
+                        showLayoutBounds.get()
+                    );
             },
-            owner
-//            showLines,
-//            showLayoutBounds
+            owner,
+            showLines,
+            showLayoutBounds
         );
         isAnimating.addListener((p) -> update());
         showCaretAndRange.addListener((p) -> updateCaretAndRange());
@@ -166,8 +164,8 @@ public class LayoutInfoVisualizer {
     }
 
     void refresh() {
-//        updateLayoutBounds();
-//        updateTextLines();
+        updateLayoutBounds();
+        updateTextLines();
     }
 
     private void updateCaretAndRange() {
@@ -196,7 +194,7 @@ public class LayoutInfoVisualizer {
             if (strikeThroughPath == null) {
                 strikeThroughPath = new Path();
                 strikeThroughPath.setStrokeWidth(0);
-                strikeThroughPath.setFill(Color.rgb(0, 128, 0, 0.3));
+                strikeThroughPath.setFill(Color.rgb(0, 128, 0, 0.7));
                 strikeThroughPath.setManaged(false);
                 strikeThroughPath.setViewOrder(RANGE_VIEW_ORDER);
                 parent.getChildren().add(strikeThroughPath);
@@ -250,56 +248,56 @@ public class LayoutInfoVisualizer {
         }
     }
 
-//    private void updateLayoutBounds() {
-//        if (showLayoutBounds.get()) {
-//            if (boundsPath == null) {
-//                boundsPath = new Path();
-//                boundsPath.setViewOrder(BOUNDS_VIEW_ORDER);
-//                boundsPath.setStrokeWidth(0);
-//                boundsPath.setFill(Color.rgb(255, 128, 0, 0.1));
-//                boundsPath.setManaged(false);
-//                parent.getChildren().add(boundsPath);
-//            }
-//
-//            LayoutInfo la = layoutInfo();
-//            List<Rectangle2D> rs = List.of(la.getBounds(includeLineSpace.get()));
-//            PathElement[] ps = toPathElementsArray(rs);
-//            boundsPath.getElements().setAll(ps);
-//        } else {
-//            if (boundsPath != null) {
-//                parent.getChildren().remove(boundsPath);
-//                boundsPath = null;
-//            }
-//        }
-//    }
+    private void updateLayoutBounds() {
+        if (showLayoutBounds.get()) {
+            if (boundsPath == null) {
+                boundsPath = new Path();
+                boundsPath.setViewOrder(BOUNDS_VIEW_ORDER);
+                boundsPath.setStrokeWidth(0);
+                boundsPath.setFill(Color.rgb(255, 128, 0, 0.1));
+                boundsPath.setManaged(false);
+                parent.getChildren().add(boundsPath);
+            }
 
-//    private void updateTextLines() {
-//        if (showLines.get()) {
-//            if (lines == null) {
-//                lines = new Group();
-//                lines.setAutoSizeChildren(false);
-//                lines.setViewOrder(TEXT_LINES_VIEW_ORDER);
-//                lines.setManaged(false);
-//                parent.getChildren().add(lines);
-//            }
-//            lines.getChildren().setAll(createTextLinesShapes());
-//        } else {
-//            if (lines != null) {
-//                parent.getChildren().remove(lines);
-//                lines = null;
-//            }
-//        }
-//    }
+            LayoutInfo la = layoutInfo();
+            List<Rectangle2D> rs = List.of(la.getLogicalBounds(includeLineSpace.get()));
+            PathElement[] ps = toPathElementsArray(rs);
+            boundsPath.getElements().setAll(ps);
+        } else {
+            if (boundsPath != null) {
+                parent.getChildren().remove(boundsPath);
+                boundsPath = null;
+            }
+        }
+    }
 
-//    private LayoutInfo layoutInfo() {
-//        Node n = owner();
-//        if (n instanceof Text t) {
-//            return t.getLayoutInfo();
-//        } else if (n instanceof TextFlow t) {
-//            return t.getLayoutInfo();
-//        }
-//        return null;
-//    }
+    private void updateTextLines() {
+        if (showLines.get()) {
+            if (lines == null) {
+                lines = new Group();
+                lines.setAutoSizeChildren(false);
+                lines.setViewOrder(TEXT_LINES_VIEW_ORDER);
+                lines.setManaged(false);
+                parent.getChildren().add(lines);
+            }
+            lines.getChildren().setAll(createTextLinesShapes());
+        } else {
+            if (lines != null) {
+                parent.getChildren().remove(lines);
+                lines = null;
+            }
+        }
+    }
+
+    private LayoutInfo layoutInfo() {
+        Node n = owner();
+        if (n instanceof Text t) {
+            return t.getLayoutInfo();
+        } else if (n instanceof TextFlow t) {
+            return t.getLayoutInfo();
+        }
+        return null;
+    }
 
     private int getTextLength() {
         Node n = owner();
@@ -319,6 +317,8 @@ public class LayoutInfoVisualizer {
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
+            // FIX this has impact on the new LayoutInfo API:
+            // we probably should create a system property to enable the legacy behavior
             if (CORRECT_FOR_8341438_BUG) {
                 Insets m = t.getInsets();
                 p = p.subtract(m.getLeft(), m.getTop()); // TODO rtl?
@@ -351,22 +351,22 @@ public class LayoutInfoVisualizer {
         }
     }
 
-//    private List<Node> createTextLinesShapes() {
-//        LayoutInfo la = layoutInfo();
-//        List<TextLineInfo> lines = la.getTextLines(includeLineSpace.get());
-//        ArrayList<Node> a = new ArrayList<>();
-//        int i = 0;
-//        for (TextLineInfo line : lines) {
-//            Rectangle2D b = line.bounds();
-//            Color c = color(i++);
-//            Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
-//            r.setFill(c);
-//            r.setStrokeWidth(0);
-//            r.setManaged(false);
-//            a.add(r);
-//        }
-//        return a;
-//    }
+    private List<Node> createTextLinesShapes() {
+        LayoutInfo la = layoutInfo();
+        List<TextLineInfo> lines = la.getTextLines(includeLineSpace.get());
+        ArrayList<Node> a = new ArrayList<>();
+        int i = 0;
+        for (TextLineInfo line : lines) {
+            Rectangle2D b = line.bounds();
+            Color c = color(i++);
+            Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+            r.setFill(c);
+            r.setStrokeWidth(0);
+            r.setManaged(false);
+            a.add(r);
+        }
+        return a;
+    }
 
     private PathElement[] fix_8341438(PathElement[] es) {
         Insets m = ((TextFlow)owner()).getInsets();
@@ -393,35 +393,33 @@ public class LayoutInfoVisualizer {
         }
     }
 
-//    private static PathElement[] createCaretShape(CaretInfo ci) {
-//        ArrayList<PathElement> a = new ArrayList<>();
-//        for (int i = 0; i < ci.getPartCount(); i++) {
-//            Rectangle2D r = ci.getPartAt(i);
-//            a.add(new MoveTo(r.getMinX(), r.getMinY()));
-//            a.add(new LineTo(r.getMaxX(), r.getMaxY()));
-//        }
-//        return a.toArray(PathElement[]::new);
-//    }
+    private static PathElement[] createCaretShape(CaretInfo ci) {
+        ArrayList<PathElement> a = new ArrayList<>();
+        for (int i = 0; i < ci.getSegmentCount(); i++) {
+            Rectangle2D r = ci.getSegmentAt(i);
+            a.add(new MoveTo(r.getMinX(), r.getMinY()));
+            a.add(new LineTo(r.getMaxX(), r.getMaxY()));
+        }
+        return a.toArray(PathElement[]::new);
+    }
 
     private PathElement[] createCaretShape(int charIndex, boolean leading) {
-        boolean legacy = true; //legacyAPI.get();
+        boolean legacy = legacyAPI.get();
         Node n = owner();
         if (n instanceof Text t) {
             if (legacy) {
                 return t.caretShape(charIndex, leading);
+            } else {
+                CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
+                return createCaretShape(ci);
             }
-//            else {
-//                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
-//                return createCaretShape(ci);
-//            }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
                 return fix_8341438(t.caretShape(charIndex, leading));
+            } else {
+                CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
+                return createCaretShape(ci);
             }
-//            else {
-//                CaretInfo ci = layoutInfo().caretInfo(charIndex, leading);
-//                return createCaretShape(ci);
-//            }
         }
         return new PathElement[0];
     }
@@ -476,79 +474,76 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createSelectionShape(int start, int end) {
-        boolean legacy = true; //legacyAPI.get();
+        boolean legacy = legacyAPI.get();
         Node n = owner();
         if (n instanceof Text t) {
             if (legacy) {
                 return t.rangeShape(start, end);
+            } else {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
             }
-//            else {
-//                return createSelectionShape(t.getLayoutInfo(), start, end);
-//            }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
                 return fix_8341438(t.rangeShape(start, end));
+            } else {
+                return createSelectionShape(t.getLayoutInfo(), start, end);
             }
-//            else {
-//                return createSelectionShape(t.getLayoutInfo(), start, end);
-//            }
         }
         return new PathElement[0];
     }
 
     private PathElement[] createStrikeThroughShape(int start, int end) {
-        boolean legacy = true; //legacyAPI.get();
+        boolean legacy = legacyAPI.get();
         Node n = owner();
         if (n instanceof Text t) {
-//            if (legacy) {
-//                return t.strikeThroughShape(start, end);
-//            } else {
-//                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
-//            }
+            if (legacy) {
+                // FIX
+                // return t.getStrikeThroughShape(start, end);
+            } else {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            }
         } else if (n instanceof TextFlow t) {
-//            if (legacy) {
-//                return fix_8341438(t.strikeThroughShape(start, end));
-//            }
-//            else {
-//                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
-//            }
+            if (legacy) {
+                // FIX
+                //return fix_8341438(t.getStrikeThroughShape(start, end));
+            } else {
+                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            }
         }
         return new PathElement[0];
     }
 
     private PathElement[] createUnderlineShape(int start, int end) {
-        boolean legacy = true; //legacyAPI.get();
+        boolean legacy = legacyAPI.get();
         Node n = owner();
         if (n instanceof Text t) {
             if (legacy) {
                 return t.underlineShape(start, end);
+            } else {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
             }
-//            else {
-//                return createUnderlineShape(t.getLayoutInfo(), start, end);
-//            }
         } else if (n instanceof TextFlow t) {
             if (legacy) {
                 return fix_8341438(t.underlineShape(start, end));
+            } else {
+                return createUnderlineShape(t.getLayoutInfo(), start, end);
             }
-//            else {
-//                return createUnderlineShape(t.getLayoutInfo(), start, end);
-//            }
         }
         return new PathElement[0];
     }
 
-//    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
-//        List<Rectangle2D> rs = la.selectionShape(start, end, includeLineSpace.get());
-//        return toPathElementsArray(rs);
-//    }
-//
-//    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
-//        List<Rectangle2D> rs = la.strikeThroughShape(start, end);
-//        return toPathElementsArray(rs);
-//    }
-//
-//    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
-//        List<Rectangle2D> rs = la.underlineShape(start, end);
-//        return toPathElementsArray(rs);
-//    }
+    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.getSelectionGeometry(start, end, includeLineSpace.get());
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.getStrikeThroughGeometry(start, end);
+        return toPathElementsArray(rs);
+    }
+
+    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
+        List<Rectangle2D> rs = la.getUnderlineGeometry(start, end);
+        return toPathElementsArray(rs);
+    }
 }

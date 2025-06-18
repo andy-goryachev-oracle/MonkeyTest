@@ -81,7 +81,7 @@ public class TextFlowPage extends TestPaneBase {
 
         textFlow = new TextFlow() {
             @Override
-            public Object queryAccessibleAttribute(AccessibleAttribute a, Object... ps) {
+            public Object queryAccessibleAttribute(AccessibleAttribute a, Object ... ps) {
                 Object v = super.queryAccessibleAttribute(a, ps);
                 Loggers.accessibility.log(a, v);
                 return v;
@@ -131,10 +131,10 @@ public class TextFlowPage extends TestPaneBase {
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, textFlow.textAlignmentProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
-//        op.option(new BooleanOption("useLegacyAPI", "(use TextFlow API)", visualizer.legacyAPI));
-//        op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
-//        op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
-//        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));
+        op.option(new BooleanOption("useLegacyAPI", "(use TextFlow API)", visualizer.legacyAPI));
+        op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
+        op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
+        op.option(new BooleanOption("includeLineSpacing", "include lineSpacing ", visualizer.includeLineSpace));
         op.separator();
         op.option("Pick Result:", pickResult);
         op.option("Text.hitTest:", hitInfo2);
