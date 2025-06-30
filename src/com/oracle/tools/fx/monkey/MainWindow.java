@@ -24,9 +24,14 @@
  */
 package com.oracle.tools.fx.monkey;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
+import javax.imageio.ImageIO;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,6 +44,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -118,6 +124,34 @@ public class MainWindow extends Stage {
         renderScaleYProperty().addListener((x) -> updateStatus());
         updateTitle();
         updateStatus();
+        
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(() -> {
+                    try {
+                        Image im = getScene().snapshot(null);
+                        byte[] b = writePNG(im);
+                        Files.write(Path.of(new File("/Users/angorya/" + System.currentTimeMillis() + ".png").toURI()), b);
+                        System.exit(0);
+                    } catch (Throwable e) {
+                    }
+                });
+            }
+        }.start();
+    }
+    
+    public static byte[] writePNG(Image im) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
+        // this might conflict with user-set value
+        ImageIO.setUseCache(false);
+        ImageIO.write(ImgUtil.fromFXImage(im, null), "PNG", out);
+        return out.toByteArray();
     }
 
     private MenuBar createMenu() {

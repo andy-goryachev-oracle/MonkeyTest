@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -71,7 +72,7 @@ public class WebViewPage extends TestPaneBase {
             System.err.println("state:" + c);
         });
 
-        addressField = new TextField("https://");
+        addressField = new TextField("file:///Users/angorya/Projects/jfx3/jfx/rt/modules/javafx.graphics/src/main/docs/javafx/scene/doc-files/cssref.html#controls");
         addressField.setOnAction((ev) -> {
             handleUrlEntered();
         });
@@ -111,6 +112,8 @@ public class WebViewPage extends TestPaneBase {
 
         setOptions(op);
         setContent(bp);
+        
+        Platform.runLater(this::handleUrlEntered);
     }
 
     private void handleUrlEntered() {
