@@ -103,5 +103,6 @@ public class AudioClipPage extends TestPaneBase {
         c.setRate(rate.get());
         c.setVolume(volume.get());
         c.play();
+        System.out.println("AudioClip.source=" + uri);
     }
 }
