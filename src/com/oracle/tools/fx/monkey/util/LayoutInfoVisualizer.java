@@ -312,7 +312,7 @@ public class LayoutInfoVisualizer {
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
-            TextShapeLogic logic = shapeLogic.get();
+            TextShapeLogic logic = textShapeLogic();
             switch(logic) {
             case NEW:
                 return t.getHitInfo(p);
@@ -412,7 +412,7 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createCaretShape(int charIndex, boolean leading) {
-        TextShapeLogic logic = shapeLogic.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
             switch (logic) {
@@ -502,7 +502,7 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createSelectionShape(int start, int end) {
-        TextShapeLogic logic = shapeLogic.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
             switch (logic) {
@@ -531,7 +531,7 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createStrikeThroughShape(int start, int end) {
-        TextShapeLogic logic = shapeLogic.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
             switch (logic) {
@@ -562,7 +562,7 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createUnderlineShape(int start, int end) {
-        TextShapeLogic logic = shapeLogic.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
             switch (logic) {
@@ -604,5 +604,10 @@ public class LayoutInfoVisualizer {
     private PathElement[] underlineShape(LayoutInfo la, int start, int end) {
         List<Rectangle2D> rs = la.getUnderlineGeometry(start, end);
         return toPathElementsArray(rs);
+    }
+
+    private TextShapeLogic textShapeLogic() {
+        TextShapeLogic v = shapeLogic.get();
+        return v == null ? TextShapeLogic.LEGACY : v;
     }
 }
