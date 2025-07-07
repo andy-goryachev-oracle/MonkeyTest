@@ -35,6 +35,7 @@ public class Pages {
             new DemoPage("Accordion", AccordionPage::new),
             new DemoPage("AnchorPane", AnchorPanePage::new),
             new DemoPage("AreaChart", AreaChartPage::new),
+            new DemoPage("AudioClip", AudioClipPage::new),
             new DemoPage("BarChart", BarChartPage::new),
             new DemoPage("BorderPane", BorderPanePage::new),
             new DemoPage("BubbleChart", BubbleChartPage::new),
