@@ -63,7 +63,7 @@ public class TabStopPane extends Pane {
         setBackground(Background.fill(Color.WHITE));
 
         p.tabStops().subscribe(this::update);
-        p.defaultInterval().subscribe(this::update);
+        p.defaultIntervalProperty().subscribe(this::update);
         widthProperty().subscribe(this::update);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
