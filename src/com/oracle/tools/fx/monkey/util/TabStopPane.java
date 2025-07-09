@@ -63,7 +63,7 @@ public class TabStopPane extends Pane {
         setBackground(Background.fill(Color.WHITE));
 
         p.tabStops().subscribe(this::update);
-        p.defaultStopsProperty().subscribe(this::update);
+        p.defaultInterval().subscribe(this::update);
         widthProperty().subscribe(this::update);
 
         addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
@@ -96,7 +96,7 @@ public class TabStopPane extends Pane {
         }
 
         // default stops
-        double defaultStops = policy.getDefaultStops();
+        double defaultStops = policy.getDefaultInterval();
         if (defaultStops > 0.0) {
             for (;;) {
                 x = nextPosition(x, defaultStops);

@@ -294,7 +294,7 @@ public class TextFlowPage extends TestPaneBase {
                 new TabStop(50),
                 new TabStop(175)
             );
-            p.setDefaultStops(100);
+            p.setDefaultInterval(100);
             return p;
         });
         op.addChoiceSupplier("Tab Stops, w/o default stops", () -> {
@@ -311,7 +311,7 @@ public class TextFlowPage extends TestPaneBase {
 
     private static TabStopPolicy fixedTabStopPolicy(double defaultStops) {
         TabStopPolicy p = new TabStopPolicy();
-        p.setDefaultStops(defaultStops);
+        p.setDefaultInterval(defaultStops);
         return p;
     }
 
