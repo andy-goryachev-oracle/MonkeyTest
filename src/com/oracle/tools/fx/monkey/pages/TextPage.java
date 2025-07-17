@@ -54,6 +54,7 @@ import com.oracle.tools.fx.monkey.util.LayoutInfoVisualizer;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.StdoutMouseListener;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextShapeLogic;
 
 /**
  * Text Page.
@@ -98,7 +99,7 @@ public class TextPage extends TestPaneBase {
         op.option(new BooleanOption("underline", "underline", text.underlineProperty()));
         op.separator();
         op.option(new BooleanOption("showCaretAndRange", visualizer.caretOptionText(), visualizer.showCaretAndRange));
-        op.option(new BooleanOption("useLegacyAPI", "(use Text API)", visualizer.legacyAPI));
+        op.option("API:", new EnumOption<>("api", TextShapeLogic.class, visualizer.shapeLogic));
         op.option(new BooleanOption("showLines", "show text lines", visualizer.showLines));
         op.option(new BooleanOption("showBounds", "show layout bounds", visualizer.showLayoutBounds));
         op.option(new BooleanOption("includeLineSpacing", "include lineSpacing", visualizer.includeLineSpace));

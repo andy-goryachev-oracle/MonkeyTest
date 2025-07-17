@@ -33,14 +33,13 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -78,7 +77,7 @@ import javafx.util.Duration;
  */
 public class LayoutInfoVisualizer {
 
-    public final SimpleBooleanProperty legacyAPI = new SimpleBooleanProperty();
+    public final SimpleObjectProperty<TextShapeLogic> shapeLogic = new SimpleObjectProperty<>(TextShapeLogic.LAYOUT_INFO);
     public final SimpleBooleanProperty showCaretAndRange = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLines = new SimpleBooleanProperty();
     public final SimpleBooleanProperty showLayoutBounds = new SimpleBooleanProperty();
@@ -100,9 +99,6 @@ public class LayoutInfoVisualizer {
     private boolean useStrikeThroughShape;
     private boolean useUnderlineShape;
 
-    /** FIX JDK-8341438 TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border */
-    private static final boolean CORRECT_FOR_8341438_BUG = true;
-
     private static final double CARET_VIEW_ORDER = 1000;
     private static final double RANGE_VIEW_ORDER = 1010;
     private static final double TEXT_LINES_VIEW_ORDER = 1020;
@@ -111,6 +107,7 @@ public class LayoutInfoVisualizer {
     public LayoutInfoVisualizer() {
         isAnimating = Bindings.createBooleanBinding(() -> {
                 return
+                    // FIX stop animation if not showing
                     (owner.get() != null) &&
                     (
                         showLines.get() ||
@@ -136,7 +133,7 @@ public class LayoutInfoVisualizer {
     }
 
     public String caretOptionText() {
-        String ctrl = FX.isMac() ? "command" : "ctrl";
+        String ctrl = FX.isMac() ? "⌘" : "ctrl";
         return String.format("caret and range (shift: strike-through, %s: underline)", ctrl);
     }
 
@@ -259,9 +256,7 @@ public class LayoutInfoVisualizer {
                 parent.getChildren().add(boundsPath);
             }
 
-            LayoutInfo la = layoutInfo();
-            List<Rectangle2D> rs = List.of(la.getLogicalBounds(includeLineSpace.get()));
-            PathElement[] ps = toPathElementsArray(rs);
+            PathElement[] ps = createLayoutBoundsShape();
             boundsPath.getElements().setAll(ps);
         } else {
             if (boundsPath != null) {
@@ -317,13 +312,15 @@ public class LayoutInfoVisualizer {
         if (n instanceof Text t) {
             return t.hitTest(p);
         } else if (n instanceof TextFlow t) {
-            // FIX this has impact on the new LayoutInfo API:
-            // we probably should create a system property to enable the legacy behavior
-            if (CORRECT_FOR_8341438_BUG) {
-                Insets m = t.getInsets();
-                p = p.subtract(m.getLeft(), m.getTop()); // TODO rtl?
+            TextShapeLogic logic = textShapeLogic();
+            switch(logic) {
+            case NEW:
+                return t.getHitInfo(p);
+            case LAYOUT_INFO:
+                return t.getHitInfo(p);
+            case LEGACY:
+                return t.hitTest(p);
             }
-            return t.hitTest(p);
         }
         return null;
     }
@@ -354,43 +351,54 @@ public class LayoutInfoVisualizer {
     private List<Node> createTextLinesShapes() {
         LayoutInfo la = layoutInfo();
         List<TextLineInfo> lines = la.getTextLines(includeLineSpace.get());
-        ArrayList<Node> a = new ArrayList<>();
+
+        double dx = 0.0;
+        double dy = 0.0;
+        if (owner() instanceof Text t) {
+            Bounds b = t.getBoundsInLocal();
+            dx = b.getMinX();
+            dy = b.getMinY();
+        }
+
+        ArrayList<Node> rv = new ArrayList<>();
         int i = 0;
         for (TextLineInfo line : lines) {
             Rectangle2D b = line.bounds();
             Color c = color(i++);
-            Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+            Rectangle r = new Rectangle(b.getMinX() - dx, b.getMinY() - dy, b.getWidth(), b.getHeight());
             r.setFill(c);
             r.setStrokeWidth(0);
             r.setManaged(false);
-            a.add(r);
+            rv.add(r);
         }
-        return a;
+        return rv;
     }
 
-    private PathElement[] fix_8341438(PathElement[] es) {
-        Insets m = ((TextFlow)owner()).getInsets();
-        double dx = m.getLeft(); // FIX rtl?
-        double dy = m.getTop();
-
-        if (CORRECT_FOR_8341438_BUG) {
-            PathElement[] rv = new PathElement[es.length];
-            for (int i = 0; i < es.length; i++) {
-                PathElement em = es[i];
-                PathElement shifted;
-                if (em instanceof MoveTo v) {
-                    shifted = new MoveTo(v.getX() + dx, v.getY() + dy);
-                } else if (em instanceof LineTo v) {
-                    shifted = new LineTo(v.getX() + dx, v.getY() + dy);
-                } else {
-                    shifted = em;
-                }
-                rv[i] = shifted;
-            }
-            return rv;
-        } else {
+    private PathElement[] correctForTextOrigin(Text t, PathElement[] es) {
+        Bounds b = t.getBoundsInLocal();
+        double dx = b.getMinX();
+        double dy = b.getMinY();
+        if (dx == 0.0 && dy == 0.0) {
             return es;
         }
+
+        dx = -dx;
+        dy = -dy;
+
+        PathElement[] rv = new PathElement[es.length];
+        for (int i = 0; i < es.length; i++) {
+            PathElement em = es[i];
+            PathElement shifted;
+            if (em instanceof MoveTo v) {
+                shifted = new MoveTo(v.getX() + dx, v.getY() + dy);
+            } else if (em instanceof LineTo v) {
+                shifted = new LineTo(v.getX() + dx, v.getY() + dy);
+            } else {
+                shifted = em;
+            }
+            rv[i] = shifted;
+        }
+        return rv;
     }
 
     private static PathElement[] createCaretShape(CaretInfo ci) {
@@ -404,24 +412,44 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createCaretShape(int charIndex, boolean leading) {
-        boolean legacy = legacyAPI.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
-            if (legacy) {
-                return t.caretShape(charIndex, leading);
-            } else {
+            switch (logic) {
+            case NEW:
+                break;
+            case LAYOUT_INFO:
                 CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
-                return createCaretShape(ci);
+                return correctForTextOrigin(t, createCaretShape(ci));
+            case LEGACY:
+                return correctForTextOrigin(t, t.caretShape(charIndex, leading));
+            default:
+                break;
             }
         } else if (n instanceof TextFlow t) {
-            if (legacy) {
-                return fix_8341438(t.caretShape(charIndex, leading));
-            } else {
+            switch (logic) {
+            case NEW:
+                return t.getCaretShape(charIndex, leading);
+            case LAYOUT_INFO:
                 CaretInfo ci = layoutInfo().caretInfoAt(charIndex, leading);
                 return createCaretShape(ci);
+            case LEGACY:
+                return t.caretShape(charIndex, leading);
+            default:
+                break;
             }
         }
         return new PathElement[0];
+    }
+
+    private PathElement[] createLayoutBoundsShape() {
+        LayoutInfo la = layoutInfo();
+        List<Rectangle2D> rs = List.of(la.getLogicalBounds(includeLineSpace.get()));
+        PathElement[] es = toPathElementsArray(rs);
+        if (owner() instanceof Text t) {
+            es = correctForTextOrigin(t, es);
+        }
+        return es;
     }
 
     void handleMouseEvent(MouseEvent ev) {
@@ -474,76 +502,112 @@ public class LayoutInfoVisualizer {
     }
 
     private PathElement[] createSelectionShape(int start, int end) {
-        boolean legacy = legacyAPI.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
-            if (legacy) {
-                return t.rangeShape(start, end);
-            } else {
-                return createSelectionShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                return correctForTextOrigin(t, t.getRangeShape(start, end, includeLineSpace.get()));
+            case LAYOUT_INFO:
+                return correctForTextOrigin(t, selectionShape(t.getLayoutInfo(), start, end));
+            case LEGACY:
+                return correctForTextOrigin(t, t.rangeShape(start, end));
+            default:
+                break;
             }
         } else if (n instanceof TextFlow t) {
-            if (legacy) {
-                return fix_8341438(t.rangeShape(start, end));
-            } else {
-                return createSelectionShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                return t.getRangeShape(start, end, includeLineSpace.get());
+            case LAYOUT_INFO:
+                return selectionShape(t.getLayoutInfo(), start, end);
+            case LEGACY:
+                return t.rangeShape(start, end);
+            default:
+                break;
             }
         }
         return new PathElement[0];
     }
 
     private PathElement[] createStrikeThroughShape(int start, int end) {
-        boolean legacy = legacyAPI.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
-            if (legacy) {
-                // FIX
-                // return t.getStrikeThroughShape(start, end);
-            } else {
-                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                return correctForTextOrigin(t, t.getStrikeThroughShape(start, end));
+            case LAYOUT_INFO:
+                return correctForTextOrigin(t, strikeThroughShape(t.getLayoutInfo(), start, end));
+            case LEGACY:
+                // not available
+                break;
+            default:
+                break;
             }
         } else if (n instanceof TextFlow t) {
-            if (legacy) {
-                // FIX
-                //return fix_8341438(t.getStrikeThroughShape(start, end));
-            } else {
-                return createStrikeThroughShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                return t.getStrikeThroughShape(start, end);
+            case LAYOUT_INFO:
+                return strikeThroughShape(t.getLayoutInfo(), start, end);
+            case LEGACY:
+                // not available
+                break;
+            default:
+                break;
             }
         }
         return new PathElement[0];
     }
 
     private PathElement[] createUnderlineShape(int start, int end) {
-        boolean legacy = legacyAPI.get();
+        TextShapeLogic logic = textShapeLogic();
         Node n = owner();
         if (n instanceof Text t) {
-            if (legacy) {
-                return t.underlineShape(start, end);
-            } else {
-                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                // using legacy API
+                return correctForTextOrigin(t, t.underlineShape(start, end));
+            case LAYOUT_INFO:
+                return correctForTextOrigin(t, underlineShape(t.getLayoutInfo(), start, end));
+            case LEGACY:
+                return correctForTextOrigin(t, t.underlineShape(start, end));
+            default:
+                break;
             }
         } else if (n instanceof TextFlow t) {
-            if (legacy) {
-                return fix_8341438(t.underlineShape(start, end));
-            } else {
-                return createUnderlineShape(t.getLayoutInfo(), start, end);
+            switch (logic) {
+            case NEW:
+                return t.getUnderlineShape(start, end);
+            case LAYOUT_INFO:
+                return underlineShape(t.getLayoutInfo(), start, end);
+            case LEGACY:
+                return t.underlineShape(start, end);
+            default:
+                break;
             }
         }
         return new PathElement[0];
     }
 
-    private PathElement[] createSelectionShape(LayoutInfo la, int start, int end) {
+    private PathElement[] selectionShape(LayoutInfo la, int start, int end) {
         List<Rectangle2D> rs = la.getSelectionGeometry(start, end, includeLineSpace.get());
         return toPathElementsArray(rs);
     }
 
-    private PathElement[] createStrikeThroughShape(LayoutInfo la, int start, int end) {
+    private PathElement[] strikeThroughShape(LayoutInfo la, int start, int end) {
         List<Rectangle2D> rs = la.getStrikeThroughGeometry(start, end);
         return toPathElementsArray(rs);
     }
 
-    private PathElement[] createUnderlineShape(LayoutInfo la, int start, int end) {
+    private PathElement[] underlineShape(LayoutInfo la, int start, int end) {
         List<Rectangle2D> rs = la.getUnderlineGeometry(start, end);
         return toPathElementsArray(rs);
+    }
+
+    private TextShapeLogic textShapeLogic() {
+        TextShapeLogic v = shapeLogic.get();
+        return v == null ? TextShapeLogic.LEGACY : v;
     }
 }

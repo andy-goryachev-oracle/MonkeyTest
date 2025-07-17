@@ -68,7 +68,10 @@ public class AudioClipPage extends TestPaneBase {
 
         // all notes?
         VBox p = new VBox(
-            button("Play Note 1", this::playNote1)
+            button("Play Note1.wav", () -> playNote("Note1.wav")),
+            button("Play Note2.wav", () -> playNote("Note2.wav")),
+            button("Play Note3.wav", () -> playNote("Note3.wav")),
+            button("Play yo.mp3", () -> playNote("yo.mp3"))
         );
 
         setContent(p);
@@ -81,8 +84,8 @@ public class AudioClipPage extends TestPaneBase {
         return b;
     }
 
-    private void playNote1() {
-        play(Notes.getNoteURI());
+    private void playNote(String name) {
+        play(Notes.getNoteURI(name));
     }
 
     private void play() {

@@ -37,8 +37,8 @@ import java.net.URL;
  * The notes are copied from Ensemble8 project.
  */
 public class Notes {
-    public static String getNoteURI() {
-        URL u = Notes.class.getResource("Note1.wav");
+    public static String getNoteURI(String name) {
+        URL u = Notes.class.getResource(name);
         return u == null ? null : u.toExternalForm();
     }
 }
