@@ -233,10 +233,9 @@ public class StagePage extends TestPaneBase {
             });
             status.textProperty().bind(Bindings.createStringBinding(
                 () -> {
-                    if(stage.isFullScreen()) {
-                        FX.getParentWindow(StagePage.this).requestFocus();
-                    }
-                    return getStatusText(stage);
+                    String s = getStatusText(stage);
+                    System.out.println(s.replace('\n', ' '));
+                    return s;
                 },
                 stage.xProperty(),
                 stage.yProperty(),
