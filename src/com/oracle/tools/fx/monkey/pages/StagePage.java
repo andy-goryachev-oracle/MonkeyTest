@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -31,8 +32,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -42,6 +46,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.tools.CustomStage;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -51,6 +56,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class StagePage extends TestPaneBase {
     private final ToggleButton button;
+    private final Label status;
     private Stage stage;
     private final SimpleBooleanProperty alwaysOnTop = new SimpleBooleanProperty();
     private final SimpleBooleanProperty focused = new SimpleBooleanProperty();
@@ -80,12 +86,17 @@ public class StagePage extends TestPaneBase {
             toggleStage();
         });
 
+        status = new Label();
+        status.setFont(Font.font("Monospace"));
+
         OptionPane op = createOptionPane();
 
-        HBox p = new HBox(4, button);
-        p.setPadding(new Insets(4));
+        HBox hb = new HBox(4, button);
 
-        setContent(p);
+        VBox vb = new VBox(10, hb, status);
+        vb.setPadding(new Insets(10));
+
+        setContent(vb);
         setOptions(op);
     }
 
@@ -217,13 +228,35 @@ public class StagePage extends TestPaneBase {
                 if (!on) {
                     button.setSelected(false);
                     stage = null;
+                    clearStatus();
                 }
             });
+            status.textProperty().bind(Bindings.createStringBinding(
+                () -> {
+                    if(stage.isFullScreen()) {
+                        FX.getParentWindow(StagePage.this).requestFocus();
+                    }
+                    return getStatusText(stage);
+                },
+                stage.xProperty(),
+                stage.yProperty(),
+                stage.widthProperty(),
+                stage.heightProperty(),
+                stage.iconifiedProperty(),
+                stage.maximizedProperty(),
+                stage.fullScreenProperty()
+            ));
         } else {
             stage.hide();
             stage = null;
             button.setSelected(false);
+            clearStatus();
         }
+    }
+
+    private void clearStatus() {
+        status.textProperty().unbind();
+        status.setText(null);
     }
 
     @Override
@@ -237,5 +270,18 @@ public class StagePage extends TestPaneBase {
             stage = null;
             button.setSelected(false);
         }
+    }
+
+    private static String getStatusText(Stage s) {
+        return
+            "Position: " + f(s.getX()) + ", " + f(s.getY()) + "\n" +
+            "Size:     " + f(s.getWidth()) + ", " + f(s.getHeight()) + "\n" +
+            "          " + (s.isFullScreen() ? "FullScreen " : "") +
+                           (s.isIconified() ? "Iconified " : "") +
+                           (s.isMaximized() ? "Maximized " : "");
+    }
+
+    private static String f(double v) {
+        return Formats.formatDouble(v);
     }
 }
