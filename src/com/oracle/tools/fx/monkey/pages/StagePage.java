@@ -273,11 +273,11 @@ public class StagePage extends TestPaneBase {
 
     private static String getStatusText(Stage s) {
         return
-            "Position: " + f(s.getX()) + ", " + f(s.getY()) + "\n" +
-            "Size:     " + f(s.getWidth()) + ", " + f(s.getHeight()) + "\n" +
-            "          " + (s.isFullScreen() ? "FullScreen " : "") +
-                           (s.isIconified() ? "Iconified " : "") +
-                           (s.isMaximized() ? "Maximized " : "");
+            "P: " + f(s.getX()) + ", " + f(s.getY()) + "\n" +
+            "S: " + f(s.getWidth()) + ", " + f(s.getHeight()) + "\n" +
+            "   " + (s.isFullScreen() ? "FullScreen " : "") +
+                    (s.isIconified() ? "Iconified " : "") +
+                    (s.isMaximized() ? "Maximized " : "");
     }
 
     private static String f(double v) {
