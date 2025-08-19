@@ -24,13 +24,20 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Random;
 import javafx.scene.AccessibleAttribute;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import com.oracle.tools.fx.monkey.Loggers;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.sheets.NodePropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 
@@ -38,6 +45,7 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * ImageView Page.
  */
 public class ImageViewPage extends TestPaneBase {
+
     private final ImageView imageView;
 
     public ImageViewPage() {
@@ -51,6 +59,7 @@ public class ImageViewPage extends TestPaneBase {
                 return v;
             }
         };
+        FX.setPopupMenu(imageView, this::createPopupMenu);
 
         OptionPane op = new OptionPane();
         op.section("ImageView");
@@ -66,5 +75,35 @@ public class ImageViewPage extends TestPaneBase {
 
         setContent(imageView);
         setOptions(op);
+    }
+
+    private ContextMenu createPopupMenu() {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Load from Input Stream", () -> loadImageFromInputStream(false));
+        FX.item(m, "Load from Input Stream in Background", () -> loadImageFromInputStream(true));
+        return m;
+    }
+
+    private void loadImageFromInputStream(boolean loadInBackground) {
+        // requires JDK-8361286: Allow enabling of background loading for images loaded from an InputStream
+        try {
+            String ts = String.valueOf(System.nanoTime());
+            Random r = new Random();
+            int w = 10 + r.nextInt(300);
+            int h = 10 + r.nextInt(300);
+            Image src = ImageTools.createImage(ts, w, h);
+            byte[] b = ImageTools.writePNG(src);
+            ByteArrayInputStream in = new ByteArrayInputStream(b) {
+                @Override
+                public void close() throws IOException {
+                    System.out.println("Closed " + Thread.currentThread());
+                }
+            };
+
+            Image im = new Image(in, loadInBackground);
+            imageView.setImage(im);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
