@@ -85,7 +85,6 @@ public class ImageViewPage extends TestPaneBase {
     }
 
     private void loadImageFromInputStream(boolean loadInBackground) {
-        // requires JDK-8361286: Allow enabling of background loading for images loaded from an InputStream
         try {
             String ts = String.valueOf(System.nanoTime());
             Random r = new Random();
@@ -100,8 +99,9 @@ public class ImageViewPage extends TestPaneBase {
                 }
             };
 
-            Image im = new Image(in, loadInBackground);
-            imageView.setImage(im);
+// TODO requires JDK-8361286: Allow enabling of background loading for images loaded from an InputStream
+//            Image im = new Image(in, loadInBackground);
+//            imageView.setImage(im);
         } catch (IOException e) {
             e.printStackTrace();
         }
