@@ -51,6 +51,7 @@ public class TextTemplates {
             "Long CJK",  createLongCJK(),
             "Single Newline", "\n",
             "Multi-line", "Line One.\nLine Two.\nLine Three.",
+            "Khmer", "បានស្នើសុំនៅតែត្រូវបានបដិសេធ\n\nSegment: បានស្នើសុំ 0\nSegment: នៅតែត្រូវ 10\nSegment: បានបដិសេ 19\nSegment: ធ 27",
             "<empty>", "",
             "<null>", null,
        };
