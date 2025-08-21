@@ -99,9 +99,9 @@ public class ImageViewPage extends TestPaneBase {
                 }
             };
 
-// TODO requires JDK-8361286: Allow enabling of background loading for images loaded from an InputStream
-//            Image im = new Image(in, loadInBackground);
-//            imageView.setImage(im);
+            // requires JDK-8361286: Allow enabling of background loading for images loaded from an InputStream
+            Image im = new Image(in, loadInBackground);
+            imageView.setImage(im);
         } catch (IOException e) {
             e.printStackTrace();
         }
