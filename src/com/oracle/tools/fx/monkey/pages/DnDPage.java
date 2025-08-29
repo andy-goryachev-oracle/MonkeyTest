@@ -37,6 +37,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
@@ -88,11 +90,11 @@ public class DnDPage extends TestPaneBase {
         });
 
         source.setOnDragDone((ev) -> {
-            print(ev);
+            //print(ev);
         });
 
         target.setOnDragOver((ev) -> {
-            print(ev);
+            //print(ev);
             if (ev.getGestureSource() != target && ev.getDragboard().hasString()) {
                 ArrayList<TransferMode> a = new ArrayList<>();
                 if (acceptsCopy.get()) {
@@ -110,16 +112,43 @@ public class DnDPage extends TestPaneBase {
         });
 
         target.setOnDragEntered((ev) -> {
-            print(ev);
+            //print(ev);
             target.setBackground(Background.fill(Color.YELLOW));
         });
 
         target.setOnDragExited((ev) -> {
-            print(ev);
+            //print(ev);
             target.setBackground(null);
         });
 
         target.setOnDragDropped((ev) -> {
+            //print(ev);
+        });
+        
+        // listeners
+        source.addEventHandler(DragEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        target.addEventHandler(DragEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        source.addEventHandler(MouseEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        target.addEventHandler(MouseEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        source.addEventHandler(MouseDragEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        target.addEventHandler(MouseDragEvent.ANY, (ev) -> {
+            print(ev);
+        });
+        // direct
+        source.setOnMouseDragDone((ev) -> {
+            print(ev);
+        });
+        source.addEventHandler(MouseDragEvent.MOUSE_DRAG_DONE, (ev) -> {
             print(ev);
         });
 
@@ -162,6 +191,31 @@ public class DnDPage extends TestPaneBase {
         sb.append(", screenY=" + ev.getScreenY());
         sb.append(", sceneX=" + ev.getSceneX());
         sb.append(", sceneY=" + ev.getSceneY());
+        sb.append("}");
+        String s = sb.toString();
+        System.out.println(s);
+    }
+    
+    private void print(MouseEvent ev) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{event=" + ev.getEventType());
+        sb.append(", screenX=" + ev.getScreenX());
+        sb.append(", screenY=" + ev.getScreenY());
+        sb.append(", sceneX=" + ev.getSceneX());
+        sb.append(", sceneY=" + ev.getSceneY());
+        sb.append("}");
+        String s = sb.toString();
+        System.out.println(s);
+    }
+    
+    private void print(MouseDragEvent ev) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{event=" + ev.getEventType());
+        sb.append(", screenX=" + ev.getScreenX());
+        sb.append(", screenY=" + ev.getScreenY());
+        sb.append(", sceneX=" + ev.getSceneX());
+        sb.append(", sceneY=" + ev.getSceneY());
+        sb.append(", getstureSource=" + ev.getGestureSource());
         sb.append("}");
         String s = sb.toString();
         System.out.println(s);
