@@ -104,8 +104,8 @@ public class Options {
         return DoubleOption.of(name, p, 0, 1, 1.5, 4, 10, 20, 33.33, 100);
     }
 
-    public static ObjectOption<Image> createImageOption(ObjectProperty<Image> p) {
-        ObjectOption<Image> op = new ObjectOption<>("image", p);
+    public static ObjectOption<Image> createImageOption(String name, ObjectProperty<Image> p) {
+        ObjectOption<Image> op = new ObjectOption<>(name, p);
         op.addChoice("<null>", null);
         op.addChoice("1x1", ImageTools.createImage(1, 1));
         op.addChoice("16 x 16", ImageTools.createImage(16, 16));

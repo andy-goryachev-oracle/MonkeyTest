@@ -65,7 +65,7 @@ public class ImageViewPage extends TestPaneBase {
         op.section("ImageView");
         op.option("Fit Height:", DoubleOption.of("fitHeight", imageView.fitHeightProperty(), -1.0, 10.0, 100.0, 500.0));
         op.option("Fit Width:", DoubleOption.of("fitWidth", imageView.fitWidthProperty(), -1.0, 10.0, 100.0, 500.0));
-        op.option("Image:", Options.createImageOption(imageView.imageProperty()));
+        op.option("Image:", Options.createImageOption("image", imageView.imageProperty()));
         op.option(new BooleanOption("preserveRatio", "preserve ratio", imageView.preserveRatioProperty()));
         op.option(new BooleanOption("smooth", "smooth", imageView.smoothProperty()));
         // setViewport(Rectangle2D)

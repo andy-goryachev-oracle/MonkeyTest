@@ -37,7 +37,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
@@ -46,17 +45,25 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Drag and Drop Test Page.
  */
 public class DnDPage extends TestPaneBase {
-    //private static final DataFormat FORMAT = new DataFormat("DnDPage");
+    enum DragType {
+        DRAG_AND_DROP,
+        FULL,
+        SIMPLE
+    }
+
     private final Label source;
     private final Label target;
+    private final SimpleObjectProperty<DragType> type = new SimpleObjectProperty<>(DragType.DRAG_AND_DROP);
     private final SimpleBooleanProperty acceptsCopy = new SimpleBooleanProperty(true);
     private final SimpleBooleanProperty acceptsLink = new SimpleBooleanProperty();
     private final SimpleBooleanProperty acceptsMove = new SimpleBooleanProperty();
@@ -78,15 +85,27 @@ public class DnDPage extends TestPaneBase {
         hb.setPadding(new Insets(10));
 
         source.setOnDragDetected((ev) -> {
-            Dragboard db = source.startDragAndDrop(TransferMode.ANY);
-            ClipboardContent content = new ClipboardContent();
-            content.putString(source.getText());
-            db.setContent(content);
+            DragType t = type.get();
+            switch(t) {
+            case DRAG_AND_DROP:
+                Dragboard db = source.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(source.getText());
+                db.setContent(content);
 
-            Image im = dragImage.get();
-            db.setDragView(im);
-            db.setDragViewOffsetX(offsetX.get());
-            db.setDragViewOffsetY(offsetY.get());
+                Image im = dragImage.get();
+                db.setDragView(im);
+                db.setDragViewOffsetX(offsetX.get());
+                db.setDragViewOffsetY(offsetY.get());
+                break;
+            case FULL:
+                source.startFullDrag();
+                break;
+            case SIMPLE:
+                break;
+            default:
+                throw new Error("?" + t);
+            }
         });
 
         source.setOnDragDone((ev) -> {
@@ -138,27 +157,15 @@ public class DnDPage extends TestPaneBase {
         target.addEventHandler(MouseEvent.ANY, (ev) -> {
             print(ev);
         });
-        source.addEventHandler(MouseDragEvent.ANY, (ev) -> {
-            print(ev);
-        });
-        target.addEventHandler(MouseDragEvent.ANY, (ev) -> {
-            print(ev);
-        });
-        // direct
-        source.setOnMouseDragDone((ev) -> {
-            print(ev);
-        });
-        source.addEventHandler(MouseDragEvent.MOUSE_DRAG_DONE, (ev) -> {
-            print(ev);
-        });
 
         BorderPane bp = new BorderPane();
         bp.setTop(hb);
 
         OptionPane op = new OptionPane();
         op.section("Source");
+        op.option("Drag Mode:", createTypeOption("type", type));
         op.label("Drag View Image:");
-        op.option(Options.createImageOption(dragImage));
+        op.option(Options.createImageOption("image", dragImage));
         op.option("Offset X:", doubleOption("offsetX", offsetX));
         op.option("Offset Y:", doubleOption("offsetY", offsetY));
         op.section("Target");
@@ -168,6 +175,11 @@ public class DnDPage extends TestPaneBase {
 
         setContent(bp);
         setOptions(op);
+    }
+
+    private Node createTypeOption(String name, SimpleObjectProperty<DragType> p) {
+        EnumOption<DragType> op = new EnumOption<>(name, false, DragType.class, p);
+        return op;
     }
 
     private Node doubleOption(String name, DoubleProperty p) {
@@ -195,28 +207,14 @@ public class DnDPage extends TestPaneBase {
         String s = sb.toString();
         System.out.println(s);
     }
-    
+
     private void print(MouseEvent ev) {
         StringBuilder sb = new StringBuilder();
         sb.append("{event=" + ev.getEventType());
-        sb.append(", screenX=" + ev.getScreenX());
-        sb.append(", screenY=" + ev.getScreenY());
-        sb.append(", sceneX=" + ev.getSceneX());
-        sb.append(", sceneY=" + ev.getSceneY());
-        sb.append("}");
-        String s = sb.toString();
-        System.out.println(s);
-    }
-    
-    private void print(MouseDragEvent ev) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{event=" + ev.getEventType());
-        sb.append(", screenX=" + ev.getScreenX());
-        sb.append(", screenY=" + ev.getScreenY());
-        sb.append(", sceneX=" + ev.getSceneX());
-        sb.append(", sceneY=" + ev.getSceneY());
-        sb.append(", getstureSource=" + ev.getGestureSource());
-        sb.append("}");
+        sb.append(", x/y=(").append(Utils.f2(ev.getX())).append(", ").append(Utils.f2(ev.getY()));
+        sb.append("), screen=(").append(Utils.f2(ev.getScreenX())).append(", ").append(Utils.f2(ev.getScreenY()));
+        sb.append("), scene=").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
+        sb.append(")}");
         String s = sb.toString();
         System.out.println(s);
     }

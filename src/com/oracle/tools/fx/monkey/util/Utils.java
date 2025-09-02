@@ -46,7 +46,7 @@ import javafx.stage.Window;
  * Monkey Tester Utilities
  */
 public class Utils {
-    private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("0.###");
+    private static final DecimalFormat DOUBLE_FORMAT_2 = new DecimalFormat("0.##");
     private static final Random random = new Random();
 
     public static boolean isBlank(Object x) {
@@ -102,8 +102,8 @@ public class Utils {
         showDialog(owner, windowName, title, p);
     }
 
-    public static String fmt(double v) {
-        return DOUBLE_FORMAT.format(v);
+    public static String f2(double v) {
+        return DOUBLE_FORMAT_2.format(v);
     }
 
     public static String simpleName(Object x) {
