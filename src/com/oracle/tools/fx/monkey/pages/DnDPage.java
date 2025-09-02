@@ -199,13 +199,11 @@ public class DnDPage extends TestPaneBase {
     private void print(DragEvent ev) {
         StringBuilder sb = new StringBuilder();
         sb.append("{event=" + ev.getEventType());
-        sb.append(", screenX=" + ev.getScreenX());
-        sb.append(", screenY=" + ev.getScreenY());
-        sb.append(", sceneX=" + ev.getSceneX());
-        sb.append(", sceneY=" + ev.getSceneY());
-        sb.append("}");
-        String s = sb.toString();
-        System.out.println(s);
+        sb.append(", x/y=(").append(Utils.f2(ev.getX())).append(", ").append(Utils.f2(ev.getY()));
+        sb.append("), screen=(").append(Utils.f2(ev.getScreenX())).append(", ").append(Utils.f2(ev.getScreenY()));
+        sb.append("), scene=(").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
+        sb.append(")}");
+        System.out.println(sb);
     }
 
     private void print(MouseEvent ev) {
@@ -213,9 +211,8 @@ public class DnDPage extends TestPaneBase {
         sb.append("{event=" + ev.getEventType());
         sb.append(", x/y=(").append(Utils.f2(ev.getX())).append(", ").append(Utils.f2(ev.getY()));
         sb.append("), screen=(").append(Utils.f2(ev.getScreenX())).append(", ").append(Utils.f2(ev.getScreenY()));
-        sb.append("), scene=").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
+        sb.append("), scene=(").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
         sb.append(")}");
-        String s = sb.toString();
-        System.out.println(s);
+        System.out.println(sb);
     }
 }
