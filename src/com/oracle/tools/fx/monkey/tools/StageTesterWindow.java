@@ -135,16 +135,18 @@ public final class StageTesterWindow extends Stage {
                 newStage.initOwner(StageTesterWindow.this);
             }
 
+            var nodeOrientation = NodeOrientation.valueOf(nodeOrientationComboBox.getValue());
+
             Parent root = switch (headerBarComboBox.getValue().toLowerCase(Locale.ROOT)) {
-                case "simple" -> createSimpleHeaderBarRoot(newStage, false);
-                case "simple / custom buttons" -> createSimpleHeaderBarRoot(newStage, true);
-                case "split" -> createSplitHeaderBarRoot(newStage, false);
-                case "split / custom buttons" -> createSplitHeaderBarRoot(newStage, true);
-                default -> new BorderPane(createWindowActions(newStage));
+                case "simple" -> createSimpleHeaderBarRoot(newStage, nodeOrientation, false);
+                case "simple / custom buttons" -> createSimpleHeaderBarRoot(newStage, nodeOrientation, true);
+                case "split" -> createSplitHeaderBarRoot(newStage, nodeOrientation, false);
+                case "split / custom buttons" -> createSplitHeaderBarRoot(newStage, nodeOrientation, true);
+                default -> new BorderPane(createWindowActions(newStage, nodeOrientation));
             };
 
             var scene = new Scene(root);
-            scene.setNodeOrientation(NodeOrientation.valueOf(nodeOrientationComboBox.getValue()));
+            scene.setNodeOrientation(nodeOrientation);
 
             newStage.setWidth(800);
             newStage.setHeight(500);
@@ -164,7 +166,7 @@ public final class StageTesterWindow extends Stage {
         setTitle("Stage Tester");
     }
 
-    private Parent createSimpleHeaderBarRoot(Stage stage, boolean customWindowButtons) {
+    private Parent createSimpleHeaderBarRoot(Stage stage, NodeOrientation nodeOrientation, boolean customWindowButtons) {
         var headerBar = new HeaderBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(new TextField() {{ setPromptText("Search..."); setMaxWidth(300); }});
@@ -232,12 +234,12 @@ public final class StageTesterWindow extends Stage {
 
         var borderPane = new BorderPane();
         borderPane.setTop(headerBar);
-        borderPane.setCenter(createWindowActions(stage));
+        borderPane.setCenter(createWindowActions(stage, nodeOrientation));
 
         return borderPane;
     }
 
-    private Parent createSplitHeaderBarRoot(Stage stage, boolean customWindowButtons) {
+    private Parent createSplitHeaderBarRoot(Stage stage, NodeOrientation nodeOrientation, boolean customWindowButtons) {
         var leftHeaderBar = new HeaderBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
         leftHeaderBar.setLeading(new Button("\u2728"));
@@ -275,7 +277,7 @@ public final class StageTesterWindow extends Stage {
 
         var left = new BorderPane();
         left.setTop(leftHeaderBar);
-        left.setCenter(createWindowActions(stage));
+        left.setCenter(createWindowActions(stage, nodeOrientation));
 
         var right = new BorderPane();
         right.setTop(rightHeaderBar);
@@ -302,7 +304,14 @@ public final class StageTesterWindow extends Stage {
         return List.of(iconifyButton, maximizeButton, closeButton);
     }
 
-    private Parent createWindowActions(Stage stage) {
+    private Parent createWindowActions(Stage stage, NodeOrientation nodeOrientation) {
+        var nodeOrientations = Arrays.stream(NodeOrientation.values()).map(Enum::name).toList();
+        var nodeOrientationComboBox = new ComboBox<>(FXCollections.observableArrayList(nodeOrientations));
+        nodeOrientationComboBox.getSelectionModel().select(nodeOrientation.ordinal());
+        nodeOrientationComboBox.getSelectionModel().selectedItemProperty().addListener((_, _, orientation) -> {
+            stage.getScene().setNodeOrientation(NodeOrientation.valueOf(orientation));
+        });
+
         var toggleFullScreenButton = new Button("Enter/Exit Full Screen");
         toggleFullScreenButton.setOnAction(event -> stage.setFullScreen(!stage.isFullScreen()));
 
@@ -315,13 +324,19 @@ public final class StageTesterWindow extends Stage {
         var closeButton = new Button("Close");
         closeButton.setOnAction(event -> stage.close());
 
-        var vb = new VBox(toggleFullScreenButton, toggleMaximizedButton, toggleIconifiedButton, closeButton);
+        var vb = new VBox(
+            nodeOrientationComboBox,
+            toggleFullScreenButton,
+            toggleMaximizedButton,
+            toggleIconifiedButton,
+            closeButton
+        );
         vb.setSpacing(10);
         vb.setAlignment(Pos.CENTER);
-        
+
         // shows node orientation
         Label orientation = new Label("   Text Label   ");
-        
+
         BorderPane bp = new BorderPane();
         bp.setCenter(vb);
         bp.setBottom(orientation);
