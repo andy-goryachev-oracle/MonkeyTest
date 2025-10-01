@@ -24,14 +24,18 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import javafx.application.ColorScheme;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
@@ -77,6 +81,12 @@ public class StagePage extends TestPaneBase {
     private final SimpleBooleanProperty showing = new SimpleBooleanProperty();
     private final SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
     private final SimpleStringProperty title = new SimpleStringProperty();
+    // scene
+    private final ObjectProperty<ColorScheme> colorScheme = new SimpleObjectProperty<>();
+    private final ObjectProperty<Boolean> persistentScrollBars = new SimpleObjectProperty<>();
+    private final ObjectProperty<Boolean> reducedData = new SimpleObjectProperty<>();
+    private final ObjectProperty<Boolean> reducedMotion = new SimpleObjectProperty<>();
+    private final ObjectProperty<Boolean> reducedTransparency = new SimpleObjectProperty<>();
 
     public StagePage() {
         super("WindowPage");
@@ -101,6 +111,13 @@ public class StagePage extends TestPaneBase {
     }
 
     private OptionPane createOptionPane() {
+        Platform.Preferences p = Platform.getPreferences();
+        colorScheme.set(p.getColorScheme());
+        persistentScrollBars.set(p.persistentScrollBarsProperty().get());
+        reducedData.set(p.reducedDataProperty().get());
+        reducedMotion.set(p.reducedMotionProperty().get());
+        reducedTransparency.set(p.reducedTransparencyProperty().get());
+
         OptionPane op = new OptionPane();
 
         // stage
@@ -116,6 +133,14 @@ public class StagePage extends TestPaneBase {
         op.option(new BooleanOption("resizable", "resizable", resizable));
         op.option("Title:", textChoices("title", title));
 
+        // scene
+        op.section("Scene");
+        op.option("Color Scheme:", new EnumOption("colorScheme", ColorScheme.class, colorScheme));
+        op.option(new BooleanOption("persistentScrollBars", "persistent scroll bars", persistentScrollBars));
+        op.option(new BooleanOption("reducedData", "reduced data", reducedData));
+        op.option(new BooleanOption("reducedMotion", "reduced motion", reducedMotion));
+        op.option(new BooleanOption("reducedTransparency", "reduced transparency", reducedTransparency));
+        
         // init
         op.section("Stage Initialization");
         op.option(new BooleanOption("alwaysOnTop", "always on top", alwaysOnTop));
@@ -132,8 +157,17 @@ public class StagePage extends TestPaneBase {
         return op;
     }
 
+    private void sceneConfig(Scene sc) {
+        Scene.Preferences p = sc.getPreferences();
+        p.setColorScheme(colorScheme.get());
+        p.setPersistentScrollBars(persistentScrollBars.get());
+        p.setReducedData(reducedData.get());
+        p.setReducedMotion(reducedMotion.get());
+        p.setReducedTransparency(reducedTransparency.get());
+    }
+
     private Stage createStage() {
-        Stage s = new CustomStage(stageStyle.get());
+        Stage s = new CustomStage(stageStyle.get(), this::sceneConfig);
 
         // init
         s.setAlwaysOnTop(alwaysOnTop.get());

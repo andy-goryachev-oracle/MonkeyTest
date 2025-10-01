@@ -24,13 +24,11 @@
  */
 package com.oracle.tools.fx.monkey.tools;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.Consumer;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.Background;
@@ -50,8 +48,12 @@ import com.oracle.tools.fx.monkey.util.FX;
  * Custom Stage Tester.
  */
 public class CustomStage extends Stage {
-    public CustomStage(StageStyle style) {
+
+    private final Consumer<Scene> sceneConfig;
+
+    public CustomStage(StageStyle style, Consumer<Scene> sceneConfig) {
         super(style);
+        this.sceneConfig = sceneConfig;
 
         setTitle("Stage [" + style + "]");
         setWidth(700);
@@ -64,6 +66,7 @@ public class CustomStage extends Stage {
         Scene sc = new Scene(n);
         sc.setFill(Color.TRANSPARENT);
         n.setOnContextMenuRequested(this::createPopupMenu);
+        sceneConfig.accept(sc);
         setScene(sc);
     }
 
@@ -105,21 +108,5 @@ public class CustomStage extends Stage {
 
     private void setTextArea() {
         setContent(new TextArea());
-    }
-
-    public static void addMenu(MenuBar m) {
-        StageStyle[] styles = StageStyle.values();
-        Arrays.sort(styles, new Comparator<StageStyle>() {
-            @Override
-            public int compare(StageStyle a, StageStyle b) {
-                return a.toString().compareTo(b.toString());
-            }
-        });
-
-        for (StageStyle st: styles) {
-            FX.item(m, st.toString(), () -> {
-                new CustomStage(st).show();
-            });
-        }
     }
 }
