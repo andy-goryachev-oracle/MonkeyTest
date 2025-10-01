@@ -63,7 +63,7 @@ public class CustomStage extends Stage {
     private void setContent(Parent n) {
         Scene sc = new Scene(n);
         sc.setFill(Color.TRANSPARENT);
-        sc.setOnContextMenuRequested(this::createPopupMenu);
+        n.setOnContextMenuRequested(this::createPopupMenu);
         setScene(sc);
     }
 

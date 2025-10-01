@@ -171,7 +171,10 @@ public class FX {
         if (action == null) {
             mi.setDisable(true);
         } else {
-            mi.setOnAction((ev) -> action.run());
+            mi.setOnAction((ev) -> {
+                action.run();
+                ev.consume();
+            });
         }
         cm.getItems().add(mi);
         return mi;
