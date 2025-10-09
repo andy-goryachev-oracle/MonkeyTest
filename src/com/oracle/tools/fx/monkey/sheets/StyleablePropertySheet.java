@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
@@ -49,20 +47,8 @@ public class StyleablePropertySheet {
         });
 
         for (CssMetaData md : ss) {
-            // TODO
-            // Node ed = createOption(n, md);
-            // op.option(md.getProperty(), ed);
-            String val = md.getProperty(); // + ": " + md.getStyleableProperty(n).getValue();
-            op.option(val, null);
+            String val = md.getProperty();
+            op.label(val);
         }
-    }
-
-    private static Node createOption(Styleable s, CssMetaData md) {
-        // TODO move up
-//        if (!md.isSettable(s))
-//        {
-//            return null;
-//        }
-        return new Label(String.valueOf(md.getStyleableProperty(s).getValue()));
     }
 }

@@ -164,8 +164,7 @@ public class DnDPage extends TestPaneBase {
         OptionPane op = new OptionPane();
         op.section("Source");
         op.option("Drag Mode:", createTypeOption("type", type));
-        op.label("Drag View Image:");
-        op.option(Options.createImageOption("image", dragImage));
+        op.option("Drag View Image:", Options.createImageOption("image", dragImage));
         op.option("Offset X:", doubleOption("offsetX", offsetX));
         op.option("Offset Y:", doubleOption("offsetY", offsetY));
         op.section("Target");

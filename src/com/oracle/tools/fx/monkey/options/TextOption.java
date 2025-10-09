@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -58,6 +58,7 @@ public class TextOption extends BorderPane {
         FX.name(this, name);
 
         textField = new TextField();
+        textField.setPrefColumnCount(5);
         textField.setMaxWidth(Double.MAX_VALUE);
         textField.textProperty().bindBidirectional(property);
 //        setOnAction((ev) -> {

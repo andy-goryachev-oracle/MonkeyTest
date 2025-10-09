@@ -52,6 +52,7 @@ public class FontOption extends HBox {
         }
 
         FX.name(fontField, name + "_FONT");
+        fontField.setMaxWidth(Double.MAX_VALUE);
         fontField.getItems().setAll(collectFonts(allowNull));
         fontField.getSelectionModel().selectedItemProperty().addListener((x) -> {
             String fam = fontField.getSelectionModel().getSelectedItem();
@@ -60,11 +61,13 @@ public class FontOption extends HBox {
         });
 
         FX.name(styleField, name + "_STYLE");
+        styleField.setStyle("-fx-max-width:7em;");
         styleField.getSelectionModel().selectedItemProperty().addListener((x) -> {
             update();
         });
 
         FX.name(sizeField, name + "_SIZE");
+        sizeField.setStyle("-fx-max-width:7em;");
         sizeField.getItems().setAll(
             1.0,
             2.5,
