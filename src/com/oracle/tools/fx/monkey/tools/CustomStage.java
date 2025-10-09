@@ -25,7 +25,6 @@
 package com.oracle.tools.fx.monkey.tools;
 
 import java.util.List;
-import java.util.function.Consumer;
 import javafx.application.ColorScheme;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -105,17 +104,18 @@ public class CustomStage extends Stage {
         }
     }
 
-    private final Consumer<Scene> sceneConfig;
+    private final int num;
+    private final Config conf;
     private static int seq;
 
-    public CustomStage(StageStyle style, StageContent content, Consumer<Scene> sceneConfig) {
+    public CustomStage(StageStyle style, StageContent content, Config conf) {
         super(style);
-        this.sceneConfig = sceneConfig;
+        this.num = seq++;
+        this.conf = Config.copy(conf);
 
-        setTitle("Stage [" + style + "]");
         setWidth(700);
         setHeight(500);
-
+        
         setContent(content);
     }
 
@@ -135,7 +135,13 @@ public class CustomStage extends Stage {
         Scene sc = new Scene(n);
         sc.setFill(Color.TRANSPARENT);
         n.setOnContextMenuRequested(this::createPopupMenu);
-        sceneConfig.accept(sc);
+        // scene config
+        Scene.Preferences p = sc.getPreferences();
+        p.setColorScheme(conf.colorScheme.get());
+        p.setPersistentScrollBars(conf.persistentScrollBars.get());
+        p.setReducedData(conf.reducedData.get());
+        p.setReducedMotion(conf.reducedMotion.get());
+        p.setReducedTransparency(conf.reducedTransparency.get());
         setScene(sc);
     }
 
@@ -207,57 +213,74 @@ public class CustomStage extends Stage {
         };
     }
 
+    public static class Config {
+        public final SimpleBooleanProperty alwaysOnTop = new SimpleBooleanProperty();
+        public final SimpleObjectProperty<TargetLocation> location = new SimpleObjectProperty<>(TargetLocation.SAME_SCREEN);
+        public final SimpleObjectProperty<Modality> modality = new SimpleObjectProperty<>(Modality.NONE);
+        public final SimpleObjectProperty<NodeOrientation> nodeOrientation = new SimpleObjectProperty<>(NodeOrientation.INHERIT);
+        public final SimpleBooleanProperty owner = new SimpleBooleanProperty();
+        public final SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
+        //
+        public final SimpleBooleanProperty fullScreen = new SimpleBooleanProperty();
+        public final SimpleStringProperty fullScreenExitHint = new SimpleStringProperty();
+        public final SimpleBooleanProperty iconified = new SimpleBooleanProperty(false);
+        public final SimpleBooleanProperty maximized = new SimpleBooleanProperty(false);
+        //
+        public final ObjectProperty<ColorScheme> colorScheme = new SimpleObjectProperty<>();
+        public final ObjectProperty<Boolean> persistentScrollBars = new SimpleObjectProperty<>();
+        public final ObjectProperty<Boolean> reducedData = new SimpleObjectProperty<>();
+        public final ObjectProperty<Boolean> reducedMotion = new SimpleObjectProperty<>();
+        public final ObjectProperty<Boolean> reducedTransparency = new SimpleObjectProperty<>();
+
+        public static Config getDefault() {
+            Config c = new Config();
+            Platform.Preferences pp = Platform.getPreferences();
+            c.colorScheme.set(pp.getColorScheme());
+            c.persistentScrollBars.set(pp.persistentScrollBarsProperty().get());
+            c.reducedData.set(pp.reducedDataProperty().get());
+            c.reducedMotion.set(pp.reducedMotionProperty().get());
+            c.reducedTransparency.set(pp.reducedTransparencyProperty().get());
+            return c;
+        }
+
+        public static Config copy(Config x) {
+            Config c = new Config();
+            c.alwaysOnTop.set(x.alwaysOnTop.get());
+            c.location.set(x.location.get());
+            c.modality.set(x.modality.get());
+            c.nodeOrientation.set(x.nodeOrientation.get());
+            c.owner.set(x.owner.get());
+            c.stageStyle.set(x.stageStyle.get());
+            c.fullScreen.set(x.fullScreen.get());
+            c.fullScreenExitHint.set(x.fullScreenExitHint.get());
+            c.iconified.set(x.iconified.get());
+            c.maximized.set(x.maximized.get());
+            c.colorScheme.set(x.colorScheme.get());
+            c.persistentScrollBars.set(x.persistentScrollBars.get());
+            c.reducedData.set(x.reducedData.get());
+            c.reducedMotion.set(x.reducedMotion.get());
+            c.reducedTransparency.set(x.reducedTransparency.get());
+            return c;
+        }
+    }
+
     private Parent createNestedStages() {
-        SimpleBooleanProperty alwaysOnTop = new SimpleBooleanProperty();
-        SimpleObjectProperty<TargetLocation> location = new SimpleObjectProperty<>(TargetLocation.SAME_SCREEN);
-        SimpleObjectProperty<Modality> modality = new SimpleObjectProperty<>(Modality.NONE);
-        SimpleObjectProperty<NodeOrientation> nodeOrientation = new SimpleObjectProperty<>(NodeOrientation.INHERIT);
-        SimpleBooleanProperty owner = new SimpleBooleanProperty();
-        SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
-        //
-        SimpleBooleanProperty fullScreen = new SimpleBooleanProperty();
-        SimpleStringProperty fullScreenExitHint = new SimpleStringProperty();
-        SimpleBooleanProperty iconified = new SimpleBooleanProperty(false);
-        SimpleBooleanProperty maximized = new SimpleBooleanProperty(false);
-        //
-        ObjectProperty<ColorScheme> colorScheme = new SimpleObjectProperty<>();
-        ObjectProperty<Boolean> persistentScrollBars = new SimpleObjectProperty<>();
-        ObjectProperty<Boolean> reducedData = new SimpleObjectProperty<>();
-        ObjectProperty<Boolean> reducedMotion = new SimpleObjectProperty<>();
-        ObjectProperty<Boolean> reducedTransparency = new SimpleObjectProperty<>();
-        
-        Platform.Preferences pp = Platform.getPreferences();
-        colorScheme.set(pp.getColorScheme());
-        persistentScrollBars.set(pp.persistentScrollBarsProperty().get());
-        reducedData.set(pp.reducedDataProperty().get());
-        reducedMotion.set(pp.reducedMotionProperty().get());
-        reducedTransparency.set(pp.reducedTransparencyProperty().get());
-        
         OptionPane op = new OptionPane();
         // init
         op.section("Initialization");
-        op.option(new BooleanOption("alwaysOnTop", "always on top", alwaysOnTop));
+        op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
         // TODO HeaderBar
-        op.option("Location:", new EnumOption("location", TargetLocation.class, location));
-        op.option("Modality:", new EnumOption("modality", Modality.class, modality));
-        op.option("Node Orientation:", new EnumOption("nodeOrientation", NodeOrientation.class, nodeOrientation));
-        op.option(new BooleanOption("owner", "set owner", owner));
-        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, stageStyle));
+        op.option("Location:", new EnumOption("location", TargetLocation.class, conf.location));
+        op.option("Modality:", new EnumOption("modality", Modality.class, conf.modality));
+        op.option("Node Orientation:", new EnumOption("nodeOrientation", NodeOrientation.class, conf.nodeOrientation));
+        op.option(new BooleanOption("owner", "set owner", conf.owner));
+        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, conf.stageStyle));
         // stage
         op.section("Stage");
-        op.option(new BooleanOption("fullScreen", "full screen", fullScreen));
-        op.option("Full Screen Hint:", Options.textOption("fullScreenHint", true, true, fullScreenExitHint));
-        op.option(new BooleanOption("iconified", "iconified", iconified));
-        op.option(new BooleanOption("maximized", "maximized", maximized));
-
-        Consumer<Scene> sceneConfig = (sc) -> {
-            Scene.Preferences p = sc.getPreferences();
-            p.setColorScheme(colorScheme.get());
-            p.setPersistentScrollBars(persistentScrollBars.get());
-            p.setReducedData(reducedData.get());
-            p.setReducedMotion(reducedMotion.get());
-            p.setReducedTransparency(reducedTransparency.get());
-        };
+        op.option(new BooleanOption("fullScreen", "full screen", conf.fullScreen));
+        op.option("Full Screen Hint:", Options.textOption("fullScreenHint", true, true, conf.fullScreenExitHint));
+        op.option(new BooleanOption("iconified", "iconified", conf.iconified));
+        op.option(new BooleanOption("maximized", "maximized", conf.maximized));
 
         Button onTopButton = new Button();
         onTopButton.setTooltip(new Tooltip("Toggles the alwaysOnTop property"));
@@ -276,30 +299,31 @@ public class CustomStage extends Stage {
         Button createButton = new Button("Create Stage");
         createButton.setOnAction((_) -> {
             // create stage
-            Modality mod = modality.get();
-            Stage own = owner.get() ? this : null;
+            Modality mod = conf.modality.get();
+            CustomStage own = conf.owner.get() ? this : null;
+            Position pos = getPosition(conf.location.get());
+            
             StringBuilder sb = new StringBuilder();
             if ((mod != null) && (mod != Modality.NONE)) {
                 sb.append(mod).append(" ");
             }
-            sb.append("S_");
+            sb.append("S.");
             sb.append(seq++);
             if (own != null) {
-                sb.append(" owner=");
-                sb.append(own.getTitle());
+                sb.append(" owner=S.");
+                sb.append(own.num);
             }
-            Position pos = getPosition(location.get());
 
-            Stage s = new CustomStage(stageStyle.get(), StageContent.NESTED_STAGES, sceneConfig);
-            s.setTitle(sb.toString());
+            Stage s = new CustomStage(conf.stageStyle.get(), StageContent.NESTED_STAGES, conf);
             // init
-            s.setAlwaysOnTop(alwaysOnTop.get());
+            s.setTitle(sb.toString());
+            s.setAlwaysOnTop(conf.alwaysOnTop.get());
             s.initModality(mod);
             s.initOwner(own);
-            s.setFullScreen(fullScreen.get());
-            s.setFullScreenExitHint(fullScreenExitHint.get());
-            s.setIconified(iconified.get());
-            s.setMaximized(maximized.get());
+            s.setFullScreen(conf.fullScreen.get());
+            s.setFullScreenExitHint(conf.fullScreenExitHint.get());
+            s.setIconified(conf.iconified.get());
+            s.setMaximized(conf.maximized.get());
 
             if (pos != null) {
                 s.setX(pos.x());

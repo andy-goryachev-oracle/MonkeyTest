@@ -25,17 +25,14 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.application.ColorScheme;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
@@ -62,32 +59,19 @@ public class StagePage extends TestPaneBase {
     private final ToggleButton button;
     private final Label status;
     private Stage stage;
-    private final SimpleBooleanProperty alwaysOnTop = new SimpleBooleanProperty();
     private final SimpleBooleanProperty focused = new SimpleBooleanProperty();
-    private final SimpleBooleanProperty fullScreen = new SimpleBooleanProperty();
-    private final SimpleStringProperty fullScreenExitHint = new SimpleStringProperty();
-    private final SimpleBooleanProperty iconified = new SimpleBooleanProperty(false);
-    private final SimpleBooleanProperty maximized = new SimpleBooleanProperty(false);
     private final SimpleDoubleProperty maxHeight = new SimpleDoubleProperty(Double.MAX_VALUE);
     private final SimpleDoubleProperty maxWidth = new SimpleDoubleProperty(Double.MAX_VALUE);
     private final SimpleDoubleProperty minHeight = new SimpleDoubleProperty(0);
     private final SimpleDoubleProperty minWidth = new SimpleDoubleProperty(0);
-    private final SimpleObjectProperty<Modality> modality = new SimpleObjectProperty<>(Modality.NONE);
     private final SimpleDoubleProperty opacity = new SimpleDoubleProperty(1.0);
-    private final SimpleBooleanProperty owner = new SimpleBooleanProperty();
     private final SimpleDoubleProperty renderScaleX = new SimpleDoubleProperty(1.0);
     private final SimpleDoubleProperty renderScaleY = new SimpleDoubleProperty(1.0);
     private final SimpleBooleanProperty resizable = new SimpleBooleanProperty(true);
     private final SimpleBooleanProperty showing = new SimpleBooleanProperty();
-    private final SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
     private final SimpleObjectProperty<CustomStage.StageContent> stageContent = new SimpleObjectProperty<>(CustomStage.StageContent.NESTED_STAGES);
     private final SimpleStringProperty title = new SimpleStringProperty();
-    // scene
-    private final ObjectProperty<ColorScheme> colorScheme = new SimpleObjectProperty<>();
-    private final ObjectProperty<Boolean> persistentScrollBars = new SimpleObjectProperty<>();
-    private final ObjectProperty<Boolean> reducedData = new SimpleObjectProperty<>();
-    private final ObjectProperty<Boolean> reducedMotion = new SimpleObjectProperty<>();
-    private final ObjectProperty<Boolean> reducedTransparency = new SimpleObjectProperty<>();
+    private final CustomStage.Config conf = CustomStage.Config.getDefault();
 
     public StagePage() {
         super("WindowPage");
@@ -112,21 +96,14 @@ public class StagePage extends TestPaneBase {
     }
 
     private OptionPane createOptionPane() {
-        Platform.Preferences p = Platform.getPreferences();
-        colorScheme.set(p.getColorScheme());
-        persistentScrollBars.set(p.persistentScrollBarsProperty().get());
-        reducedData.set(p.reducedDataProperty().get());
-        reducedMotion.set(p.reducedMotionProperty().get());
-        reducedTransparency.set(p.reducedTransparencyProperty().get());
-
         OptionPane op = new OptionPane();
 
         // stage
         op.section("Stage");
-        op.option(new BooleanOption("fullScreen", "full screen", fullScreen));
-        op.option("Full Screen Hint:", Options.textOption("fullScreenHint", true, true, fullScreenExitHint));
-        op.option(new BooleanOption("iconified", "iconified", iconified));
-        op.option(new BooleanOption("maximized", "maximized", maximized));
+        op.option(new BooleanOption("fullScreen", "full screen", conf.fullScreen));
+        op.option("Full Screen Hint:", Options.textOption("fullScreenHint", true, true, conf.fullScreenExitHint));
+        op.option(new BooleanOption("iconified", "iconified", conf.iconified));
+        op.option(new BooleanOption("maximized", "maximized", conf.maximized));
         op.option("Max Height:", maxHeight("maxHeight", maxHeight));
         op.option("Max Width:", maxHeight("maxWidth", maxWidth));
         op.option("Min Height:", maxHeight("minHeight", minHeight));
@@ -136,18 +113,18 @@ public class StagePage extends TestPaneBase {
 
         // scene
         op.section("Scene");
-        op.option("Color Scheme:", new EnumOption("colorScheme", ColorScheme.class, colorScheme));
-        op.option(new BooleanOption("persistentScrollBars", "persistent scroll bars", persistentScrollBars));
-        op.option(new BooleanOption("reducedData", "reduced data", reducedData));
-        op.option(new BooleanOption("reducedMotion", "reduced motion", reducedMotion));
-        op.option(new BooleanOption("reducedTransparency", "reduced transparency", reducedTransparency));
+        op.option("Color Scheme:", new EnumOption("colorScheme", ColorScheme.class, conf.colorScheme));
+        op.option(new BooleanOption("persistentScrollBars", "persistent scroll bars", conf.persistentScrollBars));
+        op.option(new BooleanOption("reducedData", "reduced data", conf.reducedData));
+        op.option(new BooleanOption("reducedMotion", "reduced motion", conf.reducedMotion));
+        op.option(new BooleanOption("reducedTransparency", "reduced transparency", conf.reducedTransparency));
         
         // init
         op.section("Stage Initialization");
-        op.option(new BooleanOption("alwaysOnTop", "always on top", alwaysOnTop));
-        op.option("Modality:", new EnumOption("modality", Modality.class, modality));
-        op.option(new BooleanOption("owner", "set owner", owner));
-        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, stageStyle));
+        op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
+        op.option("Modality:", new EnumOption("modality", Modality.class, conf.modality));
+        op.option(new BooleanOption("owner", "set owner", conf.owner));
+        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, conf.stageStyle));
         op.option("Content:", new EnumOption("stageContent", CustomStage.StageContent.class, stageContent));
 
         // window
@@ -159,29 +136,20 @@ public class StagePage extends TestPaneBase {
         return op;
     }
 
-    private void sceneConfig(Scene sc) {
-        Scene.Preferences p = sc.getPreferences();
-        p.setColorScheme(colorScheme.get());
-        p.setPersistentScrollBars(persistentScrollBars.get());
-        p.setReducedData(reducedData.get());
-        p.setReducedMotion(reducedMotion.get());
-        p.setReducedTransparency(reducedTransparency.get());
-    }
-
     private Stage createStage() {
-        Stage s = new CustomStage(stageStyle.get(), stageContent.get(), this::sceneConfig);
+        Stage s = new CustomStage(conf.stageStyle.get(), stageContent.get(), conf);
 
         // init
-        s.setAlwaysOnTop(alwaysOnTop.get());
-        s.initModality(modality.get());
-        s.initOwner(owner.get() ? FX.getParentWindow(this) : null);
+        s.setAlwaysOnTop(conf.alwaysOnTop.get());
+        s.initModality(conf.modality.get());
+        s.initOwner(conf.owner.get() ? FX.getParentWindow(this) : null);
 
         // properties
-        Utils.link(fullScreen, s.fullScreenProperty(), s::setFullScreen);
+        Utils.link(conf.fullScreen, s.fullScreenProperty(), s::setFullScreen);
         // TODO fullScreenExitCombination
-        s.fullScreenExitHintProperty().bindBidirectional(fullScreenExitHint);
-        Utils.link(iconified, s.iconifiedProperty(), s::setIconified);
-        Utils.link(maximized, s.maximizedProperty(), s::setMaximized);
+        s.fullScreenExitHintProperty().bindBidirectional(conf.fullScreenExitHint);
+        Utils.link(conf.iconified, s.iconifiedProperty(), s::setIconified);
+        Utils.link(conf.maximized, s.maximizedProperty(), s::setMaximized);
         s.maxHeightProperty().bindBidirectional(maxHeight);
         s.maxWidthProperty().bindBidirectional(maxWidth);
         s.minHeightProperty().bindBidirectional(minHeight);
