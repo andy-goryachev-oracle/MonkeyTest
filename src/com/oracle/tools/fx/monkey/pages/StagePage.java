@@ -80,6 +80,7 @@ public class StagePage extends TestPaneBase {
     private final SimpleBooleanProperty resizable = new SimpleBooleanProperty(true);
     private final SimpleBooleanProperty showing = new SimpleBooleanProperty();
     private final SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
+    private final SimpleObjectProperty<CustomStage.StageContent> stageContent = new SimpleObjectProperty<>(CustomStage.StageContent.NESTED_STAGES);
     private final SimpleStringProperty title = new SimpleStringProperty();
     // scene
     private final ObjectProperty<ColorScheme> colorScheme = new SimpleObjectProperty<>();
@@ -123,7 +124,7 @@ public class StagePage extends TestPaneBase {
         // stage
         op.section("Stage");
         op.option(new BooleanOption("fullScreen", "full screen", fullScreen));
-        op.option("Full Screen Hint:", textChoices("fullScreenHint", fullScreenExitHint));
+        op.option("Full Screen Hint:", Options.textOption("fullScreenHint", true, true, fullScreenExitHint));
         op.option(new BooleanOption("iconified", "iconified", iconified));
         op.option(new BooleanOption("maximized", "maximized", maximized));
         op.option("Max Height:", maxHeight("maxHeight", maxHeight));
@@ -131,7 +132,7 @@ public class StagePage extends TestPaneBase {
         op.option("Min Height:", maxHeight("minHeight", minHeight));
         op.option("Min Width:", maxHeight("minWidth", minWidth));
         op.option(new BooleanOption("resizable", "resizable", resizable));
-        op.option("Title:", textChoices("title", title));
+        op.option("Title:", Options.textOption("title", true, true, title));
 
         // scene
         op.section("Scene");
@@ -147,6 +148,7 @@ public class StagePage extends TestPaneBase {
         op.option("Modality:", new EnumOption("modality", Modality.class, modality));
         op.option(new BooleanOption("owner", "set owner", owner));
         op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, stageStyle));
+        op.option("Content:", new EnumOption("stageContent", CustomStage.StageContent.class, stageContent));
 
         // window
         op.section("Window");
@@ -167,7 +169,7 @@ public class StagePage extends TestPaneBase {
     }
 
     private Stage createStage() {
-        Stage s = new CustomStage(stageStyle.get(), this::sceneConfig);
+        Stage s = new CustomStage(stageStyle.get(), stageContent.get(), this::sceneConfig);
 
         // init
         s.setAlwaysOnTop(alwaysOnTop.get());
@@ -248,10 +250,6 @@ public class StagePage extends TestPaneBase {
         op.addChoice("NaN", Double.NaN);
         op.selectInitialValue();
         return op;
-    }
-
-    private Node textChoices(String name, SimpleStringProperty p) {
-        return Options.textOption(name, true, true, p);
     }
 
     private void toggleStage() {

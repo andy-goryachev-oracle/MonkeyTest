@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -49,6 +50,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -434,5 +438,20 @@ public class FX {
         }
         m.getItems().add(mi);
         return mi;
+    }
+
+    public static HBox buttonBar(Node... buttons) {
+        HBox hb = new HBox(5);
+        hb.setPadding(new Insets(5, 10, 5, 10));
+        for (Node b: buttons) {
+            if (b == null) {
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                hb.getChildren().add(spacer);
+            } else {
+                hb.getChildren().add(b);
+            }
+        }
+        return hb;
     }
 }

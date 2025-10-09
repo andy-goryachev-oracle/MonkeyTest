@@ -42,6 +42,7 @@ public class ObjectOption<T> extends ComboBox<NamedValue<T>> {
 
     public ObjectOption(String name, Property<T> p) {
         FX.name(this, name);
+        setMaxWidth(Double.MAX_VALUE);
         property.bindBidirectional(p);
 
         // TODO add the current value to choices and select it

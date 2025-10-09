@@ -38,9 +38,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -101,12 +98,8 @@ public class CssPlaygroundPane extends BorderPane {
         p.add(new Label("Font Size:"), 0, r);
         p.add(fs, 1, r);
 
-        Region spacer = new Region();
-        HBox hb = new HBox(resetButton, spacer, updateButton);
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        hb.setPadding(new Insets(5, 10, 5, 10));
         BorderPane cssPane = new BorderPane(cssField);
-        cssPane.setBottom(hb);
+        cssPane.setBottom(FX.buttonBar(resetButton, null, updateButton));
         cssPane.setPadding(new Insets(2));
 
         TabPane tp = new TabPane();
