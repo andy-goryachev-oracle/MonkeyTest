@@ -37,6 +37,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SelectionMode;
@@ -47,6 +48,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.control.skin.LabelSkin;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
@@ -72,7 +74,8 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final TableView<DataRow> control;
-
+    private static final Label measurer = createMeasurer();
+    
     public TableViewPage() {
         super("TableViewPage");
 
@@ -388,10 +391,18 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         };
     }
 
+    private static Label createMeasurer() {
+        Label m = new Label();
+        m.setSkin(new LabelSkin(m));
+        return m;
+    }
+
     private static Canvas createCanvas(Labeled r, String text) {
         Font f = r.getFont();
-        double w = r.getWidth() - r.snappedLeftInset() - r.snappedRightInset();
-        double h = r.getHeight() - r.snappedTopInset() - r.snappedBottomInset();
+        measurer.setFont(f);
+        measurer.setText(text);
+        double w = measurer.prefWidth(-1);
+        double h = measurer.prefHeight(-1);
         Canvas c = new Canvas(w, h);
         GraphicsContext g = c.getGraphicsContext2D();
         g.setFill(Color.rgb(0, 255, 0, 0.1));
