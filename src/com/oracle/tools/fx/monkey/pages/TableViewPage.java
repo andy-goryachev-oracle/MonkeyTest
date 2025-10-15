@@ -132,6 +132,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         FX.separator(m);
         Menu m2 = FX.menu(m, "Cell Factory");
         FX.item(m2, "Default", () -> tc.setCellFactory(TableColumn.DEFAULT_CELL_FACTORY));
+        FX.item(m2, "Default w/Focus Tracking", () -> tc.setCellFactory(createFocusTrackingCellFactory()));
         FX.item(m2, "Canvas", () -> tc.setCellFactory(new Callback<TableColumn<?,?>, TableCell<?,?>>() {
             @Override
             public TableCell call(TableColumn param) {
@@ -164,6 +165,37 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         FX.separator(m);
         FX.item(m, "Properties...", () -> TableColumnPropertySheet.open(this, tc));
         return m;
+    }
+
+    private Callback createFocusTrackingCellFactory() {
+        return new Callback<TableColumn<?, ?>, TableCell<?, ?>>() {
+            @Override
+            public TableCell<?, ?> call(TableColumn<?, ?> param) {
+                var c = new TextFieldTableCell<>() {
+                    @Override
+                    public void commitEdit(Object v) {
+                        System.out.println("commitEdit: " + v);
+                        super.commitEdit(v);
+                    }
+
+                    @Override
+                    public void startEdit() {
+                        System.out.println("startEdit");
+                        super.startEdit();
+                    }
+
+                    @Override
+                    public void cancelEdit() {
+                        System.out.println("startEdit");
+                        super.cancelEdit();
+                    }
+                };
+                c.focusedProperty().addListener((_,_,v) -> {
+                    System.out.println("focused: " + v);
+                });
+                return c;
+            }
+        };
     }
 
     private TableColumn<DataRow, Object> newColumn() {
