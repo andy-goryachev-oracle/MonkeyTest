@@ -30,6 +30,7 @@ import java.util.Comparator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
@@ -39,6 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -65,11 +67,12 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * Monkey Tester Main Window
  */
 public class MainWindow extends Stage {
-    protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
-    protected ListView<DemoPage> pageSelector;
-    protected BorderPane contentPane;
-    protected DemoPage currentPage;
-    protected Label status;
+    private final ObservableList<DemoPage> pages = FXCollections.observableArrayList();
+    private ListView<DemoPage> pageSelector;
+    private BorderPane contentPane;
+    private DemoPage currentPage;
+    private Label status;
+    private EventHandler<InputMethodEvent> monitor;
 
     public MainWindow() {
         FX.name(this, "MainWindow");
@@ -123,11 +126,28 @@ public class MainWindow extends Stage {
 
     private MenuBar createMenu() {
         CheckMenuItem orientation = new CheckMenuItem("Orientation: RTL");
-        orientation.setOnAction((ev) -> {
+        orientation.setOnAction((_) -> {
             NodeOrientation v = (orientation.isSelected()) ?
                 NodeOrientation.RIGHT_TO_LEFT :
                 NodeOrientation.LEFT_TO_RIGHT;
             getScene().setNodeOrientation(v);
+        });
+        CheckMenuItem imeMonitor = new CheckMenuItem("IME Monitor");
+        imeMonitor.setOnAction((_) -> {
+            if (imeMonitor.isSelected()) {
+                monitor = (ev) -> {
+                    System.out.println(
+                        ev.getEventType() +
+                        " caret=" + ev.getCaretPosition() +
+                        " committed=\"" + ev.getCommitted() +
+                        "\" composed=" + ev.getComposed());
+                };
+                addEventFilter(InputMethodEvent.ANY, monitor);
+            } else {
+                if (monitor != null) {
+                    removeEventFilter(InputMethodEvent.ANY, monitor);
+                }
+            }
         });
 
         MenuBar m = new MenuBar();
@@ -158,6 +178,7 @@ public class MainWindow extends Stage {
         // Logs
         FX.menu(m, "_Logging");
         FX.checkItem(m, "Accessibility", Loggers.accessibility.enabled);
+        FX.item(m, imeMonitor);
         // Window
         FX.menu(m, "_Window");
         FX.item(m, orientation);
