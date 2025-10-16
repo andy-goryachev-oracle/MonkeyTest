@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 
@@ -55,7 +56,8 @@ public class OptionPane extends VBox {
     }
 
     public void option(BooleanOption op) {
-        lastSection().add(null, op);
+        op.setPadding(new Insets(0, 0, 0, 10));
+        lastSection().addFull(new HBox(op));
     }
 
     public void option(String text, Node n) {

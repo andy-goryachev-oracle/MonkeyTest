@@ -32,4 +32,6 @@ module monkey_tester {
     requires javafx.web;
     requires java.desktop;
     requires javafx.swing;
+    requires jfx.incubator.input;
+    requires jfx.incubator.richtext;
 }

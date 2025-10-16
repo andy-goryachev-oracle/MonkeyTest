@@ -43,21 +43,21 @@ import com.oracle.tools.fx.monkey.util.OptionPane;
 public class NodePropertySheet {
     public static void appendTo(OptionPane op, Node n) {
         op.section("Node");
-        op.option("Accessible Help:", new TextOption("accessibleHelp", n.accessibleHelpProperty()));
-        op.option("Accessible Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, n.accessibleRoleProperty()));
-        op.option("Accessible Role Description:", new TextOption("accessibleRoleDescription", n.accessibleRoleDescriptionProperty()));
-        op.option("Accessible Text:", new TextOption("accessibleText", n.accessibleTextProperty()));
+        op.option("Acc. Help:", new TextOption("accessibleHelp", n.accessibleHelpProperty()));
+        op.option("Acc. Role:", new EnumOption<>("accessibleRole", AccessibleRole.class, n.accessibleRoleProperty()));
+        op.option("Acc. Role Descr.:", new TextOption("accessibleRoleDescription", n.accessibleRoleDescriptionProperty()));
+        op.option("Acc. Text:", new TextOption("accessibleText", n.accessibleTextProperty()));
         op.option("Blend Mode:", new EnumOption<>("blendMode", BlendMode.class, n.blendModeProperty()));
         op.option(new BooleanOption("cache", "cache", n.cacheProperty()));
         op.option("Cache Hint:", new EnumOption<>("cacheHint", CacheHint.class, n.cacheHintProperty()));
         op.option("Clip:", Options.clip("clip", n, n.clipProperty()));
-        op.option("Cursor: TODO", null); // TODO
+        //op.option("Cursor: TODO", null); // TODO
         op.option("Depth Test:", new EnumOption<>("depthText", CacheHint.class, n.cacheHintProperty()));
         op.option(new BooleanOption("disable", "disable", n.disableProperty()));
-        op.option("Effect: TODO", null); // TODO
+        //op.option("Effect: TODO", null); // TODO
         op.option(new BooleanOption("focusTraversable", "focus traversable", n.focusTraversableProperty()));
         op.option("Id:", new TextOption("id", n.idProperty()));
-        op.option("Input Method Requests: TODO", null); // TODO
+        //op.option("Input Method Requests: TODO", null); // TODO
         op.option("Layout X:", new DoubleOption("layoutX", n.layoutXProperty()));
         op.option("Layout Y:", new DoubleOption("layoutY", n.layoutYProperty()));
         op.option(new BooleanOption("managed", "managed", n.managedProperty()));
@@ -66,7 +66,7 @@ public class NodePropertySheet {
         op.option("Opacity:", new DoubleSpinner("opacity", -0.1, 1.1, 0.1, n.opacityProperty()));
         op.option(new BooleanOption("pickOnBounds", "pick on bounds", n.pickOnBoundsProperty()));
         op.option("Rotate:", new DoubleOption("rotate", n.rotateProperty()));
-        op.option("Rotation Axis: TODO", null); // TODO
+        //op.option("Rotation Axis: TODO", null); // TODO
         op.option("Scale X:", new DoubleOption("scaleX", n.scaleXProperty()));
         op.option("Scale Y:", new DoubleOption("scaleY", n.scaleYProperty()));
         op.option("Scale Z:", new DoubleOption("scaleZ", n.scaleZProperty()));
@@ -75,7 +75,7 @@ public class NodePropertySheet {
         op.option("Translate X:", new DoubleOption("translateX", n.translateXProperty()));
         op.option("Translate Y:", new DoubleOption("translateY", n.translateYProperty()));
         op.option("Translate Z:", new DoubleOption("translateZ", n.translateZProperty()));
-        op.option("User Data: TODO", null); // TODO
+        //op.option("User Data: TODO", null); // TODO
         op.option("View Order:", new DoubleOption("viewOrder", n.viewOrderProperty()));
         op.option(new BooleanOption("visible", "visible", n.visibleProperty()));
 
