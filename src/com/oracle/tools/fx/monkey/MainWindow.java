@@ -103,7 +103,6 @@ public class MainWindow extends Stage {
             return new ListCell<>() {
                 @Override public void updateItem(DemoPage item, boolean empty) {
                     super.updateItem(item, empty);
-
                     if (empty || (item == null)) {
                         setText(null);
                         setGraphic(null);
