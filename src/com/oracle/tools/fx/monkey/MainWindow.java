@@ -37,6 +37,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
@@ -44,6 +45,8 @@ import javafx.scene.input.InputMethodEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
@@ -96,6 +99,28 @@ public class MainWindow extends Stage {
 
         pageSelector = new ListView(pages);
         FX.name(pageSelector, "pageSelector");
+        pageSelector.setCellFactory((v) -> {
+            return new ListCell<>() {
+                @Override public void updateItem(DemoPage item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty || (item == null)) {
+                        setText(null);
+                        setGraphic(null);
+                    } else if (item.isHighlight()) {
+                        setText(null);
+                        String text = item.toString();
+                        Text t1 = new Text(text.substring(0, 1));
+                        t1.setStyle("-fx-font-weight:bold;");
+                        Text t2 = new Text(text.substring(1));
+                        setGraphic(new TextFlow(t1, t2));
+                    } else {
+                        setText(item.toString());
+                        setGraphic(null);
+                    }
+                }
+            };
+        });
         pageSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePage(c);
         });
