@@ -48,6 +48,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
@@ -76,6 +77,7 @@ public class MainWindow extends Stage {
     private DemoPage currentPage;
     private Label status;
     private EventHandler<InputMethodEvent> monitor;
+    private Double oldScale;
 
     public MainWindow() {
         FX.name(this, "MainWindow");
@@ -156,6 +158,20 @@ public class MainWindow extends Stage {
                 NodeOrientation.LEFT_TO_RIGHT;
             getScene().setNodeOrientation(v);
         });
+        CheckMenuItem fractionalScale = new CheckMenuItem("Weird Fractional Scale");
+        fractionalScale.setOnAction((_) -> {
+            if (fractionalScale.isSelected()) {
+                oldScale = getRenderScaleX();
+                double weirdScale = Math.E;
+                setRenderScaleX(weirdScale);
+                setRenderScaleY(weirdScale);
+            } else {
+                if (oldScale != null) {
+                    setRenderScaleX(oldScale);
+                    setRenderScaleY(oldScale);
+                }
+            }
+        });
         CheckMenuItem imeMonitor = new CheckMenuItem("IME Monitor");
         imeMonitor.setOnAction((_) -> {
             if (imeMonitor.isSelected()) {
@@ -206,6 +222,7 @@ public class MainWindow extends Stage {
         // Window
         FX.menu(m, "_Window");
         FX.item(m, orientation);
+        FX.item(m, fractionalScale);
         FX.separator(m);
         FX.item(m, "Open Modal Window", this::openModalWindow);
         return m;
