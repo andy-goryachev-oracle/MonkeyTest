@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
@@ -38,6 +39,7 @@ import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import jfx.incubator.scene.control.richtext.CodeArea;
 import jfx.incubator.scene.control.richtext.LineNumberDecorator;
@@ -48,6 +50,7 @@ import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.CodeTextModel;
 import jfx.incubator.scene.control.richtext.model.RichParagraph;
 import jfx.incubator.scene.control.richtext.model.RichTextModel;
+import jfx.incubator.scene.control.richtext.model.StyleAttribute;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModel;
 
@@ -87,8 +90,58 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("useContentHeight", "use content height", r.useContentHeightProperty()));
         op.option(new BooleanOption("useContentWidth", "use content width", r.useContentWidthProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", r.wrapTextProperty()));
+        // control
+        op.section("Control");
+        op.option("Context Menu:", contextMenuOptions("contextMenu", r));
+        op.option("Tooltip:", Options.tooltipOption("tooltip", r.tooltipProperty()));
+        // region
+        RegionPropertySheet.appendTo(op, r);
+    }
 
-        ControlPropertySheet.appendTo(op, r);
+    private static ObjectOption<ContextMenu> contextMenuOptions(String name, RichTextArea r) {
+        return ControlPropertySheet.contextMenuOptions("contextMenu", r, (m) -> {
+            if (r instanceof CodeArea) {
+                return;
+            }
+            m.addChoice("RichTextArea", createContextMenu(r));
+        });
+    }
+
+    private static ContextMenu createContextMenu(RichTextArea r) {
+        ContextMenu m = new ContextMenu();
+        FX.item(m, "Undo", r::undo);
+        FX.item(m, "Redo", r::redo);
+        FX.separator(m);
+        FX.item(m, "Cut", r::cut);
+        FX.item(m, "Copy", r::copy);
+        FX.item(m, "Paste", r::paste);
+        FX.item(m, "Paste and Retain Style", r::pastePlainText);
+        FX.separator(m);
+        FX.item(m, "Select All", r::selectAll);
+        FX.separator(m);
+        FX.item(m, "Bold", () -> toggle(r, StyleAttributeMap.BOLD));
+        FX.item(m, "Italic", () -> toggle(r, StyleAttributeMap.ITALIC));
+        FX.item(m, "Strike Through", () -> toggle(r, StyleAttributeMap.STRIKE_THROUGH));
+        FX.item(m, "Underline", () -> toggle(r, StyleAttributeMap.UNDERLINE));
+        return m;
+    }
+
+    private static void toggle(RichTextArea control, StyleAttribute<Boolean> attr) {
+        TextPos start = control.getAnchorPosition();
+        TextPos end = control.getCaretPosition();
+        if (start == null) {
+            return;
+        } else if (start.equals(end)) {
+            // apply to the whole paragraph
+            int ix = start.index();
+            start = TextPos.ofLeading(ix, 0);
+            end = control.getParagraphEnd(ix);
+        }
+
+        StyleAttributeMap a = control.getActiveStyleAttributeMap();
+        boolean on = !a.getBoolean(attr);
+        a = StyleAttributeMap.builder().set(attr, on).build();
+        control.applyStyle(start, end, a);
     }
 
     private static ObjectOption<SideDecorator> createDecoratorOption(String name, ObjectProperty<SideDecorator> p) {

@@ -24,18 +24,17 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
+import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.PickResult;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
 import com.oracle.tools.fx.monkey.util.FX;
-import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.StdoutMouseListener;
 
@@ -45,39 +44,22 @@ import com.oracle.tools.fx.monkey.util.StdoutMouseListener;
 public class ControlPropertySheet {
     public static void appendTo(OptionPane op, Control control) {
         op.section("Control");
-        op.option("Context Menu:", contextMenuOptions("contextMenu", control));
-        op.option("Tooltip:", tooltipOption("tooltip", control.tooltipProperty()));
+        op.option("Context Menu:", contextMenuOptions("contextMenu", control, null));
+        op.option("Tooltip:", Options.tooltipOption("tooltip", control.tooltipProperty()));
         // region
         RegionPropertySheet.appendTo(op, control);
     }
 
-    public static Node tooltipOption(String name, ObjectProperty<Tooltip> p) {
-        ObjectOption<Tooltip> op = new ObjectOption<>(name, p);
-        op.addChoice("<null>", null);
-        op.addChoiceSupplier("simple text", () -> createSimpleTextTooltip());
-        op.addChoiceSupplier("with image", () -> createTooltipWithImage());
-        op.selectInitialValue();
-        return op;
-    }
-
-    private static Tooltip createSimpleTextTooltip() {
-        Tooltip t = new Tooltip("simple text tooltip");
-        return t;
-    }
-
-    private static Tooltip createTooltipWithImage() {
-        Tooltip t = new Tooltip("tooltip with image");
-        t.setGraphic(ImageTools.createImageView(128, 96));
-        return t;
-    }
-
-    public static ObjectOption<ContextMenu> contextMenuOptions(String name, Control c) {
+    public static ObjectOption<ContextMenu> contextMenuOptions(String name, Control c, Consumer<ObjectOption<ContextMenu>> m) {
         Picker picker = new Picker();
         ObjectProperty<ContextMenu> p = c.contextMenuProperty();
         c.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, picker);
         ObjectOption<ContextMenu> op = new ObjectOption<>(name, p);
-        op.addChoiceSupplier("Standard Context Menu", () -> createStandardContextMenu(c, picker));
         op.addChoice("<null>", null);
+        op.addChoiceSupplier("Standard Context Menu", () -> createStandardContextMenu(c, picker));
+        if (m != null) {
+            m.accept(op);
+        }
         op.selectInitialValue();
         return op;
     }

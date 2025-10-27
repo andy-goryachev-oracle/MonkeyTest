@@ -41,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -376,5 +377,25 @@ public class Options {
     private static File parseFileURI(String text) {
         // TODO
         return null;
+    }
+
+    public static Node tooltipOption(String name, ObjectProperty<Tooltip> p) {
+        ObjectOption<Tooltip> op = new ObjectOption<>(name, p);
+        op.addChoice("<null>", null);
+        op.addChoiceSupplier("simple text", () -> createSimpleTextTooltip());
+        op.addChoiceSupplier("with image", () -> createTooltipWithImage());
+        op.selectInitialValue();
+        return op;
+    }
+
+    private static Tooltip createSimpleTextTooltip() {
+        Tooltip t = new Tooltip("simple text tooltip");
+        return t;
+    }
+
+    private static Tooltip createTooltipWithImage() {
+        Tooltip t = new Tooltip("tooltip with image");
+        t.setGraphic(ImageTools.createImageView(128, 96));
+        return t;
     }
 }
