@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,6 +40,7 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.InputMethodEvent;
@@ -175,6 +177,8 @@ public class MainWindow extends Stage {
         });
 
         MenuBar m = new MenuBar();
+        Menu m1;
+        Menu m2;
         // File
         FX.menu(m, "_File");
         FX.item(m, "Quit", Platform::exit);
@@ -204,8 +208,11 @@ public class MainWindow extends Stage {
         FX.checkItem(m, "Accessibility", Loggers.accessibility.enabled);
         FX.item(m, imeMonitor);
         // Window
-        FX.menu(m, "_Window");
+        m1 = FX.menu(m, "_Window");
         FX.item(m, orientation);
+        m2 = FX.menu(m1, "Stylesheet");
+        FX.item(m2, "Modena.css", this::useModenaCSS);
+        FX.item(m2, "Caspian.css", this::useCaspianCSS);
         FX.separator(m);
         FX.item(m, "Open Modal Window", this::openModalWindow);
         return m;
@@ -349,5 +356,13 @@ public class MainWindow extends Stage {
 
     private void openPlatformPreferencesMonitor() {
         PropertiesMonitor.openPreferences(this);
+    }
+
+    private void useCaspianCSS() {
+        Application.setUserAgentStylesheet(Application.STYLESHEET_CASPIAN);
+    }
+
+    private void useModenaCSS() {
+        Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
     }
 }
