@@ -31,6 +31,7 @@ import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import jfx.incubator.scene.control.richtext.RichTextArea;
+import jfx.incubator.scene.control.richtext.model.StyledTextModel;
 import jfx.incubator.scene.control.richtext.skin.RichTextAreaSkin;
 
 /**
@@ -48,6 +49,24 @@ public class RichTextAreaPage extends TestPaneBase implements HasSkinnable {
                 Object v = super.queryAccessibleAttribute(a, ps);
                 Loggers.accessibility.log(a, v);
                 return v;
+            }
+
+            @Override
+            protected void validateModel(StyledTextModel m) {
+                super.validateModel(m);
+                if (m != null) {
+                    m.addListener((ch) -> {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("ContentChange{start=");
+                        sb.append(ch.getStart());
+                        sb.append(", end=");
+                        sb.append(ch.getEnd());
+                        sb.append(", isEdit=");
+                        sb.append(ch.isEdit());
+                        sb.append("}");
+                        System.out.println(sb);
+                    });
+                }
             }
         };
 
