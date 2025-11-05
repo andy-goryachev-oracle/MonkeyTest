@@ -36,12 +36,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DurationOption;
+import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import jfx.incubator.scene.control.richtext.CodeArea;
+import jfx.incubator.scene.control.richtext.LineEnding;
 import jfx.incubator.scene.control.richtext.LineNumberDecorator;
 import jfx.incubator.scene.control.richtext.RichTextArea;
 import jfx.incubator.scene.control.richtext.SideDecorator;
@@ -68,6 +70,7 @@ public class RTAPropertySheet {
 
             op.section("CodeArea");
             op.option("Font:", new FontOption("font", false, c.fontProperty()));
+            op.option("Line Ending:", new EnumOption<LineEnding>("lineEnding", true, LineEnding.class, c.lineEndingProperty()));
             op.option(new BooleanOption("lineNumbers", "line numbers enabled", c.lineNumbersEnabledProperty()));
             op.option("Line Spacing:", Options.lineSpacing("lineSpacing", c.lineSpacingProperty()));
             op.option("Model:", createCodeModelOption("model", c.modelProperty()));
