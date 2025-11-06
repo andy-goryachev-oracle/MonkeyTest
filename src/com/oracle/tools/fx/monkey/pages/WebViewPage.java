@@ -94,6 +94,13 @@ public class WebViewPage extends TestPaneBase {
         op.option("Pref Height", Options.tabPaneConstraints("prefHeight", webView.prefHeightProperty()));
         op.option("Pref Width", Options.tabPaneConstraints("prefWidth", webView.prefWidthProperty()));
         op.option("Zoom:", DoubleOption.of("zoom", webView.zoomProperty(), 0.2, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0));
+        op.section("WebEngine");
+        op.option(new BooleanOption("javaScriptEnabled", "javaScript enabled", engine.javaScriptEnabledProperty()));
+        op.option("User Agent:", Options.textOption("userAgent", true, engine.userAgentProperty(),
+            "<null>", null,
+            "<default>", engine.getUserAgent(),
+            "Chrome", ""));
+        //op.option("User Style Sheet Location:", Options.textOption("userStyleSheetLocation", false, true, engine.userStyleSheetLocationProperty()));
         NodePropertySheet.appendTo(op, webView);
 
         HBox tb = new HBox(

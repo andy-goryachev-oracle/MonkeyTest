@@ -93,6 +93,13 @@ public class Options {
         return op;
     }
 
+    public static Node textOption(String name, boolean allowEditButton, StringProperty prop, Object ... nameValuePairs) {
+        TextChoiceOption op = new TextChoiceOption(name, true, prop);
+        Utils.fromPairs(nameValuePairs, (k,v) -> op.addChoice(k, v));
+        op.selectFirst();
+        return op;
+    }
+
     public static Node fixedSizeOption(String name, DoubleProperty p) {
         return DoubleOption.of(name, p, 0, 20, 33.4, 50, 100);
     }
