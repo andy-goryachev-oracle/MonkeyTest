@@ -86,7 +86,6 @@ public class MainWindow extends Stage {
 
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
-        status.setStyle("-fx-font-size:80%;");
 
         Label spacer = new Label();
 
@@ -253,18 +252,14 @@ public class MainWindow extends Stage {
 
     private String statusText() {
         StringBuilder sb = new StringBuilder();
-        sb.append("   FX:");
-        sb.append(System.getProperty("javafx.runtime.version"));
-        sb.append("  JDK:");
-        sb.append(System.getProperty("java.version"));
 
         if (getRenderScaleX() == getRenderScaleY()) {
-            sb.append("  scale=");
+            sb.append("   scale=");
             sb.append(getRenderScaleX());
         } else {
-            sb.append("  scaleX=");
+            sb.append("   scaleX=");
             sb.append(getRenderScaleX());
-            sb.append("  scaleY=");
+            sb.append(" scaleY=");
             sb.append(getRenderScaleY());
         }
 
@@ -272,14 +267,20 @@ public class MainWindow extends Stage {
         sb.append(f(getWidth())).append("x").append(f(getHeight()));
         sb.append("] @(");
         sb.append(f(getX())).append(",").append(f(getY()));
+        sb.append(")");
 
-        sb.append(") DIR:");
+        sb.append(" ◆fx:");
+        sb.append(System.getProperty("javafx.runtime.version"));
+        sb.append(" ◆jdk:");
+        sb.append(System.getProperty("java.version"));
+
+        sb.append(" ◆dir:");
         sb.append(new File("").getAbsolutePath());
         return sb.toString();
     }
 
     private String f(double v) {
-        return Formats.formatDouble(v);
+        return Formats.format2DP(v);
     }
 
     private DemoPage[] createPages() {
