@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -68,14 +68,14 @@ public class TableColumnPropertySheet extends BorderPane {
         op.section("TableColumn");
         op.option("Cell Factory: TODO", null); // TODO
         op.option("Cell Value Factory: TODO", null); // TODO
-        op.option("Sort Type:", new EnumOption(null, TableColumn.SortType.class, c.sortTypeProperty()));
+        op.option("Sort Type:", new EnumOption<>(null, TableColumn.SortType.class, c.sortTypeProperty()));
     }
 
     private void treeTableColumnOptions(OptionPane op, TreeTableColumn<?, ?> c) {
         op.section("TreeTableColumn");
         op.option("Cell Factory: TODO", null); // TODO
         op.option("Cell Value Factory: TODO", null); // TODO
-        op.option("Sort Type:", new EnumOption(null, TreeTableColumn.SortType.class, c.sortTypeProperty()));
+        op.option("Sort Type:", new EnumOption<>(null, TreeTableColumn.SortType.class, c.sortTypeProperty()));
     }
 
     private void tableColumnBaseOptions(OptionPane op, TableColumnBase<?, ?> c) {

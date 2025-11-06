@@ -34,6 +34,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.HeaderBar;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
@@ -41,6 +42,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HeaderBars;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -68,6 +70,7 @@ public class DialogPage extends TestPaneBase {
     private final SimpleBooleanProperty dpExpanded = new SimpleBooleanProperty();
     private final SimpleObjectProperty<Node> dpGraphic = new SimpleObjectProperty<>();
     private final SimpleObjectProperty<Node> dpGHeader = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<HeaderBars.ChoiceD> headerBar = new SimpleObjectProperty<>(HeaderBars.ChoiceD.NONE);
     private final SimpleStringProperty dpHeaderText = new SimpleStringProperty();
 
     public DialogPage() {
@@ -98,6 +101,7 @@ public class DialogPage extends TestPaneBase {
         op.option(new BooleanOption("expanded", "dpExpanded", dpExpanded));
         op.option("Graphic:", new GraphicOption("dpGraphic", dpGraphic));
         op.option("Header:", new GraphicOption("dpHeader", dpGHeader));
+        op.option("Header Bar:", new EnumOption<>("headerBar", false, HeaderBars.ChoiceD.class, headerBar));
         op.option("Header Text:", textChoices("dpHeaderText", dpHeaderText));
 
         // dialog
@@ -141,6 +145,13 @@ public class DialogPage extends TestPaneBase {
             p.graphicProperty().bindBidirectional(dpGraphic);
             p.headerProperty().bindBidirectional(dpGHeader);
             p.headerTextProperty().bindBidirectional(dpHeaderText);
+            HeaderBar h = switch (headerBar.get()) {
+            case NONE -> null;
+            case SIMPLE -> HeaderBars.createSimple();
+            };
+            if (h != null) {
+                p.setHeaderBar(h);
+            }
             d.setDialogPane(p);
         }
         d.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

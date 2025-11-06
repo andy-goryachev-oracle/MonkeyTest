@@ -115,8 +115,8 @@ public class StagePage extends TestPaneBase {
 
         // scene
         op.section("Scene");
-        op.option("Color Scheme:", new EnumOption("colorScheme", ColorScheme.class, conf.colorScheme));
-        op.option("Header Bar:", new EnumOption("headerBar", false, HeaderBars.Choice.class, headerBar));
+        op.option("Color Scheme:", new EnumOption<>("colorScheme", ColorScheme.class, conf.colorScheme));
+        op.option("Header Bar:", new EnumOption<>("headerBar", false, HeaderBars.Choice.class, headerBar));
         op.option(new BooleanOption("persistentScrollBars", "persistent scroll bars", conf.persistentScrollBars));
         op.option(new BooleanOption("reducedData", "reduced data", conf.reducedData));
         op.option(new BooleanOption("reducedMotion", "reduced motion", conf.reducedMotion));
@@ -125,10 +125,10 @@ public class StagePage extends TestPaneBase {
         // init
         op.section("Stage Initialization");
         op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
-        op.option("Modality:", new EnumOption("modality", Modality.class, conf.modality));
+        op.option("Modality:", new EnumOption<>("modality", Modality.class, conf.modality));
         op.option(new BooleanOption("owner", "set owner", conf.owner));
-        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, conf.stageStyle));
-        op.option("Content:", new EnumOption("stageContent", CustomStage.StageContent.class, stageContent));
+        op.option("Stage Style:", new EnumOption<>("stageStyle", StageStyle.class, conf.stageStyle));
+        op.option("Content:", new EnumOption<>("stageContent", CustomStage.StageContent.class, stageContent));
 
         // window
         op.section("Window");

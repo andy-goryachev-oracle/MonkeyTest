@@ -53,13 +53,30 @@ public class HeaderBars {
         }
     }
 
-    public static Parent createSimple(Parent n) {
-        HeaderBar headerBar = new HeaderBar();
-        headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
-        headerBar.setCenter(searchField());
+    public static enum ChoiceD {
+        NONE,
+        SIMPLE;
 
+        @Override
+        public String toString() {
+            return switch(this) {
+                case NONE -> "<none>";
+                case SIMPLE ->"Simple";
+            };
+        }
+    }
+
+    public static HeaderBar createSimple() {
+        HeaderBar h = new HeaderBar();
+        h.setBackground(Background.fill(Color.LIGHTSKYBLUE));
+        h.setCenter(searchField());
+        return h;
+    }
+
+    public static Parent createSimple(Parent n) {
+        HeaderBar h = createSimple();
         BorderPane bp = new BorderPane();
-        bp.setTop(headerBar);
+        bp.setTop(h);
         bp.setCenter(n);
         return bp;
     }

@@ -280,11 +280,11 @@ public class CustomStage extends Stage {
         op.section("Initialization");
         op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
         // TODO HeaderBar
-        op.option("Location:", new EnumOption("location", TargetLocation.class, conf.location));
-        op.option("Modality:", new EnumOption("modality", Modality.class, conf.modality));
-        op.option("Node Orientation:", new EnumOption("nodeOrientation", NodeOrientation.class, conf.nodeOrientation));
+        op.option("Location:", new EnumOption<>("location", TargetLocation.class, conf.location));
+        op.option("Modality:", new EnumOption<>("modality", Modality.class, conf.modality));
+        op.option("Node Orientation:", new EnumOption<>("nodeOrientation", NodeOrientation.class, conf.nodeOrientation));
         op.option(new BooleanOption("owner", "set owner", conf.owner));
-        op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, conf.stageStyle));
+        op.option("Stage Style:", new EnumOption<>("stageStyle", StageStyle.class, conf.stageStyle));
         // stage
         op.section("Stage");
         op.option(new BooleanOption("fullScreen", "full screen", conf.fullScreen));

@@ -108,7 +108,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option(new BooleanOption("showRoot", "show root", control.showRootProperty()));
-        op.option("Sort Mode:", new EnumOption("sortMode", TreeSortMode.class, control.sortModeProperty()));
+        op.option("Sort Mode:", new EnumOption<>("sortMode", TreeSortMode.class, control.sortModeProperty()));
         op.option("Sort Policy: TODO", null); // TODO
         op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", control.tableMenuButtonVisibleProperty()));
         op.separator();
