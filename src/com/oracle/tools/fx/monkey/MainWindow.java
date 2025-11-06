@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -64,6 +65,7 @@ import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.tools.StageTesterWindow;
 import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -84,6 +86,7 @@ public class MainWindow extends Stage {
 
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
+        status.setStyle("-fx-font-size:80%;");
 
         Label spacer = new Label();
 
@@ -144,10 +147,15 @@ public class MainWindow extends Stage {
         setWidth(1200);
         setHeight(800);
 
-        renderScaleXProperty().addListener((x) -> updateStatus());
-        renderScaleYProperty().addListener((x) -> updateStatus());
         updateTitle();
-        updateStatus();
+        status.textProperty().bind(Bindings.createStringBinding(
+            this::statusText,
+            renderScaleXProperty(),
+            renderScaleYProperty(),
+            xProperty(),
+            yProperty(),
+            widthProperty(),
+            heightProperty()));
     }
 
     private MenuBar createMenu() {
@@ -243,7 +251,7 @@ public class MainWindow extends Stage {
         setTitle(sb.toString());
     }
 
-    private void updateStatus() {
+    private String statusText() {
         StringBuilder sb = new StringBuilder();
         sb.append("   FX:");
         sb.append(System.getProperty("javafx.runtime.version"));
@@ -260,9 +268,18 @@ public class MainWindow extends Stage {
             sb.append(getRenderScaleY());
         }
 
-        sb.append("  LOC:");
+        sb.append(" [");
+        sb.append(f(getWidth())).append("x").append(f(getHeight()));
+        sb.append("] @(");
+        sb.append(f(getX())).append(",").append(f(getY()));
+
+        sb.append(") DIR:");
         sb.append(new File("").getAbsolutePath());
-        status.setText(sb.toString());
+        return sb.toString();
+    }
+
+    private String f(double v) {
+        return Formats.formatDouble(v);
     }
 
     private DemoPage[] createPages() {
