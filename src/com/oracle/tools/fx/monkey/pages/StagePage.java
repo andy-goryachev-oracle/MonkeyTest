@@ -48,6 +48,7 @@ import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.tools.CustomStage;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.Formats;
+import com.oracle.tools.fx.monkey.util.HeaderBars;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -60,6 +61,7 @@ public class StagePage extends TestPaneBase {
     private final Label status;
     private Stage stage;
     private final SimpleBooleanProperty focused = new SimpleBooleanProperty();
+    private final SimpleObjectProperty<HeaderBars.Choice> headerBar = new SimpleObjectProperty<>(HeaderBars.Choice.NONE);
     private final SimpleDoubleProperty maxHeight = new SimpleDoubleProperty(Double.MAX_VALUE);
     private final SimpleDoubleProperty maxWidth = new SimpleDoubleProperty(Double.MAX_VALUE);
     private final SimpleDoubleProperty minHeight = new SimpleDoubleProperty(0);
@@ -114,6 +116,7 @@ public class StagePage extends TestPaneBase {
         // scene
         op.section("Scene");
         op.option("Color Scheme:", new EnumOption("colorScheme", ColorScheme.class, conf.colorScheme));
+        op.option("Header Bar:", new EnumOption("headerBar", false, HeaderBars.Choice.class, headerBar));
         op.option(new BooleanOption("persistentScrollBars", "persistent scroll bars", conf.persistentScrollBars));
         op.option(new BooleanOption("reducedData", "reduced data", conf.reducedData));
         op.option(new BooleanOption("reducedMotion", "reduced motion", conf.reducedMotion));
@@ -137,7 +140,8 @@ public class StagePage extends TestPaneBase {
     }
 
     private Stage createStage() {
-        Stage s = new CustomStage(conf.stageStyle.get(), stageContent.get(), conf);
+        HeaderBars.Choice h = headerBar.get();
+        Stage s = new CustomStage(conf.stageStyle.get(), stageContent.get(), h, conf);
 
         // init
         s.setAlwaysOnTop(conf.alwaysOnTop.get());

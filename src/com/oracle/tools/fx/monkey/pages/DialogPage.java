@@ -61,7 +61,7 @@ public class DialogPage extends TestPaneBase {
     private final SimpleObjectProperty<StageStyle> stageStyle = new SimpleObjectProperty<>(StageStyle.DECORATED);
     private final SimpleStringProperty title = new SimpleStringProperty();
     // dialog pane
-    private final SimpleBooleanProperty useDialogPane = new SimpleBooleanProperty(true);
+    private final SimpleBooleanProperty setDialogPane = new SimpleBooleanProperty(true);
     private final SimpleObjectProperty<Node> dpContent = new SimpleObjectProperty<>();
     private final SimpleStringProperty dpContentText = new SimpleStringProperty();
     private final SimpleObjectProperty<Node> dpExpandableContent = new SimpleObjectProperty<>();
@@ -92,7 +92,7 @@ public class DialogPage extends TestPaneBase {
 
         // dialog pane
         op.section("DialogPane");
-        op.option(new BooleanOption("set DialogPane", "setDialogPane", useDialogPane));
+        op.option(new BooleanOption("set DialogPane", "set DialogPane", setDialogPane));
         op.option("Content:", new GraphicOption("dpContent", dpContent));
         op.option("Expandable Content:", new GraphicOption("dpExpandableContent", dpExpandableContent));
         op.option(new BooleanOption("expanded", "dpExpanded", dpExpanded));
@@ -133,7 +133,7 @@ public class DialogPage extends TestPaneBase {
         d.titleProperty().bindBidirectional(title);
 
         // dialog pane
-        if (useDialogPane.get()) {
+        if (setDialogPane.get()) {
             DialogPane p = new DialogPane();
             p.contentProperty().bindBidirectional(dpContent);
             p.expandableContentProperty().bindBidirectional(dpExpandableContent);
