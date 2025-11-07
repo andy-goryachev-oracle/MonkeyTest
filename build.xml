@@ -49,7 +49,7 @@ This build requires javafx.home property, pointing to JavaFX SDK directory, e.g.
 			includeantruntime="false"
 		>
 			<compilerarg value="-Xlint:none"/>
-			<compilerarg line="--module-path ${javafx.home}/lib --add-modules javafx.base,javafx.graphics,javafx.controls,javafx.media,javafx.swing,javafx.web,jfx.incubator.input,jfx.incubator.richtext"/>
+			<compilerarg line="--module-path ${javafx.home}/lib --add-modules javafx.base,javafx.graphics,javafx.controls,javafx.media,javafx.swing,javafx.web,jfx.incubator.richtext"/>
 			<classpath refid="libs" />
 		</javac>
 	</target>
