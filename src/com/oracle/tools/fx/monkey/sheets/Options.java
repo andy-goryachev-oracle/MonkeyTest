@@ -26,6 +26,9 @@ package com.oracle.tools.fx.monkey.sheets;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -39,7 +42,11 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -404,5 +411,24 @@ public class Options {
         Tooltip t = new Tooltip("tooltip with image");
         t.setGraphic(ImageTools.createImageView(128, 96));
         return t;
+    }
+
+    public static <T extends Enum> ObjectSelector<T> ofEnum(String name, boolean allowNull, Class<T> type, T defaultValue, Consumer<T> client) {
+        ObjectSelector<T> op = new ObjectSelector<>(name, client);
+        T[] values = type.getEnumConstants();
+        Arrays.sort(values, new Comparator<T>() {
+            @Override
+            public int compare(T a, T b) {
+                return a.toString().compareTo(b.toString());
+            }
+        });
+
+        if (allowNull) {
+            op.addChoice("<null>", null);
+        }
+        for (T v : values) {
+            op.addChoice(v.toString(), v);
+        }
+        return op;
     }
 }

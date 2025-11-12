@@ -75,7 +75,6 @@ public class RTAPropertySheet {
 
             op.section("CodeArea");
             op.option("Font:", new FontOption("font", false, c.fontProperty()));
-            op.option("Line Ending:", new EnumOption<LineEnding>("lineEnding", true, LineEnding.class, c.lineEndingProperty()));
             op.option(new BooleanOption("lineNumbers", "line numbers enabled", c.lineNumbersEnabledProperty()));
             op.option("Line Spacing:", Options.lineSpacing("lineSpacing", c.lineSpacingProperty()));
             op.option("Model:", createCodeModelOption("model", c.modelProperty()));
@@ -91,6 +90,9 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("editable", "editable", r.editableProperty()));
         op.option(new BooleanOption("highlightCurrentParagraph", "highlight current paragraph", r.highlightCurrentParagraphProperty()));
         op.option("Left Decorator:", createDecoratorOption("leftDecorator", r.leftDecoratorProperty()));
+        op.option("Line Ending:", Options.ofEnum("lineEnding", true, LineEnding.class, LineEnding.system(), (le) -> {
+            r.setLineEnding(le);
+        }));
         if (c == null) {
             op.option("Model:", createModelOption("model", r.modelProperty()));
         }
