@@ -37,6 +37,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -67,6 +68,14 @@ public class Utils {
     public static Pane buttons(Node ... nodes) {
         HBox b = new HBox(nodes);
         b.setSpacing(2);
+        return b;
+    }
+
+    public static Pane withButtons(Node main, Node ... buttons) {
+        HBox b = new HBox(2);
+        HBox.setHgrow(main, Priority.ALWAYS);
+        b.getChildren().add(main);
+        b.getChildren().addAll(buttons);
         return b;
     }
 
