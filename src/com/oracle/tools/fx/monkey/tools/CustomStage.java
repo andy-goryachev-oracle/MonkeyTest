@@ -61,6 +61,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.CustomPane;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.HeaderBars;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 
 /**
@@ -105,21 +106,23 @@ public class CustomStage extends Stage {
     }
 
     private final int num;
+    private final HeaderBars.Choice headerBarChoice;
     private final Config conf;
     private static int seq;
 
-    public CustomStage(StageStyle style, StageContent content, Config conf) {
+    public CustomStage(StageStyle style, StageContent content, HeaderBars.Choice h, Config conf) {
         super(style);
         this.num = seq++;
+        this.headerBarChoice = h;
         this.conf = Config.copy(conf);
 
         setWidth(700);
         setHeight(500);
         
-        setContent(content);
+        setContent(content, h);
     }
 
-    private void setContent(StageContent content) {
+    private void setContent(StageContent content, HeaderBars.Choice h) {
         Parent n = switch(content) {
         case EMPTY ->
             createEmpty();
@@ -132,6 +135,13 @@ public class CustomStage extends Stage {
         case UI_PANEL ->
             createUiPanel();
         };
+
+        n = switch(h) {
+        case NONE -> n;
+        case SIMPLE -> HeaderBars.createSimple(n);
+        case SPLIT -> HeaderBars.createSplit(n);
+        };
+
         Scene sc = new Scene(n);
         sc.setFill(Color.TRANSPARENT);
         n.setOnContextMenuRequested(this::createPopupMenu);
@@ -148,7 +158,7 @@ public class CustomStage extends Stage {
     private void createPopupMenu(ContextMenuEvent ev) {
         ContextMenu m = new ContextMenu();
         for(StageContent c: StageContent.values()) {
-            FX.item(m, c.toString(), () -> setContent(c));
+            FX.item(m, c.toString(), () -> setContent(c, headerBarChoice));
         }
         FX.separator(m);
         FX.item(m, "Size to Scene", this::sizeToScene);
@@ -314,7 +324,7 @@ public class CustomStage extends Stage {
                 sb.append(own.num);
             }
 
-            Stage s = new CustomStage(conf.stageStyle.get(), StageContent.NESTED_STAGES, conf);
+            Stage s = new CustomStage(conf.stageStyle.get(), StageContent.NESTED_STAGES, headerBarChoice, conf);
             // init
             s.setTitle(sb.toString());
             s.setAlwaysOnTop(conf.alwaysOnTop.get());

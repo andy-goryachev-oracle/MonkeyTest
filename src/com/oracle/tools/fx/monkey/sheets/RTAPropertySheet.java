@@ -29,7 +29,10 @@ import java.util.regex.Pattern;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
@@ -51,7 +54,9 @@ import jfx.incubator.scene.control.richtext.SyntaxDecorator;
 import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.CodeTextModel;
 import jfx.incubator.scene.control.richtext.model.RichParagraph;
+import jfx.incubator.scene.control.richtext.model.RichTextFormatHandler;
 import jfx.incubator.scene.control.richtext.model.RichTextModel;
+import jfx.incubator.scene.control.richtext.model.SimpleViewOnlyStyledModel;
 import jfx.incubator.scene.control.richtext.model.StyleAttribute;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModel;
@@ -184,6 +189,7 @@ public class RTAPropertySheet {
         ObjectOption<StyledTextModel> op = new ObjectOption<>(name, p);
         op.addChoice("<null>", null);
         op.addChoiceSupplier("RichTextModel", RichTextModel::new);
+        op.addChoiceSupplier("Read-Only Model", SampleModel::new);
         // TODO large, all attributes
         if (initial != null) {
             op.addChoice("<initial>", initial);
@@ -327,6 +333,96 @@ public class RTAPropertySheet {
         @Override
         public void handleChange(CodeTextModel m, TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
             // no-op
+        }
+    }
+
+    private static class SampleModel extends SimpleViewOnlyStyledModel {
+        public SampleModel() {
+            // Styles: see MainWindow.stylesheet()
+            String BOLD = "bold";
+            String CODE = "code";
+            String GRAY = "gray";
+            String GREEN = "green";
+            String ITALIC = "italic";
+            String LARGE = "large";
+            String RED = "red";
+            String STRIKETHROUGH = "strikethrough";
+            String UNDERLINE = "underline";
+
+            addWithInlineAndStyleNames("Read-Only Model", "-fx-font-size:200%;", UNDERLINE);
+            nl(2);
+
+            addWithStyleNames("/**", RED, CODE);
+            nl();
+            addWithStyleNames(" * Syntax Highlight Demo.", RED, CODE);
+            nl();
+            addWithStyleNames(" */", RED, CODE);
+            nl();
+            addWithStyleNames("public class ", GREEN, CODE);
+            addWithStyleNames("SyntaxHighlightDemo ", CODE);
+            addWithStyleNames("extends ", GREEN, CODE);
+            addWithStyleNames("Application {", CODE);
+            nl();
+            addWithStyleNames("\tpublic static void", GREEN, CODE);
+            addWithStyleNames(" main(String[] args) {", CODE);
+            nl();
+            addWithStyleNames("\t\tApplication.launch(SyntaxHighlightDemo.", CODE);
+            addWithStyleNames("class", CODE, GREEN);
+            addWithStyleNames(", args);", CODE);
+            nl();
+            addWithStyleNames("\t}", CODE);
+            nl();
+            addWithStyleNames("}", CODE);
+            nl(2);
+            // font attributes
+            addWithStyleNames("BOLD ", BOLD);
+            addWithStyleNames("ITALIC ", ITALIC);
+            addWithStyleNames("STRIKETHROUGH ", STRIKETHROUGH);
+            addWithStyleNames("UNDERLINE ", UNDERLINE);
+            addWithStyleNames("ALL OF THEM ", BOLD, ITALIC, STRIKETHROUGH, UNDERLINE);
+            nl(2);
+            // inline nodes
+            addSegment("Inline Nodes:  ");
+            addNodeSegment(() -> {
+                TextField f = new TextField();
+                f.setPrefColumnCount(20);
+                return f;
+            });
+            addSegment(" ");
+            addNodeSegment(() -> new Button("OK"));
+            addSegment(" ");
+            nl(2);
+            addWithInlineStyle("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
+            addWithStyleNames("        leading and trailing whitespace         ", CODE).nl();
+            nl(2);
+            addWithStyleNames("Various highlights, some overlapping.", LARGE);
+            highlight(8, 10, Color.rgb(255, 255, 128, 0.7));
+            highlight(12, 12, Color.rgb(0, 0, 128, 0.1));
+            addWavyUnderline(25, 100, Color.RED);
+            nl(2);
+            addSegment("Styled with CSS");
+            addWavyUnderline(0, 6, "squiggly-css");
+            highlight(12, 3, "highlight1", "highlight2");
+            nl(2);
+            addSegment("Trailing node: ");
+            addNodeSegment(() -> {
+                String text = "(click me)";
+                Label b = new Label(text);
+                b.setBackground(Background.fill(Color.LIGHTSALMON));
+                b.setOnMouseClicked((_) -> {
+                    if (text.equals(b.getText())) {
+                        b.setMinWidth(200);
+                        b.setText("(click me again)");
+                    } else {
+                        b.setMinWidth(Label.USE_PREF_SIZE);
+                        b.setText(text);
+                    }
+                });
+                return b;
+            });
+
+            // rich text data handler
+            registerDataFormatHandler(RichTextFormatHandler.getInstance(), true, false, 2000);
         }
     }
 }

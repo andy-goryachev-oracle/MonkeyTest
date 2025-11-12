@@ -25,10 +25,13 @@
 package com.oracle.tools.fx.monkey;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -64,6 +67,7 @@ import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.tools.StageTesterWindow;
 import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
@@ -140,14 +144,22 @@ public class MainWindow extends Stage {
         bp.setCenter(split);
         bp.setBottom(st);
 
-        setScene(new Scene(bp));
+        Scene scene = new Scene(bp);
+        scene.getStylesheets().add(stylesheet());
+
+        setScene(scene);
         setWidth(1200);
         setHeight(800);
 
-        renderScaleXProperty().addListener((x) -> updateStatus());
-        renderScaleYProperty().addListener((x) -> updateStatus());
         updateTitle();
-        updateStatus();
+        status.textProperty().bind(Bindings.createStringBinding(
+            this::statusText,
+            renderScaleXProperty(),
+            renderScaleYProperty(),
+            xProperty(),
+            yProperty(),
+            widthProperty(),
+            heightProperty()));
     }
 
     private MenuBar createMenu() {
@@ -243,26 +255,37 @@ public class MainWindow extends Stage {
         setTitle(sb.toString());
     }
 
-    private void updateStatus() {
+    private String statusText() {
         StringBuilder sb = new StringBuilder();
-        sb.append("   FX:");
-        sb.append(System.getProperty("javafx.runtime.version"));
-        sb.append("  JDK:");
-        sb.append(System.getProperty("java.version"));
 
         if (getRenderScaleX() == getRenderScaleY()) {
-            sb.append("  scale=");
+            sb.append("   scale=");
             sb.append(getRenderScaleX());
         } else {
-            sb.append("  scaleX=");
+            sb.append("   scaleX=");
             sb.append(getRenderScaleX());
-            sb.append("  scaleY=");
+            sb.append(" scaleY=");
             sb.append(getRenderScaleY());
         }
 
-        sb.append("  LOC:");
+        sb.append(" [");
+        sb.append(f(getWidth())).append("x").append(f(getHeight()));
+        sb.append("] @(");
+        sb.append(f(getX())).append(",").append(f(getY()));
+        sb.append(")");
+
+        sb.append(" ◆fx:");
+        sb.append(System.getProperty("javafx.runtime.version"));
+        sb.append(" ◆jdk:");
+        sb.append(System.getProperty("java.version"));
+
+        sb.append(" ◆dir:");
         sb.append(new File("").getAbsolutePath());
-        status.setText(sb.toString());
+        return sb.toString();
+    }
+
+    private String f(double v) {
+        return Formats.format2DP(v);
     }
 
     private DemoPage[] createPages() {
@@ -364,5 +387,62 @@ public class MainWindow extends Stage {
 
     private void useModenaCSS() {
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+    }
+
+    private static String stylesheet() {
+        String css =
+            """
+            .bold {
+                -fx-font-weight: bold;
+            }
+
+            .code {
+                -fx-font-family: Monospace;
+            }
+
+            .gray {
+                -fx-fill:gray;
+            }
+
+            .green {
+                -fx-fill:#3e8c25;
+            }
+
+            .italic {
+                -fx-font-family: serif;
+                -fx-font-style: italic;
+            }
+
+            .large {
+                -fx-font-size:200%;
+            }
+
+            .red {
+                -fx-fill:red;
+            }
+
+            .strikethrough {
+                -fx-strikethrough: true;
+            }
+
+            .underline {
+                -fx-underline: true;
+            }
+
+            .squiggly-css {
+                -fx-stroke-width: 0.6;
+                -fx-stroke: blue;
+            }
+
+            .highlight1 {
+                -fx-fill:red;
+            }
+
+            .highlight2 {
+                -fx-stroke-width:1;
+                -fx-stroke-fill:black;
+            }
+            """;
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.US_ASCII));
     }
 }
