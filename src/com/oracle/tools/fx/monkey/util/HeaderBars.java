@@ -65,15 +65,16 @@ public class HeaderBars {
     }
 
     public static Parent createSplit(Parent n) {
-        var leftHeaderBar = new HeaderBar();
+        HeaderBar leftHeaderBar = new HeaderBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
-        leftHeaderBar.setLeading(new Button("\u2728"));
+        leftHeaderBar.setLeft(new Button("Left"));
         leftHeaderBar.setCenter(searchField());
-        leftHeaderBar.setTrailingSystemPadding(false);
+        leftHeaderBar.setRightSystemPadding(false);
 
-        var rightHeaderBar = new HeaderBar();
+        HeaderBar rightHeaderBar = new HeaderBar();
         rightHeaderBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
-        rightHeaderBar.setLeadingSystemPadding(false);
+        rightHeaderBar.setLeftSystemPadding(false);
+        rightHeaderBar.setRight(new Button("Right"));
 
         BorderPane left = new BorderPane();
         left.setTop(leftHeaderBar);
