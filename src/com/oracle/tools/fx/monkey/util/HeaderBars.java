@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.util;
 
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
@@ -57,6 +58,8 @@ public class HeaderBars {
         HeaderBar headerBar = new HeaderBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(searchField());
+        headerBar.setLeading(new Label("Leading"));
+        headerBar.setTrailing(new Label("Trailing"));
 
         BorderPane bp = new BorderPane();
         bp.setTop(headerBar);
@@ -65,15 +68,16 @@ public class HeaderBars {
     }
 
     public static Parent createSplit(Parent n) {
-        var leftHeaderBar = new HeaderBar();
+        HeaderBar leftHeaderBar = new HeaderBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
-        leftHeaderBar.setLeading(new Button("\u2728"));
+        leftHeaderBar.setLeading(new Button("Leading"));
         leftHeaderBar.setCenter(searchField());
         leftHeaderBar.setTrailingSystemPadding(false);
 
-        var rightHeaderBar = new HeaderBar();
+        HeaderBar rightHeaderBar = new HeaderBar();
         rightHeaderBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         rightHeaderBar.setLeadingSystemPadding(false);
+        rightHeaderBar.setTrailing(new Button("Trailing"));
 
         BorderPane left = new BorderPane();
         left.setTop(leftHeaderBar);
