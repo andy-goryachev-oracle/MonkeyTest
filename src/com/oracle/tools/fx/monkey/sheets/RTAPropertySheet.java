@@ -401,25 +401,33 @@ public class RTAPropertySheet {
             addWavyUnderline(0, 6, "squiggly-css");
             highlight(12, 3, "highlight1", "highlight2");
             nl(2);
+            addSegment("Paragraph Node:");
+            addParagraph(JumpingLabel::new);
+            nl(2);
             addSegment("Trailing node: ");
-            addNodeSegment(() -> {
-                String text = "(click me)";
-                Label b = new Label(text);
-                b.setBackground(Background.fill(Color.LIGHTSALMON));
-                b.setOnMouseClicked((_) -> {
-                    if (text.equals(b.getText())) {
-                        b.setMinWidth(200);
-                        b.setText("(click me again)");
-                    } else {
-                        b.setMinWidth(Label.USE_PREF_SIZE);
-                        b.setText(text);
-                    }
-                });
-                return b;
-            });
+            addNodeSegment(JumpingLabel::new);
 
             // rich text data handler
             registerDataFormatHandler(RichTextFormatHandler.getInstance(), true, false, 2000);
+        }
+    }
+
+    static class JumpingLabel extends Label {
+        public JumpingLabel() {
+            String text = "(click me)";
+            setText(text);
+            setBackground(Background.fill(new Color(1.0, 0.627451, 0.47843137, 0.5)));
+            setOnMouseClicked((_) -> {
+                if (text.equals(getText())) {
+                    setMinWidth(200);
+                    setMinHeight(100);
+                    setText("(click me again)");
+                } else {
+                    setMinWidth(Label.USE_PREF_SIZE);
+                    setText(text);
+                    setMinHeight(Label.USE_PREF_SIZE);
+                }
+            });
         }
     }
 }
