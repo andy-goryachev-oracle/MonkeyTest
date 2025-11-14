@@ -42,6 +42,7 @@ import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.util.ContextMenuOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import jfx.incubator.scene.control.richtext.CodeArea;
@@ -95,21 +96,15 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("useContentHeight", "use content height", r.useContentHeightProperty()));
         op.option(new BooleanOption("useContentWidth", "use content width", r.useContentWidthProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", r.wrapTextProperty()));
-        // control
-        op.section("Control");
-        op.option("Context Menu:", contextMenuOptions("contextMenu", r));
-        op.option("Tooltip:", Options.tooltipOption("tooltip", r.tooltipProperty()));
-        // region
-        RegionPropertySheet.appendTo(op, r);
+        ControlPropertySheet.appendTo(op, r, contextMenuOptions("contextMenu", r));
     }
 
-    private static ObjectOption<ContextMenu> contextMenuOptions(String name, RichTextArea r) {
-        return ControlPropertySheet.contextMenuOptions("contextMenu", r, (m) -> {
-            if (r instanceof CodeArea) {
-                return;
-            }
-            m.addChoice("RichTextArea", createContextMenu(r));
-        });
+    private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
+        ContextMenuOptions c = new ContextMenuOptions(name, r);
+        if (!(r instanceof CodeArea)) {
+            c.addChoice("RichTextArea", createContextMenu(r));
+        }
+        return c;
     }
 
     private static ContextMenu createContextMenu(RichTextArea r) {
