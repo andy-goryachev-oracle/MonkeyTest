@@ -67,9 +67,11 @@ import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
+import com.oracle.tools.fx.monkey.util.CustomPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
+import com.oracle.tools.fx.monkey.util.StageInfoPane;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
@@ -404,5 +406,19 @@ public class Options {
         Tooltip t = new Tooltip("tooltip with image");
         t.setGraphic(ImageTools.createImageView(128, 96));
         return t;
+    }
+
+    public static ObjectOption<Node> nodeOption(String name, ObjectProperty<Node> p) {
+        ObjectOption<Node> op = new ObjectOption<Node>(name, p);
+        op.addChoice("<null>", null);
+        op.addChoice("1 x 1", ImageTools.createImageView(1, 1));
+        op.addChoice("16 x 16", ImageTools.createImageView(16, 16));
+        op.addChoice("128 x 16", ImageTools.createImageView(128, 16));
+        op.addChoice("16 x 128", ImageTools.createImageView(16, 128));
+        op.addChoice("512 x 512", ImageTools.createImageView(512, 512));
+        op.addChoiceSupplier("Complex Pane", CustomPane::create);
+        op.addChoiceSupplier("Stage Information", StageInfoPane::new);
+        op.selectInitialValue();
+        return op;
     }
 }

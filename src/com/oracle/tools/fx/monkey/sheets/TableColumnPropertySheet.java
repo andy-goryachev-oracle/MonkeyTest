@@ -30,7 +30,6 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.layout.BorderPane;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.OptionWindow;
@@ -83,7 +82,7 @@ public class TableColumnPropertySheet extends BorderPane {
         op.option("Comparator: TODO", null); // TODO
         op.option("Context Menu: TODO", null); // TODO
         op.option(new BooleanOption(null, "editable", c.editableProperty()));
-        op.option("Graphic:", new GraphicOption("graphic", c.graphicProperty()));
+        op.option("Graphic:", Options.nodeOption("graphic", c.graphicProperty()));
         op.option("Id:", new TextOption("id", c.idProperty()));
         op.option("Max Width:", Options.forColumnWidth("maxWidth", 5000.0, c.maxWidthProperty()));
         op.option("Min Width:", Options.forColumnWidth("minWidth", 10.0, c.minWidthProperty()));
