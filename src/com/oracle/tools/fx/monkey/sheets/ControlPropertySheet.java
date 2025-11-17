@@ -24,86 +24,25 @@
  */
 package com.oracle.tools.fx.monkey.sheets;
 
-import java.util.function.Consumer;
-import javafx.beans.property.ObjectProperty;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.PickResult;
-import com.oracle.tools.fx.monkey.options.ObjectOption;
-import com.oracle.tools.fx.monkey.tools.AccessibilityPropertyViewer;
-import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.ContextMenuOptions;
 import com.oracle.tools.fx.monkey.util.OptionPane;
-import com.oracle.tools.fx.monkey.util.StdoutMouseListener;
 
 /**
  * Control Property Sheet.
  */
 public class ControlPropertySheet {
+
     public static void appendTo(OptionPane op, Control control) {
+        ContextMenuOptions c = new ContextMenuOptions("contextMenu", control);
+        appendTo(op, control, c);
+    }
+
+    public static void appendTo(OptionPane op, Control control, ContextMenuOptions cx) {
         op.section("Control");
-        op.option("Context Menu:", contextMenuOptions("contextMenu", control, null));
+        op.option("Context Menu:", cx);
         op.option("Tooltip:", Options.tooltipOption("tooltip", control.tooltipProperty()));
         // region
         RegionPropertySheet.appendTo(op, control);
-    }
-
-    public static ObjectOption<ContextMenu> contextMenuOptions(String name, Control c, Consumer<ObjectOption<ContextMenu>> m) {
-        Picker picker = new Picker();
-        ObjectProperty<ContextMenu> p = c.contextMenuProperty();
-        c.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, picker);
-        ObjectOption<ContextMenu> op = new ObjectOption<>(name, p);
-        op.addChoice("<null>", null);
-        op.addChoiceSupplier("Standard Context Menu", () -> createStandardContextMenu(c, picker));
-        if (m != null) {
-            m.accept(op);
-        }
-        op.selectInitialValue();
-        return op;
-    }
-
-    private static ContextMenu createStandardContextMenu(Control c, Picker picker) {
-        return new ContextMenu() {
-            @Override
-            public void show(Node anchor, double screenX, double screenY) {
-                PickResult pick = picker.getPickResult();
-                getItems().clear();
-                populate(this, c, pick);
-                super.show(anchor, screenX, screenY);
-            }
-        };
-    }
-
-    private static void populate(ContextMenu m, Control c, PickResult pick) {
-        Node source = pick.getIntersectedNode();
-        TypeSpecificContextMenu.populate(m, source);
-        if (m.getItems().size() > 0) {
-            FX.separator(m);
-        }
-        FX.item(m, "Accessibility Attributes...", () -> {
-            AccessibilityPropertyViewer.open(pick);
-        });
-        FX.item(m, "Show Properties Monitor...", () -> {
-            PropertiesMonitor.open(source);
-        });
-        StdoutMouseListener.attach(m, c);
-        if (c != source) {
-            StdoutMouseListener.attach(m, source);
-        }
-    }
-
-    static class Picker implements EventHandler<ContextMenuEvent> {
-        private PickResult pick;
-
-        @Override
-        public void handle(ContextMenuEvent ev) {
-            pick = ev.getPickResult();
-        }
-
-        public PickResult getPickResult() {
-            return pick;
-        }
     }
 }

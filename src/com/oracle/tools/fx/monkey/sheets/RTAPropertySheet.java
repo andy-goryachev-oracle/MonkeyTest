@@ -29,7 +29,10 @@ import java.util.regex.Pattern;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
@@ -39,6 +42,7 @@ import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.util.ContextMenuOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import jfx.incubator.scene.control.richtext.CodeArea;
@@ -49,7 +53,9 @@ import jfx.incubator.scene.control.richtext.SyntaxDecorator;
 import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.CodeTextModel;
 import jfx.incubator.scene.control.richtext.model.RichParagraph;
+import jfx.incubator.scene.control.richtext.model.RichTextFormatHandler;
 import jfx.incubator.scene.control.richtext.model.RichTextModel;
+import jfx.incubator.scene.control.richtext.model.SimpleViewOnlyStyledModel;
 import jfx.incubator.scene.control.richtext.model.StyleAttribute;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModel;
@@ -90,21 +96,15 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("useContentHeight", "use content height", r.useContentHeightProperty()));
         op.option(new BooleanOption("useContentWidth", "use content width", r.useContentWidthProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", r.wrapTextProperty()));
-        // control
-        op.section("Control");
-        op.option("Context Menu:", contextMenuOptions("contextMenu", r));
-        op.option("Tooltip:", Options.tooltipOption("tooltip", r.tooltipProperty()));
-        // region
-        RegionPropertySheet.appendTo(op, r);
+        ControlPropertySheet.appendTo(op, r, contextMenuOptions("contextMenu", r));
     }
 
-    private static ObjectOption<ContextMenu> contextMenuOptions(String name, RichTextArea r) {
-        return ControlPropertySheet.contextMenuOptions("contextMenu", r, (m) -> {
-            if (r instanceof CodeArea) {
-                return;
-            }
-            m.addChoice("RichTextArea", createContextMenu(r));
-        });
+    private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
+        ContextMenuOptions c = new ContextMenuOptions(name, r);
+        if (!(r instanceof CodeArea)) {
+            c.addChoice("RichTextArea", createContextMenu(r));
+        }
+        return c;
     }
 
     private static ContextMenu createContextMenu(RichTextArea r) {
@@ -181,6 +181,7 @@ public class RTAPropertySheet {
         ObjectOption<StyledTextModel> op = new ObjectOption<>(name, p);
         op.addChoice("<null>", null);
         op.addChoiceSupplier("RichTextModel", RichTextModel::new);
+        op.addChoiceSupplier("Read-Only Model", SampleModel::new);
         // TODO large, all attributes
         if (initial != null) {
             op.addChoice("<initial>", initial);
@@ -324,6 +325,104 @@ public class RTAPropertySheet {
         @Override
         public void handleChange(CodeTextModel m, TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
             // no-op
+        }
+    }
+
+    private static class SampleModel extends SimpleViewOnlyStyledModel {
+        public SampleModel() {
+            // Styles: see MainWindow.stylesheet()
+            String BOLD = "bold";
+            String CODE = "code";
+            String GRAY = "gray";
+            String GREEN = "green";
+            String ITALIC = "italic";
+            String LARGE = "large";
+            String RED = "red";
+            String STRIKETHROUGH = "strikethrough";
+            String UNDERLINE = "underline";
+
+            addWithInlineAndStyleNames("Read-Only Model", "-fx-font-size:200%;", UNDERLINE);
+            nl(2);
+
+            addWithStyleNames("/**", RED, CODE);
+            nl();
+            addWithStyleNames(" * Syntax Highlight Demo.", RED, CODE);
+            nl();
+            addWithStyleNames(" */", RED, CODE);
+            nl();
+            addWithStyleNames("public class ", GREEN, CODE);
+            addWithStyleNames("SyntaxHighlightDemo ", CODE);
+            addWithStyleNames("extends ", GREEN, CODE);
+            addWithStyleNames("Application {", CODE);
+            nl();
+            addWithStyleNames("\tpublic static void", GREEN, CODE);
+            addWithStyleNames(" main(String[] args) {", CODE);
+            nl();
+            addWithStyleNames("\t\tApplication.launch(SyntaxHighlightDemo.", CODE);
+            addWithStyleNames("class", CODE, GREEN);
+            addWithStyleNames(", args);", CODE);
+            nl();
+            addWithStyleNames("\t}", CODE);
+            nl();
+            addWithStyleNames("}", CODE);
+            nl(2);
+            // font attributes
+            addWithStyleNames("BOLD ", BOLD);
+            addWithStyleNames("ITALIC ", ITALIC);
+            addWithStyleNames("STRIKETHROUGH ", STRIKETHROUGH);
+            addWithStyleNames("UNDERLINE ", UNDERLINE);
+            addWithStyleNames("ALL OF THEM ", BOLD, ITALIC, STRIKETHROUGH, UNDERLINE);
+            nl(2);
+            // inline nodes
+            addSegment("Inline Nodes:  ");
+            addNodeSegment(() -> {
+                TextField f = new TextField();
+                f.setPrefColumnCount(20);
+                return f;
+            });
+            addSegment(" ");
+            addNodeSegment(() -> new Button("OK"));
+            addSegment(" ");
+            nl(2);
+            addWithInlineStyle("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
+            addWithStyleNames("        leading and trailing whitespace         ", CODE).nl();
+            nl(2);
+            addWithStyleNames("Various highlights, some overlapping.", LARGE);
+            highlight(8, 10, Color.rgb(255, 255, 128, 0.7));
+            highlight(12, 12, Color.rgb(0, 0, 128, 0.1));
+            addWavyUnderline(25, 100, Color.RED);
+            nl(2);
+            addSegment("Styled with CSS");
+            addWavyUnderline(0, 6, "squiggly-css");
+            highlight(12, 3, "highlight1", "highlight2");
+            nl(2);
+            addSegment("Paragraph Node:");
+            addParagraph(JumpingLabel::new);
+            nl(2);
+            addSegment("Trailing node: ");
+            addNodeSegment(JumpingLabel::new);
+
+            // rich text data handler
+            registerDataFormatHandler(RichTextFormatHandler.getInstance(), true, false, 2000);
+        }
+    }
+
+    static class JumpingLabel extends Label {
+        public JumpingLabel() {
+            String text = "(click me)";
+            setText(text);
+            setBackground(Background.fill(new Color(1.0, 0.627451, 0.47843137, 0.5)));
+            setOnMouseClicked((_) -> {
+                if (text.equals(getText())) {
+                    setMinWidth(200);
+                    setMinHeight(100);
+                    setText("(click me again)");
+                } else {
+                    setMinWidth(Label.USE_PREF_SIZE);
+                    setText(text);
+                    setMinHeight(Label.USE_PREF_SIZE);
+                }
+            });
         }
     }
 }

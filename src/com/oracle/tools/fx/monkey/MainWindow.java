@@ -25,7 +25,9 @@
 package com.oracle.tools.fx.monkey;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -142,7 +144,10 @@ public class MainWindow extends Stage {
         bp.setCenter(split);
         bp.setBottom(st);
 
-        setScene(new Scene(bp));
+        Scene scene = new Scene(bp);
+        scene.getStylesheets().add(stylesheet());
+
+        setScene(scene);
         setWidth(1200);
         setHeight(800);
 
@@ -382,5 +387,62 @@ public class MainWindow extends Stage {
 
     private void useModenaCSS() {
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+    }
+
+    private static String stylesheet() {
+        String css =
+            """
+            .bold {
+                -fx-font-weight: bold;
+            }
+
+            .code {
+                -fx-font-family: Monospace;
+            }
+
+            .gray {
+                -fx-fill:gray;
+            }
+
+            .green {
+                -fx-fill:#3e8c25;
+            }
+
+            .italic {
+                -fx-font-family: serif;
+                -fx-font-style: italic;
+            }
+
+            .large {
+                -fx-font-size:200%;
+            }
+
+            .red {
+                -fx-fill:red;
+            }
+
+            .strikethrough {
+                -fx-strikethrough: true;
+            }
+
+            .underline {
+                -fx-underline: true;
+            }
+
+            .squiggly-css {
+                -fx-stroke-width: 0.6;
+                -fx-stroke: blue;
+            }
+
+            .highlight1 {
+                -fx-fill:red;
+            }
+
+            .highlight2 {
+                -fx-stroke-width:1;
+                -fx-stroke-fill:black;
+            }
+            """;
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.US_ASCII));
     }
 }
