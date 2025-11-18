@@ -56,6 +56,7 @@ import com.oracle.tools.fx.monkey.sheets.ControlPropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.sheets.TableColumnPropertySheet;
 import com.oracle.tools.fx.monkey.util.ColumnBuilder;
+import com.oracle.tools.fx.monkey.util.ContextMenuOptions;
 import com.oracle.tools.fx.monkey.util.DataRow;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -83,13 +84,11 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
             }
         };
 
-        Button addDataItemButton = FX.button("Add Data Item", this::addDataItem);
-        addDataItemButton.setDisable(true); // FIX
-
-        Button clearDataItemsButton = FX.button("Clear Data Items", () -> {
+        Button clearDataItemsButton = FX.button("Clear", () -> {
             control.setRoot(new TreeItem(null));
             control.setShowRoot(false);
         });
+        FX.tooltip(clearDataItemsButton, "Clear Data Items");
 
         Button refresh = FX.button("Refresh", () -> {
             control.refresh();
@@ -103,20 +102,32 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Fixed Cell Size:", Options.fixedSizeOption("fixedCellSize", control.fixedCellSizeProperty()));
         op.option("Focus Model:", createFocusModelOptions("focusModel", control.focusModelProperty()));
         op.option("Placeholder:", Options.placeholderNode("placeholder", control.placeholderProperty()));
-        op.option("Root:", createRootOptions("root", control.rootProperty()));
-        op.option(Utils.buttons(addDataItemButton, clearDataItemsButton));
+        op.option("Root:", Utils.withButtons(createRootOptions("root", control.rootProperty()), clearDataItemsButton));
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option(new BooleanOption("showRoot", "show root", control.showRootProperty()));
         op.option("Sort Mode:", new EnumOption("sortMode", TreeSortMode.class, control.sortModeProperty()));
-        op.option("Sort Policy: TODO", null); // TODO
+        //op.option("Sort Policy: TODO", null); // TODO
         op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", control.tableMenuButtonVisibleProperty()));
         op.separator();
         op.option(refresh);
-        ControlPropertySheet.appendTo(op, control);
+        ControlPropertySheet.appendTo(op, control, contextMenuOptions("contextMenu"));
 
         setContent(control);
         setOptions(op);
+    }
+
+    private ContextMenuOptions contextMenuOptions(String name) {
+        ContextMenuOptions c = new ContextMenuOptions(name, control);
+        c.addChoiceSupplier("Data Manipulation", () -> {
+            ContextMenu m = new ContextMenu();
+            FX.item(m, "Add After", this::addAfter);
+            FX.item(m, "Add Child", this::addChild);
+            FX.separator(m);
+            FX.item(m, "Remove Item", this::removeItem);
+            return m;
+        });
+        return c;
     }
 
     private ContextMenu createPopupMenu(TreeTableColumn<?,?> tc) {
@@ -365,7 +376,30 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         return s;
     }
 
-    private void addDataItem() {
-        // TODO
+    private void addAfter() {
+        control.getSelectionModel().getSelectedItems().forEach((item) -> {
+            var p = item.getParent();
+            if (p != null) {
+                var items = p.getChildren();
+                int ix = items.indexOf(item);
+                items.add(ix + 1, new TreeItem<>(new DataRow()));
+            }
+        });
+    }
+
+    private void addChild() {
+        control.getSelectionModel().getSelectedItems().forEach((item) -> {
+            item.getChildren().add(new TreeItem<>(new DataRow()));
+            item.setExpanded(true);
+        });
+    }
+
+    private void removeItem() {
+        List.copyOf(control.getSelectionModel().getSelectedItems()).forEach((item) -> {
+            var p = item.getParent();
+            if (p != null) {
+                p.getChildren().remove(item);
+            }
+        });
     }
 }

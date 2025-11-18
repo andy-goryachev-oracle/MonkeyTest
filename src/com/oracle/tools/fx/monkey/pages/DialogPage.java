@@ -38,7 +38,6 @@ import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.options.GraphicOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
@@ -93,11 +92,11 @@ public class DialogPage extends TestPaneBase {
         // dialog pane
         op.section("DialogPane");
         op.option(new BooleanOption("set DialogPane", "set DialogPane", setDialogPane));
-        op.option("Content:", new GraphicOption("dpContent", dpContent));
-        op.option("Expandable Content:", new GraphicOption("dpExpandableContent", dpExpandableContent));
+        op.option("Content:", Options.nodeOption("dpContent", dpContent));
+        op.option("Expandable Content:", Options.nodeOption("dpExpandableContent", dpExpandableContent));
         op.option(new BooleanOption("expanded", "dpExpanded", dpExpanded));
-        op.option("Graphic:", new GraphicOption("dpGraphic", dpGraphic));
-        op.option("Header:", new GraphicOption("dpHeader", dpGHeader));
+        op.option("Graphic:", Options.nodeOption("dpGraphic", dpGraphic));
+        op.option("Header:", Options.nodeOption("dpHeader", dpGHeader));
         op.option("Header Text:", textChoices("dpHeaderText", dpHeaderText));
 
         // dialog

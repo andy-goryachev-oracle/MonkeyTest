@@ -43,6 +43,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
+import com.oracle.tools.fx.monkey.util.ContextMenuOptions;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import jfx.incubator.scene.control.richtext.CodeArea;
@@ -100,21 +101,15 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("useContentHeight", "use content height", r.useContentHeightProperty()));
         op.option(new BooleanOption("useContentWidth", "use content width", r.useContentWidthProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", r.wrapTextProperty()));
-        // control
-        op.section("Control");
-        op.option("Context Menu:", contextMenuOptions("contextMenu", r));
-        op.option("Tooltip:", Options.tooltipOption("tooltip", r.tooltipProperty()));
-        // region
-        RegionPropertySheet.appendTo(op, r);
+        ControlPropertySheet.appendTo(op, r, contextMenuOptions("contextMenu", r));
     }
 
-    private static ObjectOption<ContextMenu> contextMenuOptions(String name, RichTextArea r) {
-        return ControlPropertySheet.contextMenuOptions("contextMenu", r, (m) -> {
-            if (r instanceof CodeArea) {
-                return;
-            }
-            m.addChoice("RichTextArea", createContextMenu(r));
-        });
+    private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
+        ContextMenuOptions c = new ContextMenuOptions(name, r);
+        if (!(r instanceof CodeArea)) {
+            c.addChoice("RichTextArea", createContextMenu(r));
+        }
+        return c;
     }
 
     private static ContextMenu createContextMenu(RichTextArea r) {
@@ -406,25 +401,33 @@ public class RTAPropertySheet {
             addWavyUnderline(0, 6, "squiggly-css");
             highlight(12, 3, "highlight1", "highlight2");
             nl(2);
+            addSegment("Paragraph Node:");
+            addParagraph(JumpingLabel::new);
+            nl(2);
             addSegment("Trailing node: ");
-            addNodeSegment(() -> {
-                String text = "(click me)";
-                Label b = new Label(text);
-                b.setBackground(Background.fill(Color.LIGHTSALMON));
-                b.setOnMouseClicked((_) -> {
-                    if (text.equals(b.getText())) {
-                        b.setMinWidth(200);
-                        b.setText("(click me again)");
-                    } else {
-                        b.setMinWidth(Label.USE_PREF_SIZE);
-                        b.setText(text);
-                    }
-                });
-                return b;
-            });
+            addNodeSegment(JumpingLabel::new);
 
             // rich text data handler
             registerDataFormatHandler(RichTextFormatHandler.getInstance(), true, false, 2000);
+        }
+    }
+
+    static class JumpingLabel extends Label {
+        public JumpingLabel() {
+            String text = "(click me)";
+            setText(text);
+            setBackground(Background.fill(new Color(1.0, 0.627451, 0.47843137, 0.5)));
+            setOnMouseClicked((_) -> {
+                if (text.equals(getText())) {
+                    setMinWidth(200);
+                    setMinHeight(100);
+                    setText("(click me again)");
+                } else {
+                    setMinWidth(Label.USE_PREF_SIZE);
+                    setText(text);
+                    setMinHeight(Label.USE_PREF_SIZE);
+                }
+            });
         }
     }
 }
