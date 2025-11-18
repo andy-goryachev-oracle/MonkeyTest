@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.sheets;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -39,7 +40,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DurationOption;
-import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
@@ -67,6 +67,9 @@ import jfx.incubator.scene.control.richtext.model.StyledTextModel;
  */
 public class RTAPropertySheet {
     public static void appendTo(OptionPane op, RichTextArea r) {
+        Label caret = new Label();
+        caret.textProperty().bind(Bindings.createStringBinding(() -> caretPosition(r), r.caretPositionProperty()));
+
         CodeArea c = (r instanceof CodeArea ca) ? ca : null;
         if (c != null) {
             SimpleObjectProperty<SyntaxDecorator> syntaxDecorator = new SimpleObjectProperty<>();
@@ -86,6 +89,7 @@ public class RTAPropertySheet {
         }
         op.section("RichTextArea");
         op.option("Caret Blink Period:", new DurationOption("caretBlinkPeriod", r.caretBlinkPeriodProperty()));
+        op.option("Caret Position:", caret);
         op.option("Content Padding:", new InsetsOption("contentPadding", false, r.contentPaddingProperty()));
         op.option(new BooleanOption("displayCaret", "display caret", r.displayCaretProperty()));
         op.option(new BooleanOption("editable", "editable", r.editableProperty()));
@@ -102,6 +106,14 @@ public class RTAPropertySheet {
         op.option(new BooleanOption("useContentWidth", "use content width", r.useContentWidthProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", r.wrapTextProperty()));
         ControlPropertySheet.appendTo(op, r, contextMenuOptions("contextMenu", r));
+    }
+
+    private static String caretPosition(RichTextArea r) {
+        TextPos p = r.getCaretPosition();
+        if(p == null) {
+            return null;
+        }
+        return "ix=" + p.index() + " off=" + p.offset() + " ch=" + p.charIndex() + (p.isLeading() ? " leading" : "");
     }
 
     private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
