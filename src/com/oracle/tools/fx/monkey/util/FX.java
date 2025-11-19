@@ -71,14 +71,14 @@ public class FX {
 
     public static Menu menu(MenuBar b, String text) {
         Menu m = new Menu(text);
-        applyMnemonic(m);
+        m.setMnemonicParsing(false);
         b.getMenus().add(m);
         return m;
     }
 
     public static Menu menu(ContextMenu cm, String text) {
         Menu m = new Menu(text);
-        applyMnemonic(m);
+        m.setMnemonicParsing(false);
         cm.getItems().add(m);
         return m;
     }
@@ -95,7 +95,7 @@ public class FX {
 
     public static MenuItem item(MenuBar b, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         if (action == null) {
             mi.setDisable(true);
         } else {
@@ -123,25 +123,16 @@ public class FX {
     }
 
     public static MenuItem item(MenuBar b, MenuItem mi) {
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         lastMenu(b).getItems().add(mi);
         return mi;
     }
 
     public static MenuItem item(MenuBar b, String text) {
         MenuItem mi = new MenuItem(text);
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         lastMenu(b).getItems().add(mi);
         return mi;
-    }
-
-    private static void applyMnemonic(MenuItem m) {
-        String text = m.getText();
-        if (text != null) {
-            if (text.contains("_")) {
-                m.setMnemonicParsing(true);
-            }
-        }
     }
 
     private static Menu lastMenu(MenuBar b) {
@@ -171,7 +162,7 @@ public class FX {
 
     public static MenuItem item(ContextMenu cm, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         if (action == null) {
             mi.setDisable(true);
         } else {
@@ -416,21 +407,21 @@ public class FX {
 
     public static Menu menu(Menu menu, String text) {
         Menu m = new Menu(text);
-        applyMnemonic(m);
+        m.setMnemonicParsing(false);
         menu.getItems().add(m);
         return m;
     }
 
     public static MenuItem item(Menu m, String text) {
         MenuItem mi = new MenuItem(text);
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         m.getItems().add(mi);
         return mi;
     }
 
     public static MenuItem item(Menu m, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
-        applyMnemonic(mi);
+        mi.setMnemonicParsing(false);
         if (action == null) {
             mi.setDisable(true);
         } else {

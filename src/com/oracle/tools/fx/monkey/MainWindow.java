@@ -192,19 +192,19 @@ public class MainWindow extends Stage {
         Menu m1;
         Menu m2;
         // File
-        FX.menu(m, "_File");
+        FX.menu(m, "File");
         FX.item(m, "Quit", Platform::exit);
         // Page
-        FX.menu(m, "_Page");
+        FX.menu(m, "Page");
         FX.item(m, "Reload Current Page", this::reloadCurrentPage);
         FX.separator(m);
         FX.checkItem(m, "Snapped Split Panes", AppSettings.snapSplitPanes);
         // Skin
-        FX.menu(m, "_Skin");
+        FX.menu(m, "Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
         // Tools
-        FX.menu(m, "_Tools");
+        FX.menu(m, "Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
         FX.item(m, "CSS Playground", this::openCssPlayground);
         FX.item(m, "FX TextArea Embedded in JFXPanel", this::openJFXPanel);
@@ -216,11 +216,11 @@ public class MainWindow extends Stage {
         FX.item(m, "Stage Tester", this::openStageTesterWindow);
         FX.item(m, "System Info", this::openSystemInfo);
         // Logs
-        FX.menu(m, "_Logging");
+        FX.menu(m, "Logging");
         FX.checkItem(m, "Accessibility", Loggers.accessibility.enabled);
         FX.item(m, imeMonitor);
         // Window
-        m1 = FX.menu(m, "_Window");
+        m1 = FX.menu(m, "Window");
         FX.item(m, orientation);
         m2 = FX.menu(m1, "Stylesheet");
         FX.item(m2, "Modena.css", this::useModenaCSS);

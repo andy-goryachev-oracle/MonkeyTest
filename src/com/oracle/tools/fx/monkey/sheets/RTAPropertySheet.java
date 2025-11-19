@@ -33,11 +33,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DurationOption;
 import com.oracle.tools.fx.monkey.options.FontOption;
@@ -54,6 +56,7 @@ import jfx.incubator.scene.control.richtext.SideDecorator;
 import jfx.incubator.scene.control.richtext.SyntaxDecorator;
 import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.CodeTextModel;
+import jfx.incubator.scene.control.richtext.model.ParagraphDirection;
 import jfx.incubator.scene.control.richtext.model.RichParagraph;
 import jfx.incubator.scene.control.richtext.model.RichTextFormatHandler;
 import jfx.incubator.scene.control.richtext.model.RichTextModel;
@@ -119,12 +122,13 @@ public class RTAPropertySheet {
     private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
         ContextMenuOptions c = new ContextMenuOptions(name, r);
         if (!(r instanceof CodeArea)) {
-            c.addChoice("RichTextArea", createContextMenu(r));
+            c.addChoice("RichTextArea", createRtaContextMenu(r));
         }
         return c;
     }
 
-    private static ContextMenu createContextMenu(RichTextArea r) {
+    private static ContextMenu createRtaContextMenu(RichTextArea r) {
+        Menu m2;
         ContextMenu m = new ContextMenu();
         FX.item(m, "Undo", r::undo);
         FX.item(m, "Redo", r::redo);
@@ -140,7 +144,43 @@ public class RTAPropertySheet {
         FX.item(m, "Italic", () -> toggle(r, StyleAttributeMap.ITALIC));
         FX.item(m, "Strike Through", () -> toggle(r, StyleAttributeMap.STRIKE_THROUGH));
         FX.item(m, "Underline", () -> toggle(r, StyleAttributeMap.UNDERLINE));
+        FX.separator(m);
+        m2 = FX.menu(m, "Styles");
+        menuItem(m2, "Font Family", r, StyleAttributeMap.FONT_FAMILY, "Cursive", "Fantasy", "Monospace", "Sans-serif", "Serif", "System");
+        menuItem(m2, "Font Size", r, StyleAttributeMap.FONT_SIZE, 2.0, 6.0, 8.0, 10.0, 12.0, 24.0, 48.0, 72.0, 144.0);
+        menuItem(m2, "Text Color", r, StyleAttributeMap.TEXT_COLOR, Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.WHITE);
+        FX.separator(m);
+        m2 = FX.menu(m, "Paragraph Styles");
+        menuItem(m2, "Background", r, StyleAttributeMap.BACKGROUND, Color.rgb(255, 0, 0, 0.3), Color.rgb(0, 0, 0, 0.3));
+        menuItem(m2, "Bullet", r, StyleAttributeMap.BULLET, "•", "✓");
+        menuItem(m2, "First Line Indent", r, StyleAttributeMap.FIRST_LINE_INDENT, 50.0, 100.0);
+        menuItem(m2, "Line Spacing", r, StyleAttributeMap.LINE_SPACING, 10.0, 33.0);
+        menuItem(m2, "Paragraph Direction", r, StyleAttributeMap.PARAGRAPH_DIRECTION, ParagraphDirection.values());
+        menuItem(m2, "Space Above", r, StyleAttributeMap.SPACE_ABOVE, 10.0, 33.0, 100.0);
+        menuItem(m2, "Space Below", r, StyleAttributeMap.SPACE_BELOW, 10.0, 33.0, 100.0);
+        menuItem(m2, "Space Left", r, StyleAttributeMap.SPACE_LEFT, 10.0, 33.0, 100.0);
+        menuItem(m2, "Space Right", r, StyleAttributeMap.SPACE_RIGHT, 10.0, 33.0, 100.0);
+        menuItem(m2, "Text Alignment", r, StyleAttributeMap.TEXT_ALIGNMENT, TextAlignment.values());
         return m;
+    }
+
+    private static <T> void menuItem(Menu menu, String name, RichTextArea control, StyleAttribute<T> a, T... values) {
+        Menu m = FX.menu(menu, name);
+        FX.item(m, "<null>", () -> setAttribute(control, a, null));
+        for (T v : values) {
+            String s = v.toString();
+            FX.item(m, s, () -> setAttribute(control, a, v));
+        }
+    }
+
+    private static <T> void setAttribute(RichTextArea control, StyleAttribute<T> att, T value) {
+        TextPos start = control.getAnchorPosition();
+        TextPos end = control.getCaretPosition();
+        if (start == null) {
+            return;
+        }
+        StyleAttributeMap a = StyleAttributeMap.of(att, value);
+        control.applyStyle(start, end, a);
     }
 
     private static void toggle(RichTextArea control, StyleAttribute<Boolean> attr) {
@@ -185,7 +225,7 @@ public class RTAPropertySheet {
         ObjectOption<StyledTextModel> op = new ObjectOption<>(name, p);
         op.addChoice("<null>", null);
         op.addChoiceSupplier("CodeModel", CodeTextModel::new);
-        // TODO large, all attributes
+        // TODO large
         if (initial != null) {
             op.addChoice("<initial>", initial);
         }
@@ -199,7 +239,7 @@ public class RTAPropertySheet {
         op.addChoice("<null>", null);
         op.addChoiceSupplier("RichTextModel", RichTextModel::new);
         op.addChoiceSupplier("Read-Only Model", SampleModel::new);
-        // TODO large, all attributes
+        // TODO large
         if (initial != null) {
             op.addChoice("<initial>", initial);
         }
