@@ -122,7 +122,7 @@ public class RTAPropertySheet {
     private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
         ContextMenuOptions c = new ContextMenuOptions(name, r);
         if (!(r instanceof CodeArea)) {
-            c.addChoice("RichTextArea", createRtaContextMenu(r));
+            c.addChoice("RichTextArea Menu", createRtaContextMenu(r));
         }
         return c;
     }
