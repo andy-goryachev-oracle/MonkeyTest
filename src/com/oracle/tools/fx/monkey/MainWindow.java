@@ -25,7 +25,9 @@
 package com.oracle.tools.fx.monkey;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -142,7 +144,10 @@ public class MainWindow extends Stage {
         bp.setCenter(split);
         bp.setBottom(st);
 
-        setScene(new Scene(bp));
+        Scene scene = new Scene(bp);
+        scene.getStylesheets().add(stylesheet());
+
+        setScene(scene);
         setWidth(1200);
         setHeight(800);
 
@@ -187,19 +192,19 @@ public class MainWindow extends Stage {
         Menu m1;
         Menu m2;
         // File
-        FX.menu(m, "_File");
+        FX.menu(m, "File");
         FX.item(m, "Quit", Platform::exit);
         // Page
-        FX.menu(m, "_Page");
+        FX.menu(m, "Page");
         FX.item(m, "Reload Current Page", this::reloadCurrentPage);
         FX.separator(m);
         FX.checkItem(m, "Snapped Split Panes", AppSettings.snapSplitPanes);
         // Skin
-        FX.menu(m, "_Skin");
+        FX.menu(m, "Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
         // Tools
-        FX.menu(m, "_Tools");
+        FX.menu(m, "Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
         FX.item(m, "CSS Playground", this::openCssPlayground);
         FX.item(m, "FX TextArea Embedded in JFXPanel", this::openJFXPanel);
@@ -211,11 +216,11 @@ public class MainWindow extends Stage {
         FX.item(m, "Stage Tester", this::openStageTesterWindow);
         FX.item(m, "System Info", this::openSystemInfo);
         // Logs
-        FX.menu(m, "_Logging");
+        FX.menu(m, "Logging");
         FX.checkItem(m, "Accessibility", Loggers.accessibility.enabled);
         FX.item(m, imeMonitor);
         // Window
-        m1 = FX.menu(m, "_Window");
+        m1 = FX.menu(m, "Window");
         FX.item(m, orientation);
         m2 = FX.menu(m1, "Stylesheet");
         FX.item(m2, "Modena.css", this::useModenaCSS);
@@ -382,5 +387,62 @@ public class MainWindow extends Stage {
 
     private void useModenaCSS() {
         Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
+    }
+
+    private static String stylesheet() {
+        String css =
+            """
+            .bold {
+                -fx-font-weight: bold;
+            }
+
+            .code {
+                -fx-font-family: Monospace;
+            }
+
+            .gray {
+                -fx-fill:gray;
+            }
+
+            .green {
+                -fx-fill:#3e8c25;
+            }
+
+            .italic {
+                -fx-font-family: serif;
+                -fx-font-style: italic;
+            }
+
+            .large {
+                -fx-font-size:200%;
+            }
+
+            .red {
+                -fx-fill:red;
+            }
+
+            .strikethrough {
+                -fx-strikethrough: true;
+            }
+
+            .underline {
+                -fx-underline: true;
+            }
+
+            .squiggly-css {
+                -fx-stroke-width: 0.6;
+                -fx-stroke: blue;
+            }
+
+            .highlight1 {
+                -fx-fill:red;
+            }
+
+            .highlight2 {
+                -fx-stroke-width:1;
+                -fx-stroke-fill:black;
+            }
+            """;
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.US_ASCII));
     }
 }

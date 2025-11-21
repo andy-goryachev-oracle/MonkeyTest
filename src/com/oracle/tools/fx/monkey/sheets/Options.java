@@ -26,6 +26,9 @@ package com.oracle.tools.fx.monkey.sheets;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.function.Consumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -39,7 +42,11 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -67,9 +74,11 @@ import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.IntOption;
 import com.oracle.tools.fx.monkey.options.ObjectOption;
 import com.oracle.tools.fx.monkey.options.TextChoiceOption;
+import com.oracle.tools.fx.monkey.util.CustomPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
+import com.oracle.tools.fx.monkey.util.StageInfoPane;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
@@ -404,5 +413,38 @@ public class Options {
         Tooltip t = new Tooltip("tooltip with image");
         t.setGraphic(ImageTools.createImageView(128, 96));
         return t;
+    }
+
+    public static <T extends Enum> ObjectSelector<T> ofEnum(String name, boolean allowNull, Class<T> type, T defaultValue, Consumer<T> client) {
+        ObjectSelector<T> op = new ObjectSelector<>(name, client);
+        T[] values = type.getEnumConstants();
+        Arrays.sort(values, new Comparator<T>() {
+            @Override
+            public int compare(T a, T b) {
+                return a.toString().compareTo(b.toString());
+            }
+        });
+
+        if (allowNull) {
+            op.addChoice("<null>", null);
+        }
+        for (T v : values) {
+            op.addChoice(v.toString(), v);
+        }
+        return op;
+    }
+
+    public static ObjectOption<Node> nodeOption(String name, ObjectProperty<Node> p) {
+        ObjectOption<Node> op = new ObjectOption<Node>(name, p);
+        op.addChoice("<null>", null);
+        op.addChoice("1 x 1", ImageTools.createImageView(1, 1));
+        op.addChoice("16 x 16", ImageTools.createImageView(16, 16));
+        op.addChoice("128 x 16", ImageTools.createImageView(128, 16));
+        op.addChoice("16 x 128", ImageTools.createImageView(16, 128));
+        op.addChoice("512 x 512", ImageTools.createImageView(512, 512));
+        op.addChoiceSupplier("Complex Pane", CustomPane::create);
+        op.addChoiceSupplier("Stage Information", StageInfoPane::new);
+        op.selectInitialValue();
+        return op;
     }
 }
