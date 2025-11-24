@@ -458,6 +458,9 @@ public class RTAPropertySheet {
             nl(2);
             addSegment("Trailing node: ");
             addNodeSegment(JumpingLabel::new);
+            // one after another
+            addParagraph(JumpingLabel::new);
+            addNodeSegment(JumpingLabel::new);
 
             // rich text data handler
             registerDataFormatHandler(RichTextFormatHandler.getInstance(), true, false, 2000);
