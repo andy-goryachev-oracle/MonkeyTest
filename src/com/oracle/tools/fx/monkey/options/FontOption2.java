@@ -49,13 +49,14 @@ public class FontOption2 extends Button {
         FX.name(this, name);
         if (p != null) {
             property.bindBidirectional(p);
-            textProperty().bind(Bindings.createStringBinding(() -> {
-                Font f = property.get();
-                return FontPickerPane.getFontString(f);
-            }, property));
         }
         setMaxWidth(Double.MAX_VALUE);
         setAlignment(Pos.CENTER_LEFT);
+
+        textProperty().bind(Bindings.createStringBinding(() -> {
+            Font f = property.get();
+            return FontPickerPane.getFontString(f);
+        }, property));
 
         setFontValue(property.get());
 

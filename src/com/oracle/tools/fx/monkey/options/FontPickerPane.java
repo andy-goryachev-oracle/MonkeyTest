@@ -39,6 +39,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -47,7 +48,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.util.converter.DoubleStringConverter;
@@ -58,12 +58,13 @@ import com.oracle.tools.fx.monkey.util.Utils;
  * Font Picker Pane.
  */
 public class FontPickerPane extends GridPane {
+    private final static boolean allowLogical = false;
     private final boolean allowNull;
     private final Consumer<Font> client;
     // TODO editable combo box w/list of previously selected fonts (font + style + size)
     private final TextField editor;
     private final ListView<String> familyField = new ListView<>();
-    private final ListView<Object> styleField = new ListView<>();
+    private final ListView<NamedValue<String>> styleField = new ListView<>();
     private final ComboBox<Double> sizeField = new ComboBox<>();
     private final Label sample;
     private final List<String> fonts;
@@ -109,14 +110,20 @@ public class FontPickerPane extends GridPane {
             144.0,
             480.0
         );
+        sizeField.valueProperty().addListener((_,_,_) -> {
+            updatePreview();
+        });
 
         sample = new Label("Brown fox jumped over a lazy dog.\n01234567890");
-        sample.setMinHeight(70);
         sample.setMaxWidth(Double.MAX_VALUE);
-        sample.setBackground(Background.fill(Color.WHITE));
+        //sample.setBackground(Background.fill(Color.WHITE));
         sample.setAlignment(Pos.TOP_LEFT);
         sample.setPadding(new Insets(5));
-        // maybe in a scroll pane?
+        ScrollPane scroll = new ScrollPane(sample);
+        scroll.setMinHeight(80);
+        scroll.setMaxHeight(80);
+        // FIX
+        scroll.setBackground(Background.fill(Color.WHITE));
         
         Button ok = new Button("OK");
         ButtonBar.setButtonData(ok, ButtonData.OK_DONE);
@@ -138,9 +145,9 @@ public class FontPickerPane extends GridPane {
         setFocusTraversable(true);
 
         ColumnConstraints c0 = new ColumnConstraints();
-        c0.setPercentWidth(80.0);
+        c0.setPercentWidth(75.0);
         ColumnConstraints c1 = new ColumnConstraints();
-        c1.setPercentWidth(20.0);
+        c1.setPercentWidth(25.0);
         getColumnConstraints().addAll(c0, c1);
         
         RowConstraints r0 = new RowConstraints();
@@ -153,23 +160,21 @@ public class FontPickerPane extends GridPane {
         add(sizeField, 1, 0);
         add(familyField, 0, 1);
         add(styleField, 1, 1);
-        add(sample, 0, 2, 2, 1);
+        add(scroll, 0, 2, 2, 1);
         add(bb, 0, 3, 2, 1);
 
         setFont(f);
     }
 
-    // TODO move to caller?
     public Popup createPopup() {
         Popup p = new Popup();
         p.setAnchorLocation(AnchorLocation.WINDOW_TOP_LEFT);
-        //p.setAutoHide(true);
+        p.setAutoHide(true);
         p.getContent().add(this);
 
         p.setOnShown((ev) -> {
             editor.requestFocus();
         });
-
         return p;
     }
 
@@ -183,73 +188,91 @@ public class FontPickerPane extends GridPane {
             }
         }
         familyField.getItems().setAll(fs);
-        // TODO if one, select?
     }
 
     private void setFamily(String name) {
-        System.out.println("setFamily " + name); // FIX
-        
-        String st = getCurrentStyle();
-        double sz = getCurrentSize();
-        
-        List<Object> ss = collectStyles(name);
+        List<NamedValue<String>> ss = collectStyles(name);
         styleField.getItems().setAll(ss);
-
-        int ix = indexOf(ss, st);
-        if (ix >= 0) {
+        if (ss.size() > 0) {
+            int ix = guessPlain(ss);
             styleField.getSelectionModel().select(ix);
         }
-
-        ix = indexOf(sizeField.getItems(), sizeField.getValue());
-        if (ix < 0) {
-            ix = indexOf(sizeField.getItems(), defaultFontSize());
-        }
-        styleField.getSelectionModel().select(ix);
+        // TODO update editor?
+        updatePreview();
     }
 
-    private void setStyle(Object x) {
-        System.out.println("setStyle " + x); // FIX
-        // TODO
-        // if one, select?
+    private void setStyle(NamedValue<String> v) {
+        updatePreview();
+    }
+
+    private void updatePreview() {
+        Font f = getCurrentFont();
+        //System.out.println(f);
+        sample.setFont(f);
+    }
+
+    private static int guessPlain(List<NamedValue<String>> styles) {
+        int sz = styles.size();
+        if (sz > 1) {
+            for (int i = 0; i < sz; i++) {
+                NamedValue<String> v = styles.get(i);
+                if (isPlain(v.getDisplay())) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+
+    private static boolean isPlain(String style) {
+        switch(style.toLowerCase(Locale.ROOT)) {
+        case "regular":
+        case "plain":
+            return true;
+        }
+        return false;
     }
     
     private void setFont(Font f) {
-        System.out.println(f); // FIX
-        if(f == null) {
-            if(allowNull) {
+        if (f == null) {
+            if (allowNull) {
                 familyField.getSelectionModel().select(null);
                 editor.setText(null);
             }
         } else {
+            String name = f.getName();
             String fam = f.getFamily();
-            String sty = f.getStyle();
             double sz = f.getSize();
+
             familyField.getSelectionModel().select(fam);
-            select(styleField, sty);
-            select(sizeField, sz);
+            int ix = indexByValue(styleField.getItems(), name);
+            if (ix >= 0) {
+                styleField.getSelectionModel().select(ix);
+            }
+
+            ix = indexOf(sizeField.getItems(), sz);
+            if (ix >= 0) {
+                sizeField.getSelectionModel().select(ix);
+            }
+
             editor.setText(getFontString(f));
         }
     }
-    
-    public String getCurrentFamily() {
+
+    private String getCurrentFamily() {
         return familyField.getSelectionModel().getSelectedItem();
     }
 
-    public String getCurrentStyle() {
-        Object v = styleField.getSelectionModel().getSelectedItem();
-        return getDisplayValue(v);
-    }
-
-    public double getCurrentSize() {
+    private double getCurrentSize() {
         Double v = sizeField.getValue();
         return v == null ? defaultFontSize() : v;
     }
 
-    private static int indexOf(List<?> items, String value) {
+    private static int indexByValue(List<NamedValue<String>> items, String value) {
         int sz = items.size();
         for (int i = 0; i < sz; i++) {
-            Object x = items.get(i);
-            String s = getDisplayValue(x);
+            NamedValue<String> v = items.get(i);
+            String s = v.getValue();
             if (Utils.eq(s, value)) {
                 return i;
             }
@@ -270,20 +293,6 @@ public class FontPickerPane extends GridPane {
         return -1;
     }
 
-    private static void select(ListView<Object> list, String val) {
-        int ix = indexOf(list.getItems(), val);
-        if (ix >= 0) {
-            list.getSelectionModel().select(ix);
-        }
-    }
-
-    private static void select(ComboBox<Double> cb, double value) {
-        int ix = indexOf(cb.getItems(), value);
-        if (ix >= 0) {
-            cb.getSelectionModel().select(ix);
-        }
-    }
-
     private static String getDisplayValue(Object x) {
         if(x == null) {
             return null;
@@ -299,29 +308,31 @@ public class FontPickerPane extends GridPane {
         if (allowNull) {
             rv.add(0, null);
         }
-        rv.add("Cursive");
-        rv.add("Fantasy");
-        rv.add("Monospace");
-        rv.add("Sans-serif");
-        rv.add("Serif");
-        rv.add("System");
+        if (allowLogical) {
+            rv.add("Cursive");
+            rv.add("Fantasy");
+            rv.add("Monospace");
+            rv.add("Sans-serif");
+            rv.add("Serif");
+            rv.add("System");
+        }
         rv.addAll(Font.getFamilies());
         sort(rv);
         return rv;
     }
 
-    private static List<Object> collectStyles(String family) {
+    private static List<NamedValue<String>> collectStyles(String family) {
         if (Utils.isBlank(family)) {
             return List.of();
         }
 
         List<String> ss = Font.getFontNames(family);
         int sz = ss.size();
-        ArrayList<Object> rv = new ArrayList<>(sz);
+        ArrayList<NamedValue<String>> rv = new ArrayList<>(sz);
         for (int i = 0; i < sz; i++) {
             String s = ss.get(i);
-            Object v = parseStyle(family, s);
-            rv.add(v);
+            String display = parseDisplayStyle(family, s);
+            rv.add(new NamedValue<>(display, s));
         }
         sort(rv);
         return rv;
@@ -349,12 +360,12 @@ public class FontPickerPane extends GridPane {
         });
     }
 
-    private static Object parseStyle(String family, String s) {
+    private static String parseDisplayStyle(String family, String s) {
         if (s.startsWith(family)) {
             s = s.substring(family.length()).trim();
         }
         if (Utils.isBlank(s)) {
-            return new NamedValue("Regular", "");
+            return "Regular";
         }
         return s;
     }
@@ -376,7 +387,6 @@ public class FontPickerPane extends GridPane {
 
     private void pickFont() {
         Font f = getCurrentFont();
-        System.out.println("pickFont: " + f); // FIX
         client.accept(f);
     }
 
@@ -385,34 +395,14 @@ public class FontPickerPane extends GridPane {
         if (Utils.isBlank(fm)) {
             return null;
         } else {
-            // FIX or maybe construct the actual font name, and get it?  do not parse weight!
-            Object v = styleField.getSelectionModel().getSelectedItem();
-            String st;
+            NamedValue<String> v = styleField.getSelectionModel().getSelectedItem();
             if(v == null) {
-                st = "";
-            } else if(v instanceof NamedValue nv) {
-                st = nv.getValue().toString();
-            } else {
-                st = v.toString();
+                return Font.getDefault();
             }
-            String name;
-            if (Utils.isBlank(st)) {
-                name = fm;
-            } else {
-                name = fm + " " + st;
-            }
+            
+            String name = v.getValue();
             double sz = getCurrentSize();
-            return Font.font(name, sz);
+            return new Font(name, sz);
         }
-    }
-
-    // TODO remove?
-    private static FontWeight parseWeight(String s) {
-        FontWeight w = FontWeight.findByName(s);
-        if (w == null) {
-            System.out.println("Unable to parse: " + s); // FIX
-            return FontWeight.NORMAL;
-        }
-        return w;
     }
 }
