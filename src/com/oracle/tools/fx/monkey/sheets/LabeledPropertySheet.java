@@ -31,7 +31,7 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
-import com.oracle.tools.fx.monkey.options.FontOption;
+import com.oracle.tools.fx.monkey.options.FontOption2;
 import com.oracle.tools.fx.monkey.options.InsetsOption;
 import com.oracle.tools.fx.monkey.options.PaintOption;
 import com.oracle.tools.fx.monkey.options.TextOption;
@@ -46,7 +46,7 @@ public class LabeledPropertySheet {
         op.option("Alignment:", new EnumOption<>("alignment", Pos.class, n.alignmentProperty()));
         op.option("Content Display:", new EnumOption<>("contentDisplay", ContentDisplay.class, n.contentDisplayProperty()));
         op.option("Ellipsis String:", new TextOption("ellipsisString", n.ellipsisStringProperty()));
-        op.option("Font:", new FontOption("font", false, n.fontProperty()));
+        op.option("Font:", new FontOption2("font", false, n.fontProperty()));
         op.option("Graphic:", Options.nodeOption("graphic", n.graphicProperty()));
         op.option("Padding:", new InsetsOption("padding", false, n.paddingProperty()));
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", n.lineSpacingProperty()));
