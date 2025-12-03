@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -42,6 +43,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -76,8 +78,15 @@ public class FontPickerPane extends GridPane {
         fonts = collectFonts(allowNull);
 
         editor = new TextField();
-        editor.addEventFilter(KeyEvent.ANY, (ev) -> {
+        editor.addEventFilter(KeyEvent.ANY, (_) -> {
             handleKeyPress();
+        });
+        editor.addEventHandler(MouseEvent.MOUSE_PRESSED, (_) -> {
+            if (!editor.isFocused()) {
+                Platform.runLater(() -> {
+                    editor.selectAll();
+                });
+            }
         });
 
         familyField.getItems().setAll(fonts);
@@ -393,7 +402,7 @@ public class FontPickerPane extends GridPane {
     public Font getCurrentFont() {
         String fm = getCurrentFamily();
         if (Utils.isBlank(fm)) {
-            return null;
+            return allowNull ? null : Font.getDefault();
         } else {
             NamedValue<String> v = styleField.getSelectionModel().getSelectedItem();
             if(v == null) {
