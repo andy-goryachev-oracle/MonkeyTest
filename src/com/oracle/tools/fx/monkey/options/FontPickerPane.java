@@ -64,7 +64,7 @@ public class FontPickerPane extends GridPane {
     private final boolean allowNull;
     private final Consumer<Font> client;
     // TODO editable combo box w/list of previously selected fonts (font + style + size)
-    private final TextField editor;
+    private final TextField patternField;
     private final ListView<String> familyField = new ListView<>();
     private final ListView<NamedValue<String>> styleField = new ListView<>();
     private final ComboBox<Double> sizeField = new ComboBox<>();
@@ -74,17 +74,19 @@ public class FontPickerPane extends GridPane {
     public FontPickerPane(Font f, boolean allowNull, Consumer<Font> client) {
         this.allowNull = allowNull;
         this.client = client;
+        
+        //getStyleClass().add("date-picker-popup");
 
         fonts = collectFonts(allowNull);
 
-        editor = new TextField();
-        editor.addEventFilter(KeyEvent.ANY, (_) -> {
+        patternField = new TextField();
+        patternField.addEventFilter(KeyEvent.ANY, (_) -> {
             handleKeyPress();
         });
-        editor.addEventHandler(MouseEvent.MOUSE_PRESSED, (_) -> {
-            if (!editor.isFocused()) {
+        patternField.addEventHandler(MouseEvent.MOUSE_PRESSED, (_) -> {
+            if (!patternField.isFocused()) {
                 Platform.runLater(() -> {
-                    editor.selectAll();
+                    patternField.selectAll();
                 });
             }
         });
@@ -101,10 +103,8 @@ public class FontPickerPane extends GridPane {
         sizeField.setEditable(true);
         sizeField.setConverter(new DoubleStringConverter());
         sizeField.getItems().setAll(
-            1.0,
-            2.5,
-            6.0,
             8.0,
+            9.0,
             10.0,
             11.0,
             12.0,
@@ -115,9 +115,7 @@ public class FontPickerPane extends GridPane {
             24.0,
             32.0,
             48.0,
-            72.0,
-            144.0,
-            480.0
+            72.0
         );
         sizeField.valueProperty().addListener((_,_,_) -> {
             updatePreview();
@@ -165,7 +163,7 @@ public class FontPickerPane extends GridPane {
         RowConstraints r2 = new RowConstraints();
         getRowConstraints().addAll(r0, r1, r2);
 
-        add(editor, 0, 0);
+        add(patternField, 0, 0);
         add(sizeField, 1, 0);
         add(familyField, 0, 1);
         add(styleField, 1, 1);
@@ -175,21 +173,28 @@ public class FontPickerPane extends GridPane {
         setFont(f);
     }
 
+    // TODO there is an alternative: open a resizeable dialog/owned window instead
     public Popup createPopup() {
+        setStyle("""
+            -fx-background-color: -fx-outer-border, -fx-body-color;
+            -fx-background-insets: 0, 1;
+            -fx-padding: 1em 1em 1em 1em;
+            -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.2) , 12, 0.0 , 0 , 8 );
+            """);
+
         Popup p = new Popup();
         p.setAnchorLocation(AnchorLocation.WINDOW_TOP_LEFT);
         p.setAutoHide(true);
         p.getContent().add(this);
-
         p.setOnShown((ev) -> {
-            editor.requestFocus();
+            patternField.requestFocus();
         });
         return p;
     }
 
     private void handleKeyPress() {
         // TODO delayed action: filter, set all
-        String pattern = editor.getText().toLowerCase(Locale.ROOT);
+        String pattern = patternField.getText().toLowerCase(Locale.ROOT);
         ArrayList<String> fs = new ArrayList<>(fonts.size());
         for (String s : fonts) {
             if (s.toLowerCase(Locale.ROOT).contains(pattern)) {
@@ -246,7 +251,7 @@ public class FontPickerPane extends GridPane {
         if (f == null) {
             if (allowNull) {
                 familyField.getSelectionModel().select(null);
-                editor.setText(null);
+                patternField.setText(null);
             }
         } else {
             String name = f.getName();
@@ -264,7 +269,7 @@ public class FontPickerPane extends GridPane {
                 sizeField.getSelectionModel().select(ix);
             }
 
-            editor.setText(getFontString(f));
+            patternField.setText(getFontString(f));
         }
     }
 

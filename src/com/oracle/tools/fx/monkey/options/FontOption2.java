@@ -32,13 +32,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
+import com.oracle.tools.fx.monkey.settings.HasSettings;
+import com.oracle.tools.fx.monkey.settings.SStream;
 import com.oracle.tools.fx.monkey.util.FX;
 
 /**
  * Font Option Bound to a Property.
  */
 // TODO rename
-public class FontOption2 extends Button {
+public class FontOption2 extends Button implements HasSettings {
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
     private Popup popup;
     private final boolean allowNull;
@@ -47,6 +49,7 @@ public class FontOption2 extends Button {
         this.allowNull = allowNull;
 
         FX.name(this, name);
+
         if (p != null) {
             property.bindBidirectional(p);
         }
@@ -97,5 +100,31 @@ public class FontOption2 extends Button {
             style = f.getStyle();
             size = f.getSize();
         }
+    }
+
+    @Override
+    public SStream storeSettings() {
+        SStream s = SStream.writer();
+        Font f = property.get();
+        if (f == null) {
+            s.add("-");
+        } else {
+            s.add(f.getName());
+            s.add(f.getSize());
+        }
+        return s;
+    }
+
+    @Override
+    public void restoreSettings(SStream s) {
+        Font f;
+        String name = s.nextString("-");
+        if("-".equals(name)) {
+            f = null;
+        } else {
+            double sz = s.nextDouble(12.0);
+            f = new Font(name, sz);
+        }
+        property.set(f);
     }
 }
