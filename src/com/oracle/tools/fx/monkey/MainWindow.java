@@ -390,6 +390,7 @@ public class MainWindow extends Stage {
     }
 
     private static String stylesheet() {
+        // NOTE: the style names are used in RTAPropertySheet
         String css =
             """
             .bold {
@@ -423,6 +424,10 @@ public class MainWindow extends Stage {
 
             .strikethrough {
                 -fx-strikethrough: true;
+            }
+
+            .monospaced {
+                -fx-font-family:Monospaced;
             }
 
             .underline {
