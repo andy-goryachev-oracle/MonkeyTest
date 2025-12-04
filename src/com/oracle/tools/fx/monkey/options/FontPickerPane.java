@@ -269,7 +269,7 @@ public class FontPickerPane extends GridPane {
                 sizeField.getSelectionModel().select(ix);
             }
 
-            patternField.setText(getFontString(f));
+            patternField.setText(FontOption.getFontString(f));
         }
     }
 
@@ -386,17 +386,6 @@ public class FontPickerPane extends GridPane {
 
     private static double defaultFontSize() {
         return Font.getDefault().getSize();
-    }
-
-    public static String getFontString(Font f) {
-        if (f == null) {
-            return null;
-        }
-
-        String fam = f.getFamily();
-        String sty = f.getStyle();
-        double sz = f.getSize();
-        return fam + " " + sty + " " + sz;
     }
 
     private void pickFont() {
