@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,134 +24,66 @@
  */
 package com.oracle.tools.fx.monkey.options;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Insets;
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.text.Font;
+import javafx.stage.Popup;
+import com.oracle.tools.fx.monkey.settings.HasSettings;
+import com.oracle.tools.fx.monkey.settings.SStream;
 import com.oracle.tools.fx.monkey.util.FX;
 
 /**
  * Font Option Bound to a Property.
  */
-public class FontOption extends HBox {
+public class FontOption extends Button implements HasSettings {
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
-    private final ComboBox<String> fontField = new ComboBox<>();
-    private final ComboBox<String> styleField = new ComboBox<>();
-    private final ComboBox<Double> sizeField = new ComboBox<>();
+    private Popup popup;
+    private final boolean allowNull;
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
+        this.allowNull = allowNull;
+
         FX.name(this, name);
+        setMaxWidth(Double.MAX_VALUE);
+        setAlignment(Pos.CENTER_LEFT);
+
         if (p != null) {
             property.bindBidirectional(p);
         }
 
-        FX.name(fontField, name + "_FONT");
-        fontField.setMaxWidth(Double.MAX_VALUE);
-        fontField.getItems().setAll(collectFonts(allowNull));
-        fontField.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            String fam = fontField.getSelectionModel().getSelectedItem();
-            updateStyles(fam);
-            update();
-        });
+        textProperty().bind(Bindings.createStringBinding(this::getButtonText, property));
 
-        FX.name(styleField, name + "_STYLE");
-        styleField.setStyle("-fx-max-width:7em;");
-        styleField.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            update();
-        });
+        setFontValue(property.get());
 
-        FX.name(sizeField, name + "_SIZE");
-        sizeField.setStyle("-fx-max-width:7em;");
-        sizeField.getItems().setAll(
-            1.0,
-            2.5,
-            6.0,
-            8.0,
-            10.0,
-            11.0,
-            12.0,
-            16.0,
-            24.0,
-            32.0,
-            48.0,
-            72.0,
-            144.0,
-            480.0
-        );
-        sizeField.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            update();
-        });
-
-        getChildren().setAll(fontField, styleField, sizeField);
-        setHgrow(fontField, Priority.ALWAYS);
-        setMargin(sizeField, new Insets(0, 0, 0, 2));
-
-        setFont(property.get());
+        setOnAction((ev) -> togglePopup());
     }
 
-    public SimpleObjectProperty<Font> getProperty() {
-        return property;
-    }
-
-    public void select(String name) {
-        fontField.getSelectionModel().select(name);
-    }
-
-    public Font getFont() {
-        String name = fontField.getSelectionModel().getSelectedItem();
-        if (name == null) {
-            return null;
-        }
-        String style = styleField.getSelectionModel().getSelectedItem();
-        if (!isBlank(style)) {
-            name = name + " " + style;
-        }
-        Double size = sizeField.getSelectionModel().getSelectedItem();
-        if (size == null) {
-            size = 12.0;
-        }
-        return new Font(name, size);
-    }
-
-    private static boolean isBlank(String s) {
-        return s == null ? true : s.trim().length() == 0;
-    }
-
-    protected void updateStyles(String family) {
-        String st = styleField.getSelectionModel().getSelectedItem();
-        if (st == null) {
-            st = "";
-        }
-
-        List<String> ss = Font.getFontNames(family);
-        for (int i = 0; i < ss.size(); i++) {
-            String s = ss.get(i);
-            if (s.startsWith(family)) {
-                s = s.substring(family.length()).trim();
-                ss.set(i, s);
-            }
-        }
-        Collections.sort(ss);
-
-        styleField.getItems().setAll(ss);
-        int ix = ss.indexOf(st);
-        if (ix >= 0) {
-            styleField.getSelectionModel().select(ix);
+    private void togglePopup() {
+        if (popup == null) {
+            Point2D p = localToScreen(0.0, getHeight());
+            Font f = property.get();
+            FontPickerPane fp = new FontPickerPane(f, allowNull, (v) -> {
+                property.set(v);
+                popup.hide();
+            });
+            popup = fp.createPopup();
+            popup.setOnHidden((_) -> {
+                if (popup != null) {
+                    popup = null;
+                }
+            });
+            popup.show(this, p.getX(), p.getY());
+        } else {
+            popup.hide();
+            popup = null;
         }
     }
 
-    protected void update() {
-        Font f = getFont();
-        property.set(f);
-    }
-
-    private void setFont(Font f) {
+    private void setFontValue(Font f) {
         String name;
         String style;
         double size;
@@ -164,23 +96,55 @@ public class FontOption extends HBox {
             style = f.getStyle();
             size = f.getSize();
         }
-        fontField.getSelectionModel().select(name);
-        styleField.getSelectionModel().select(style);
-        sizeField.getSelectionModel().select(size);
     }
 
-    protected List<String> collectFonts(boolean allowNull) {
-        ArrayList<String> rv = new ArrayList<>();
-        if (allowNull) {
-            rv.add(null);
+    @Override
+    public SStream storeSettings() {
+        SStream s = SStream.writer();
+        Font f = property.get();
+        if (f == null) {
+            s.add("-");
+        } else {
+            s.add(f.getName());
+            s.add(f.getSize());
         }
-        rv.addAll(Font.getFamilies());
-        return rv;
+        return s;
+    }
+
+    @Override
+    public void restoreSettings(SStream s) {
+        Font f;
+        String name = s.nextString("-");
+        if ("-".equals(name)) {
+            f = null;
+        } else {
+            double sz = s.nextDouble(12.0);
+            f = new Font(name, sz);
+        }
+        property.set(f);
+    }
+
+    private String getButtonText() {
+        Font f = property.get();
+        return getFontString(f);
+    }
+
+    public SimpleObjectProperty<Font> getProperty() {
+        return property;
     }
 
     public void selectSystemFont() {
-        FX.select(fontField, "System");
-        FX.select(styleField, "");
-        FX.select(sizeField, 12.0);
+        setFont(Font.getDefault());
+    }
+
+    public static String getFontString(Font f) {
+        if (f == null) {
+            return null;
+        }
+
+        String fam = f.getFamily();
+        String sty = f.getStyle();
+        double sz = f.getSize();
+        return fam + " " + sty + " " + sz;
     }
 }

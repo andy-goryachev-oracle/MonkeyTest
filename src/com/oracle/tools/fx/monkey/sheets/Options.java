@@ -189,11 +189,17 @@ public class Options {
         op.addChoiceSupplier("Black", () -> {
             return Background.fill(Color.BLACK);
         });
-        op.addChoiceSupplier("Red", () -> {
-            return Background.fill(Color.RED);
+        op.addChoiceSupplier("Dark Gray", () -> {
+            return Background.fill(Color.DARKGRAY);
+        });
+        op.addChoiceSupplier("Light Gray", () -> {
+            return Background.fill(Color.LIGHTGRAY);
         });
         op.addChoiceSupplier("White", () -> {
             return Background.fill(Color.WHITE);
+        });
+        op.addChoiceSupplier("Red", () -> {
+            return Background.fill(Color.RED);
         });
         op.addChoiceSupplier("Linear Gradient", () -> {
             LinearGradient g = new LinearGradient(

@@ -151,7 +151,7 @@ public class TextFlowPage extends TestPaneBase {
         setOptions(op);
 
         fontOption.selectSystemFont();
-        visualizer.attach(container, textFlow);
+        visualizer.attach(textFlow);
     }
 
     private void setContent(String text) {
