@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.tools;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +47,7 @@ import javafx.scene.input.DataFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Clipboard Viewer
@@ -91,6 +93,7 @@ public class ClipboardViewer extends BorderPane {
                     protected void updateItem(String text, boolean empty) {
                         super.updateItem(text, empty);
                         Text t = new Text(text);
+                        t.setStyle("-fx-font-family:Monospace;");
                         t.wrappingWidthProperty().bind(widthProperty());
                         setPrefHeight(USE_COMPUTED_SIZE);
                         setGraphic(t);
@@ -154,7 +157,7 @@ public class ClipboardViewer extends BorderPane {
         }
     }
 
-    private void reload() {
+    public void reload() {
         Set<DataFormat> expanded = getExpandedItems();
         Clipboard c = Clipboard.getSystemClipboard();
         List<DataFormat> formats = new ArrayList<>(c.getContentTypes());
@@ -199,8 +202,15 @@ public class ClipboardViewer extends BorderPane {
     }
 
     private static String convert(Object x) {
-        // String, ByteBuffer
-        return x == null ? null : x.toString();
+        if (x == null) {
+            return null;
+        } else if (x instanceof byte[] b) {
+            return Utils.hex(b, 0L);
+        } else if(x instanceof ByteBuffer bb) {
+            byte[] b = bb.array();
+            return Utils.hex(b, 0L);
+        }
+        return x.toString();
     }
 
     private static class Entry {

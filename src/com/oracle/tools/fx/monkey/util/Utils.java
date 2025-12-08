@@ -49,6 +49,7 @@ import javafx.stage.Window;
 public class Utils {
     private static final DecimalFormat DOUBLE_FORMAT_2 = new DecimalFormat("0.##");
     private static final Random random = new Random();
+    private static final String HEX = "0123456789ABCDEF";
 
     public static boolean isBlank(Object x) {
         if(x == null) {
@@ -160,5 +161,100 @@ public class Utils {
             boolean val = ui.get();
             c.consume(val);
         }
+    }
+
+    /**
+     * Dumps byte array into a nicely formatted String.
+     * printing address first, then 16 bytes of hex then ASCII representation then newline
+     *     "0000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................" or
+     * "00000000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................"
+     * depending on startAddress
+     *
+     * @param bytes the input
+     * @param startAddress the logical start address
+     * @return
+     */
+    // Adapted from https://github.com/andy-goryachev/AppFramework/blob/main/src/goryachev/common/util/Dump.java
+    // with the author's permission.
+    public static String hex(byte[] bytes, long startAddress) {
+        if (bytes == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder(((bytes.length / 16) + 1) * 77 + 1);
+        hex(sb, bytes, startAddress, 0);
+        return sb.toString();
+    }
+
+    private static void hex(StringBuilder sb, byte[] bytes, long startAddress, int indent) {
+        boolean bigfile = ((startAddress + bytes.length) > 65535);
+
+        int col = 0;
+        long addr = startAddress;
+        int lineStart = 0;
+
+        for (int i = 0; i < bytes.length; i++) {
+            if (col == 0) {
+                // indent
+                for (int j = 0; j < indent; j++) {
+                    sb.append(' ');
+                }
+
+                // offset
+                if (col == 0) {
+                    lineStart = i;
+                    if (bigfile) {
+                        hex(sb, (int)(addr >> 24));
+                        hex(sb, (int)(addr >> 16));
+                    }
+                    hex(sb, (int)(addr >> 8));
+                    hex(sb, (int)(addr));
+                    sb.append("  ");
+                }
+            }
+
+            // byte
+            hex(sb, bytes[i]);
+            sb.append(' ');
+
+            // space or newline
+            if (col >= 15) {
+                dumpASCII(sb, bytes, lineStart);
+                col = 0;
+            } else {
+                col++;
+            }
+
+            addr++;
+        }
+
+        if (col != 0) {
+            while (col++ < 16) {
+                sb.append("   ");
+            }
+
+            dumpASCII(sb, bytes, lineStart);
+        }
+    }
+
+    public static void hex(StringBuilder sb, int c) {
+        sb.append(HEX.charAt((c >> 4) & 0x0f));
+        sb.append(HEX.charAt(c & 0x0f));
+    }
+
+    private static void dumpASCII(StringBuilder sb, byte[] bytes, int lineStart) {
+        // first, print padding
+        sb.append(' ');
+
+        int max = Math.min(bytes.length, lineStart + 16);
+        for (int i = lineStart; i < max; i++) {
+            int d = bytes[i] & 0xff;
+            if ((d < 0x20) || (d >= 0x7f)) {
+                d = '.';
+            }
+            sb.append((char)d);
+        }
+
+        sb.append('\n');
     }
 }

@@ -47,6 +47,7 @@ public class Pages {
             new DemoPage("Canvas", true, CanvasPage::new),
             new DemoPage("CheckBox", CheckBoxPage::new),
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
+            new DemoPage("Clipboard", ClipboardPage::new),
             new DemoPage("CodeArea", CodeAreaPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
