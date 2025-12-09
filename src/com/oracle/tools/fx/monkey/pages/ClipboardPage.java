@@ -136,11 +136,13 @@ public class ClipboardPage extends TestPaneBase {
         // unbelievable!
         // new DataFormat() throws an exception if some other code has created the same data format earlier
         String mime = x.toString();
-        DataFormat f = DataFormat.lookupMimeType(mime);
-        if (f != null) {
-            return f;
+        synchronized (DataFormat.class) {
+            DataFormat f = DataFormat.lookupMimeType(mime);
+            if (f != null) {
+                return f;
+            }
+            return new DataFormat(mime);
         }
-        return new DataFormat(mime);
     }
 
     private Object parseData(NamedValue x) {

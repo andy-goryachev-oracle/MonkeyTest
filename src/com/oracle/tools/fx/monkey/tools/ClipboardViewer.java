@@ -70,7 +70,8 @@ public class ClipboardViewer extends BorderPane {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>();
             c.setText("Data Format");
             c.setMinWidth(100);
-            c.setMaxWidth(200);
+            c.setPrefWidth(200);
+            c.setMaxWidth(300);
             c.setCellValueFactory((f) -> {
                 var t = f.getValue();
                 if (t != null) {
