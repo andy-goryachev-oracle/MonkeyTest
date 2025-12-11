@@ -408,4 +408,8 @@ public class FontPickerPane extends GridPane {
             return new Font(name, sz);
         }
     }
+
+    public void requestPatternFieldFocus() {
+        patternField.requestFocus();
+    }
 }
