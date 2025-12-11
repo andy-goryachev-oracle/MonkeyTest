@@ -69,7 +69,7 @@ public class FontPickerPane extends GridPane {
     private final Label sample;
     private final List<String> fonts;
 
-    public FontPickerPane(ObjectProperty<Font> prop, boolean allowNull, Runnable onCommit) {
+    public FontPickerPane(ObjectProperty<Font> prop, boolean allowNull, Runnable onCompletion) {
         this.prop = prop;
         this.allowNull = allowNull;
         
@@ -132,11 +132,11 @@ public class FontPickerPane extends GridPane {
         ButtonBar.setButtonData(ok, ButtonData.OK_DONE);
         ok.setOnAction((_) -> {
             pickFont();
-            onCommit.run();
+            onCompletion.run();
         });
         Button cancel = new Button("Cancel");
         cancel.setOnAction((_) -> {
-            onCommit.run();
+            onCompletion.run();
         });
         ButtonBar.setButtonData(cancel, ButtonData.CANCEL_CLOSE);
         ButtonBar bb = new ButtonBar();
