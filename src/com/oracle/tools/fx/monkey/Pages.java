@@ -77,6 +77,7 @@ public class Pages {
             new DemoPage("Pagination", true, PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
+            new DemoPage("Popup", PopupPage::new),
             new DemoPage("ProgressBar", ProgressBarPage::new),
             new DemoPage("ProgressIndicator", ProgressIndicatorPage::new),
             // r

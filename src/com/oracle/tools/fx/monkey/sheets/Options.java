@@ -453,4 +453,25 @@ public class Options {
         op.selectInitialValue();
         return op;
     }
+
+    public static Node opacity(String name, DoubleProperty p) {
+        DoubleOption op = new DoubleOption(name, p);
+        op.addChoice(0);
+        op.addChoice(0.5);
+        op.addChoice(1.0);
+        op.addChoice("NaN", Double.NaN);
+        op.selectInitialValue();
+        return op;
+    }
+
+    public static Node scale(String name, DoubleProperty p) {
+        DoubleOption op = new DoubleOption(name, p);
+        op.addChoice(0);
+        op.addChoice(0.5);
+        op.addChoice(1.0);
+        op.addChoice(2.0);
+        op.addChoice("NaN", Double.NaN);
+        op.selectInitialValue();
+        return op;
+    }
 }
