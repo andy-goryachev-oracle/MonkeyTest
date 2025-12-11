@@ -39,6 +39,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -256,5 +257,16 @@ public class Utils {
         }
 
         sb.append('\n');
+    }
+
+    public static String getDisplayText(Font f) {
+        if (f == null) {
+            return null;
+        }
+
+        String fam = f.getFamily();
+        String sty = f.getStyle();
+        double sz = f.getSize();
+        return fam + " " + sty + " " + sz;
     }
 }

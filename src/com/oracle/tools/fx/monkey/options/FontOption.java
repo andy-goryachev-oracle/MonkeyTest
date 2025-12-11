@@ -32,7 +32,9 @@ import javafx.scene.text.Font;
 import com.oracle.tools.fx.monkey.settings.HasSettings;
 import com.oracle.tools.fx.monkey.settings.SStream;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.FontPickerPane;
 import com.oracle.tools.fx.monkey.util.PopupButton;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Font Option Bound to a Property.
@@ -106,7 +108,7 @@ public class FontOption extends PopupButton implements HasSettings {
 
     private String getButtonText() {
         Font f = property.get();
-        return getDisplayText(f);
+        return Utils.getDisplayText(f);
     }
 
     public SimpleObjectProperty<Font> getProperty() {
@@ -115,16 +117,5 @@ public class FontOption extends PopupButton implements HasSettings {
 
     public void selectSystemFont() {
         setFont(Font.getDefault());
-    }
-
-    public static String getDisplayText(Font f) {
-        if (f == null) {
-            return null;
-        }
-
-        String fam = f.getFamily();
-        String sty = f.getStyle();
-        double sz = f.getSize();
-        return fam + " " + sty + " " + sz;
     }
 }

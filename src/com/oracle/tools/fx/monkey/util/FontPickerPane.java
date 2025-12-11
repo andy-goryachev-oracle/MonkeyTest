@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.util;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -53,8 +53,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.util.converter.DoubleStringConverter;
-import com.oracle.tools.fx.monkey.util.NamedValue;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Font Picker Pane.
@@ -271,7 +269,7 @@ public class FontPickerPane extends GridPane {
                 sizeField.getSelectionModel().select(ix);
             }
 
-            patternField.setText(FontOption.getDisplayText(f));
+            patternField.setText(Utils.getDisplayText(f));
         }
     }
 
