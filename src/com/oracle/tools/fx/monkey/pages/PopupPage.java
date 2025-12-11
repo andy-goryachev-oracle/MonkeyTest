@@ -79,10 +79,6 @@ public class PopupPage extends TestPaneBase {
     private final SimpleDoubleProperty renderScaleY = new SimpleDoubleProperty(1.0);
     private final SimpleBooleanProperty showing = new SimpleBooleanProperty();
     private final SimpleObjectProperty<PContent> content = new SimpleObjectProperty<>(PContent.LABELS);
-//    setAnchorLocation(AnchorLocation)
-//    setAnchorX(double)
-//    setAnchorY(double)
-//    setConsumeAutoHidingEvents(boolean)
 
     public PopupPage() {
         super("PopupPage");
@@ -137,10 +133,9 @@ public class PopupPage extends TestPaneBase {
         });
 
         // popup
-        // TODO
         p.setAnchorLocation(anchorLocation.get());
-//      setAnchorX(double)
-//      setAnchorY(double)
+        // TODO     setAnchorX(double)
+        // TODO     setAnchorY(double)
         p.setAutoFix(autoFix.get());
         p.setAutoHide(autoHide.get());
         p.setConsumeAutoHidingEvents(consumeAutoHidingEvents.get());

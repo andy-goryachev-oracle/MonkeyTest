@@ -42,16 +42,6 @@ public class FontOption extends PopupButton implements HasSettings {
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
-        setContentSupplier(() -> {
-            Font f = property.get();
-            FontPickerPane fp = new FontPickerPane(f, allowNull, (v) -> {
-                property.set(v);
-                hidePopup();
-            });
-            onShown(fp::requestPatternFieldFocus);
-            return fp;
-        });
-
         FX.name(this, name);
         setMaxWidth(Double.MAX_VALUE);
         setAlignment(Pos.CENTER_LEFT);
@@ -59,6 +49,12 @@ public class FontOption extends PopupButton implements HasSettings {
         if (p != null) {
             property.bindBidirectional(p);
         }
+
+        setContentSupplier(() -> {
+            FontPickerPane fp = new FontPickerPane(property, allowNull, this::hidePopup);
+            onShown(fp::requestPatternFieldFocus);
+            return fp;
+        });
 
         textProperty().bind(Bindings.createStringBinding(this::getButtonText, property));
 
@@ -110,7 +106,7 @@ public class FontOption extends PopupButton implements HasSettings {
 
     private String getButtonText() {
         Font f = property.get();
-        return getFontString(f);
+        return getDisplayText(f);
     }
 
     public SimpleObjectProperty<Font> getProperty() {
@@ -121,7 +117,7 @@ public class FontOption extends PopupButton implements HasSettings {
         setFont(Font.getDefault());
     }
 
-    public static String getFontString(Font f) {
+    public static String getDisplayText(Font f) {
         if (f == null) {
             return null;
         }
