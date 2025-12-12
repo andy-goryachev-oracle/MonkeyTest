@@ -145,6 +145,10 @@ public class RelocationPane extends GridPane {
         v.add(new NamedValue<>("BOTTOM_LEFT", AnchorPoint.BOTTOM_LEFT));
         v.add(new NamedValue<>("BOTTOM_CENTER", AnchorPoint.BOTTOM_CENTER));
         v.add(new NamedValue<>("BOTTOM_RIGHT", AnchorPoint.BOTTOM_RIGHT));
+        v.add(new NamedValue<>("333,333,absolute", AnchorPoint.absolute(333, 333)));
+        v.add(new NamedValue<>("1,1,proportional", AnchorPoint.proportional(1, 1)));
+        v.add(new NamedValue<>("-333,-333,absolute", AnchorPoint.absolute(-333, -333)));
+        v.add(new NamedValue<>("-1,-1,proportional", AnchorPoint.proportional(-1, -1)));
         return v;
     }
 
