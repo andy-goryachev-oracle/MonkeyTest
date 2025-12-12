@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey.util;
 import java.text.DecimalFormat;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.util.StringConverter;
 
@@ -82,6 +83,16 @@ public class Formats {
             ", " +
             Formats.formatDouble(r.getMinY()) +
             ")";
+    }
+
+    public static String font(Font f) {
+        if (f == null) {
+            return null;
+        }
+        String fam = f.getFamily();
+        String sty = f.getStyle();
+        double sz = f.getSize();
+        return fam + " " + sty + " " + sz;
     }
 
     public static StringConverter universalConverter() {

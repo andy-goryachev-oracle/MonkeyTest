@@ -32,6 +32,8 @@ import javafx.scene.text.Font;
 import com.oracle.tools.fx.monkey.settings.HasSettings;
 import com.oracle.tools.fx.monkey.settings.SStream;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.FontPickerPane;
+import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.PopupButton;
 
 /**
@@ -42,16 +44,6 @@ public class FontOption extends PopupButton implements HasSettings {
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
-        setContentSupplier(() -> {
-            Font f = property.get();
-            FontPickerPane fp = new FontPickerPane(f, allowNull, (v) -> {
-                property.set(v);
-                hidePopup();
-            });
-            onShown(fp::requestPatternFieldFocus);
-            return fp;
-        });
-
         FX.name(this, name);
         setMaxWidth(Double.MAX_VALUE);
         setAlignment(Pos.CENTER_LEFT);
@@ -59,6 +51,12 @@ public class FontOption extends PopupButton implements HasSettings {
         if (p != null) {
             property.bindBidirectional(p);
         }
+
+        setContentSupplier(() -> {
+            FontPickerPane fp = new FontPickerPane(property, allowNull, this::hidePopup);
+            onShown(fp::requestPatternFieldFocus);
+            return fp;
+        });
 
         textProperty().bind(Bindings.createStringBinding(this::getButtonText, property));
 
@@ -110,7 +108,7 @@ public class FontOption extends PopupButton implements HasSettings {
 
     private String getButtonText() {
         Font f = property.get();
-        return getFontString(f);
+        return Formats.font(f);
     }
 
     public SimpleObjectProperty<Font> getProperty() {
@@ -119,16 +117,5 @@ public class FontOption extends PopupButton implements HasSettings {
 
     public void selectSystemFont() {
         setFont(Font.getDefault());
-    }
-
-    public static String getFontString(Font f) {
-        if (f == null) {
-            return null;
-        }
-
-        String fam = f.getFamily();
-        String sty = f.getStyle();
-        double sz = f.getSize();
-        return fam + " " + sty + " " + sz;
     }
 }
