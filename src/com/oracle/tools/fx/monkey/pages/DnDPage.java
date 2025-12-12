@@ -47,9 +47,9 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
+import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Drag and Drop Test Page.
@@ -198,9 +198,9 @@ public class DnDPage extends TestPaneBase {
     private void print(DragEvent ev) {
         StringBuilder sb = new StringBuilder();
         sb.append("{event=" + ev.getEventType());
-        sb.append(", x/y=(").append(Utils.f2(ev.getX())).append(", ").append(Utils.f2(ev.getY()));
-        sb.append("), screen=(").append(Utils.f2(ev.getScreenX())).append(", ").append(Utils.f2(ev.getScreenY()));
-        sb.append("), scene=(").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
+        sb.append(", x/y=(").append(f(ev.getX())).append(", ").append(f(ev.getY()));
+        sb.append("), screen=(").append(f(ev.getScreenX())).append(", ").append(f(ev.getScreenY()));
+        sb.append("), scene=(").append(f(ev.getSceneX())).append(", ").append(f(ev.getSceneY()));
         sb.append(")}");
         System.out.println(sb);
     }
@@ -208,10 +208,14 @@ public class DnDPage extends TestPaneBase {
     private void print(MouseEvent ev) {
         StringBuilder sb = new StringBuilder();
         sb.append("{event=" + ev.getEventType());
-        sb.append(", x/y=(").append(Utils.f2(ev.getX())).append(", ").append(Utils.f2(ev.getY()));
-        sb.append("), screen=(").append(Utils.f2(ev.getScreenX())).append(", ").append(Utils.f2(ev.getScreenY()));
-        sb.append("), scene=(").append(Utils.f2(ev.getSceneX())).append(", ").append(Utils.f2(ev.getSceneY()));
+        sb.append(", x/y=(").append(f(ev.getX())).append(", ").append(f(ev.getY()));
+        sb.append("), screen=(").append(f(ev.getScreenX())).append(", ").append(f(ev.getScreenY()));
+        sb.append("), scene=(").append(f(ev.getSceneX())).append(", ").append(f(ev.getSceneY()));
         sb.append(")}");
         System.out.println(sb);
+    }
+
+    private static String f(double v) {
+        return Formats.num2(v);
     }
 }

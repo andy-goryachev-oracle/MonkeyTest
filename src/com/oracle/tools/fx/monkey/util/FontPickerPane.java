@@ -269,7 +269,7 @@ public class FontPickerPane extends GridPane {
                 sizeField.getSelectionModel().select(ix);
             }
 
-            patternField.setText(Utils.getDisplayText(f));
+            patternField.setText(Formats.font(f));
         }
     }
 
