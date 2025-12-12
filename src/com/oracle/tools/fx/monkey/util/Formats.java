@@ -35,7 +35,7 @@ import javafx.util.StringConverter;
  * Various formatting methods.
  */
 public class Formats {
-    private static final DecimalFormat FORMAT_2DP = new DecimalFormat("#,##0.##");
+    private static final DecimalFormat FORMAT_2DP = new DecimalFormat("0.##");
     private static StringConverter universalConverter;
 
     public static String formatDouble(Number value) {
@@ -57,12 +57,19 @@ public class Formats {
         if(v == null) {
             return "<null>";
         }
-        return "Insets {" +
-            "T=" + num2(v.getTop()) +
-            " R=" + num2(v.getRight()) +
-            " B=" + num2(v.getBottom()) +
-            " L=" + num2(v.getLeft()) +
-            "}";
+        if(
+            (v.getTop() == v.getBottom()) &&
+            (v.getBottom() == v.getLeft()) &&
+            (v.getLeft() == v.getRight()))
+        {
+            return "[" + num2(v.getTop()) + "]";
+        }
+        return "[" +
+            "t:" + num2(v.getTop()) +
+            " r:" + num2(v.getRight()) +
+            " b:" + num2(v.getBottom()) +
+            " l:" + num2(v.getLeft()) +
+            "]";
     }
 
     public static String screen(Screen s) {
