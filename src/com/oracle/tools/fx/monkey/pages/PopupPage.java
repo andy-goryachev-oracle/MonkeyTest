@@ -37,6 +37,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.AnchorPolicy;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.WindowEvent;
@@ -69,6 +70,7 @@ public class PopupPage extends TestPaneBase {
     private final Label status;
     private Popup popup;
     private final SimpleObjectProperty<AnchorLocation> anchorLocation = new SimpleObjectProperty<>(AnchorLocation.WINDOW_TOP_LEFT);
+    private final SimpleObjectProperty<AnchorPolicy> anchorPolicy = new SimpleObjectProperty<>(AnchorPolicy.FIXED);
     private final SimpleBooleanProperty autoFix = new SimpleBooleanProperty();
     private final SimpleBooleanProperty autoHide = new SimpleBooleanProperty();
     private final SimpleBooleanProperty consumeAutoHidingEvents = new SimpleBooleanProperty();
@@ -114,6 +116,7 @@ public class PopupPage extends TestPaneBase {
         // popup
         op.section("Popup");
         op.option("Anchor Location:", new EnumOption<>("anchorLocation", AnchorLocation.class, anchorLocation));
+        op.option("Anchor Policy:", new EnumOption<>("anchorPolicy", AnchorPolicy.class, anchorPolicy));
         op.option(new BooleanOption("autoFix", "auto fix", autoFix));
         op.option(new BooleanOption("autoHide", "auto hide", autoHide));
         op.option(new BooleanOption("consumeAutoHiding", "consume auto hiding events", consumeAutoHidingEvents));
@@ -139,6 +142,7 @@ public class PopupPage extends TestPaneBase {
         // popup
         // TODO
         p.setAnchorLocation(anchorLocation.get());
+        p.setAnchorPolicy(anchorPolicy.get());
 //      setAnchorX(double)
 //      setAnchorY(double)
         p.setAutoFix(autoFix.get());

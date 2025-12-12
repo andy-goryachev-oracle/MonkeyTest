@@ -44,6 +44,7 @@ import javafx.stage.StageStyle;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DoubleOption;
 import com.oracle.tools.fx.monkey.options.EnumOption;
+import com.oracle.tools.fx.monkey.options.StageRelocationOption;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.tools.CustomStage;
 import com.oracle.tools.fx.monkey.util.FX;
@@ -67,6 +68,7 @@ public class StagePage extends TestPaneBase {
     private final SimpleDoubleProperty minHeight = new SimpleDoubleProperty(0);
     private final SimpleDoubleProperty minWidth = new SimpleDoubleProperty(0);
     private final SimpleDoubleProperty opacity = new SimpleDoubleProperty(1.0);
+    private final StageRelocationOption relocation = new StageRelocationOption("relocation");
     private final SimpleDoubleProperty renderScaleX = new SimpleDoubleProperty(1.0);
     private final SimpleDoubleProperty renderScaleY = new SimpleDoubleProperty(1.0);
     private final SimpleBooleanProperty resizable = new SimpleBooleanProperty(true);
@@ -127,6 +129,7 @@ public class StagePage extends TestPaneBase {
         op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
         op.option("Modality:", new EnumOption("modality", Modality.class, conf.modality));
         op.option(new BooleanOption("owner", "set owner", conf.owner));
+        op.option("Relocation:", relocation);
         op.option("Stage Style:", new EnumOption("stageStyle", StageStyle.class, conf.stageStyle));
         op.option("Content:", new EnumOption("stageContent", CustomStage.StageContent.class, stageContent));
 
@@ -147,6 +150,7 @@ public class StagePage extends TestPaneBase {
         s.setAlwaysOnTop(conf.alwaysOnTop.get());
         s.initModality(conf.modality.get());
         s.initOwner(conf.owner.get() ? FX.getParentWindow(this) : null);
+        relocation.apply(s);
 
         // properties
         Utils.link(conf.fullScreen, s.fullScreenProperty(), s::setFullScreen);
@@ -159,7 +163,6 @@ public class StagePage extends TestPaneBase {
         s.minHeightProperty().bindBidirectional(minHeight);
         s.minWidthProperty().bindBidirectional(minWidth);
         s.resizableProperty().bindBidirectional(resizable);
-        // TODO scene
         s.titleProperty().bindBidirectional(title);
 
         // window

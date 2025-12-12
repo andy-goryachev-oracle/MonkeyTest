@@ -25,7 +25,7 @@
 package com.oracle.tools.fx.monkey.util;
 
 import java.lang.reflect.Array;
-import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import javafx.beans.property.BooleanProperty;
@@ -33,6 +33,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,7 +48,6 @@ import javafx.stage.Window;
  * Monkey Tester Utilities
  */
 public class Utils {
-    private static final DecimalFormat DOUBLE_FORMAT_2 = new DecimalFormat("0.##");
     private static final Random random = new Random();
     private static final String HEX = "0123456789ABCDEF";
 
@@ -110,10 +110,6 @@ public class Utils {
         p.setCenter(textField);
 
         showDialog(owner, windowName, title, p);
-    }
-
-    public static String f2(double v) {
-        return DOUBLE_FORMAT_2.format(v);
     }
 
     public static String simpleName(Object x) {
@@ -256,5 +252,35 @@ public class Utils {
         }
 
         sb.append('\n');
+    }
+
+    public static <T> T getSelectedItem(ComboBox<T> c) {
+        return c.getSelectionModel().getSelectedItem();
+    }
+
+    public static <T> T getSelectedNamedItem(ComboBox<NamedValue<T>> c) {
+        NamedValue<T> v = c.getSelectionModel().getSelectedItem();
+        return v == null ? null : v.getValue();
+    }
+
+    public static void selectItem(ComboBox c, Object value) {
+        List<Object> items = c.getItems();
+        int sz = items.size();
+        for (int i = 0; i < sz; i++) {
+            Object item = items.get(i);
+            if (match(item, value)) {
+                c.getSelectionModel().select(i);
+                return;
+            }
+        }
+    }
+
+    private static boolean match(Object item, Object value) {
+        Object v = (item instanceof NamedValue n) ? n.getValue() : item;
+        return eq(v, value);
+    }
+
+    public static <T> void setUniversalConverter(ComboBox<T> c) {
+        c.setConverter(Formats.universalConverter());
     }
 }
