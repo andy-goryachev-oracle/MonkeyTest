@@ -44,6 +44,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.HugeTextModel;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.SampleModel;
+import com.oracle.tools.fx.monkey.util.WritingSystemsModel;
 import jfx.incubator.scene.control.richtext.CodeArea;
 import jfx.incubator.scene.control.richtext.LineEnding;
 import jfx.incubator.scene.control.richtext.LineNumberDecorator;
@@ -234,6 +235,7 @@ public class RTAPropertySheet {
         op.addChoiceSupplier("RichTextModel", RichTextModel::new);
         op.addChoiceSupplier("Read-Only Model", SampleModel::new);
         op.addChoiceSupplier("2,147,483,647 Lines", HugeTextModel::new);
+        op.addChoiceSupplier("Writing Systems", WritingSystemsModel::new);
         if (initial != null) {
             op.addChoice("<initial>", initial);
         }
