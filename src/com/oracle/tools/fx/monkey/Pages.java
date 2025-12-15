@@ -85,6 +85,7 @@ public class Pages {
             new DemoPage("RichTextArea", RichTextAreaPage::new),
             // s
             new DemoPage("ScatterChart", true, ScatterChartPage::new),
+            new DemoPage("Screen", ScreenPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
             new DemoPage("Separator", SeparatorPage::new),
