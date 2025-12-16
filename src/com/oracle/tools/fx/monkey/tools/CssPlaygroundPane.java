@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.tools;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,6 +41,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
+import javafx.util.Subscription;
 import com.oracle.tools.fx.monkey.util.FX;
 
 /**
@@ -48,8 +50,8 @@ import com.oracle.tools.fx.monkey.util.FX;
 public class CssPlaygroundPane extends BorderPane {
     private final ColorPicker colorPicker;
     private final TextArea cssField;
-    private static String oldCustom;
-    private static String oldQuick;
+    private static String customStylesheet;
+    private static String quickStylesheet;
     private int fontSize = 12;
     private static final int[] SIZES = {
         7,
@@ -66,6 +68,8 @@ public class CssPlaygroundPane extends BorderPane {
         22
     };
     private final Label fontSizeLabel;
+    private ListChangeListener<Window> monitor;
+    private Subscription sub;
 
     public CssPlaygroundPane() {
         cssField = new TextArea();
@@ -113,6 +117,43 @@ public class CssPlaygroundPane extends BorderPane {
         colorPicker.setOnAction((ev) -> {
             updateQuick();
         });
+
+        // there should be a better way to learn if the node is being displayed
+        sub = sceneProperty().
+            flatMap(Scene::windowProperty).
+            flatMap(Window::showingProperty).
+            subscribe((v) -> {
+                updateListeners(v);
+            });
+    }
+
+    private void updateListeners(Boolean on) {
+        if (Boolean.TRUE.equals(on)) {
+            if (monitor == null) {
+                monitor = new ListChangeListener<Window>() {
+                    @Override
+                    public void onChanged(Change<? extends Window> ch) {
+                        while (ch.next()) {
+                            if (ch.wasRemoved()) {
+                                for (Window w: ch.getRemoved()) {
+                                    removeStylesheets(w);
+                                }
+                            } else if (ch.wasAdded()) {
+                                for (Window w: ch.getAddedSubList()) {
+                                    addStylesheets(w);
+                                }
+                            }
+                        }
+                    }
+                };
+                Window.getWindows().addListener(monitor);
+            }
+        } else {
+            if (monitor != null) {
+                Window.getWindows().removeListener(monitor);
+                monitor = null;
+            }
+        }
     }
 
     private void fontSize(boolean larger) {
@@ -208,12 +249,12 @@ public class CssPlaygroundPane extends BorderPane {
                 if (scene != null) {
                     ObservableList<String> sheets = scene.getStylesheets();
                     if (quick) {
-                        if (oldQuick != null) {
-                            sheets.remove(oldQuick);
+                        if (quickStylesheet != null) {
+                            sheets.remove(quickStylesheet);
                         }
                     } else {
-                        if (oldCustom != null) {
-                            sheets.remove(oldCustom);
+                        if (customStylesheet != null) {
+                            sheets.remove(customStylesheet);
                         }
                     }
                     sheets.add(ss);
@@ -222,26 +263,47 @@ public class CssPlaygroundPane extends BorderPane {
         }
 
         if (quick) {
-            oldQuick = ss;
+            quickStylesheet = ss;
         } else {
-            oldCustom = ss;
+            customStylesheet = ss;
         }
+    }
+
+    private void reloadStylesheets() {
+        
     }
 
     private void reset() {
         for (Window w: Window.getWindows()) {
-            Scene scene = w.getScene();
-            if (scene != null) {
-                ObservableList<String> sheets = scene.getStylesheets();
-                if (oldCustom != null) {
-                    sheets.remove(oldCustom);
-                }
-                if (oldQuick != null) {
-                    sheets.remove(oldQuick);
-                }
+            removeStylesheets(w);
+        }
+        customStylesheet = null;
+        quickStylesheet = null;
+    }
+
+    private void removeStylesheets(Window w) {
+        Scene scene = w.getScene();
+        if (scene != null) {
+            ObservableList<String> sheets = scene.getStylesheets();
+            if (customStylesheet != null) {
+                sheets.remove(customStylesheet);
+            }
+            if (quickStylesheet != null) {
+                sheets.remove(quickStylesheet);
             }
         }
-        oldCustom = null;
-        oldQuick = null;
+    }
+
+    private void addStylesheets(Window w) {
+        Scene scene = w.getScene();
+        if (scene != null) {
+            ObservableList<String> sheets = scene.getStylesheets();
+            if (customStylesheet != null) {
+                sheets.add(customStylesheet);
+            }
+            if (quickStylesheet != null) {
+                sheets.add(quickStylesheet);
+            }
+        }
     }
 }
