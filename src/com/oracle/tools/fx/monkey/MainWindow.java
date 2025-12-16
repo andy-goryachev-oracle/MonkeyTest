@@ -226,6 +226,10 @@ public class MainWindow extends Stage {
         FX.item(m2, "Modena.css", this::useModenaCSS);
         FX.item(m2, "Caspian.css", this::useCaspianCSS);
         FX.separator(m);
+        FX.item(m, "Fullscreen", () -> setFullScreen(true));
+        FX.item(m, "Maximize", () -> setMaximized(true));
+        FX.item(m, "Iconify", () -> setIconified(true));
+        FX.separator(m);
         FX.item(m, "Open Modal Window", this::openModalWindow);
         return m;
     }
