@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.text.Font;
+import javafx.scene.text.HitInfo;
 import javafx.stage.Screen;
 import javafx.util.StringConverter;
 
@@ -47,6 +48,16 @@ public class Formats {
             return String.valueOf(value.longValue());
         }
         return String.valueOf(v);
+    }
+
+    public static String hit(HitInfo h) {
+        StringBuilder sb = new StringBuilder(32);
+        sb.append("ix=").append(h.getInsertionIndex());
+        sb.append(" char=").append(h.getCharIndex());
+        if (h.isLeading()) {
+            sb.append(" leading");
+        }
+        return sb.toString();
     }
 
     public static String num2(double v) {
