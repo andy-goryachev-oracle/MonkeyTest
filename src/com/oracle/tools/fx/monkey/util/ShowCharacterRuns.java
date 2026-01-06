@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -47,39 +47,6 @@ public class ShowCharacterRuns extends Group {
     }
 
     /**
-     * Creates ShowCharacterRuns Node for the given Text node.
-     * The Text node must be a child of a Group.
-     * @param owner the Text node to show character runs for
-     */
-    public static void createFor(Text owner) {
-        Platform.runLater(() -> {
-            List<Node> cs = getChildren(owner);
-            ShowCharacterRuns r = new ShowCharacterRuns();
-            int len = owner.getText().length();
-            for (int i = 0; i < len; i++) {
-                PathElement[] caret = owner.caretShape(i, true);
-                if (caret.length == 4) {
-                    caret = new PathElement[] {
-                        caret[0],
-                        caret[1]
-                    };
-                }
-
-                Bounds caretBounds = new Path(caret).getLayoutBounds();
-                double x = caretBounds.getMaxX();
-                double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-                HitInfo hit = owner.hitTest(new Point2D(x, y));
-                Path p = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
-                Color c = color(i);
-                p.setFill(c);
-                p.setStroke(c);
-                r.getChildren().add(p);
-            }
-            cs.add(r);
-        });
-    }
-
-    /**
      * Creates ShowCharacterRuns Node for the given TextFlow node.
      * The Text node must be a child of a Group.
      * @param owner the Text node to show character runs for
@@ -89,7 +56,7 @@ public class ShowCharacterRuns extends Group {
             ShowCharacterRuns r = new ShowCharacterRuns();
             int len = FX.getTextLength(owner);
             for (int i = 0; i < len; i++) {
-                PathElement[] caret = owner.caretShape(i, true);
+                PathElement[] caret = owner.getCaretShape(i, true);
                 if (caret.length == 4) {
                     caret = new PathElement[] {
                         caret[0],
@@ -100,8 +67,8 @@ public class ShowCharacterRuns extends Group {
                 Bounds caretBounds = new Path(caret).getLayoutBounds();
                 double x = caretBounds.getMaxX();
                 double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-                HitInfo hit = owner.hitTest(new Point2D(x, y));
-                Path cs = new Path(owner.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+                HitInfo hit = owner.getHitInfo(new Point2D(x, y));
+                Path cs = new Path(owner.getRangeShape(hit.getCharIndex(), hit.getCharIndex() + 1, false));
                 Color c = color(i);
                 cs.setFill(c);
                 cs.setStroke(c);

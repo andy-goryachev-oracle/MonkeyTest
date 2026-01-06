@@ -127,8 +127,8 @@ public class LayoutInfoVisualizer {
         owner.set(t);
     }
 
-    public void attach(Pane parent, TextFlow t) {
-        this.parent = parent;
+    public void attach(TextFlow t) {
+        this.parent = t;
         owner.set(t);
     }
 

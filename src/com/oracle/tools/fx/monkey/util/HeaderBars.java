@@ -26,6 +26,7 @@ package com.oracle.tools.fx.monkey.util;
 
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
@@ -57,6 +58,8 @@ public class HeaderBars {
         HeaderBar headerBar = new HeaderBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(searchField());
+        headerBar.setLeft(new Label("Left"));
+        headerBar.setRight(new Label("Right"));
 
         BorderPane bp = new BorderPane();
         bp.setTop(headerBar);

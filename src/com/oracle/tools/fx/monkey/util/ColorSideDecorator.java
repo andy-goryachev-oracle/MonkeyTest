@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,43 +25,38 @@
 package com.oracle.tools.fx.monkey.util;
 
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
-import javafx.scene.text.TextFlow;
+import jfx.incubator.scene.control.richtext.SideDecorator;
 
 /**
- * Shows caret paths for each text position.
+ * Colorful SideDecorator.
  */
-public class ShowCaretPaths extends Path {
-    public ShowCaretPaths() {
-        setStrokeWidth(1);
-        setStroke(Color.RED);
-        setManaged(false);
+public class ColorSideDecorator implements SideDecorator {
+    public ColorSideDecorator() {
     }
 
-    /**
-     * Creates ShowCaretPaths Node for the given TextFlow node.
-     * The Text node must be a child of a Group.
-     * @param owner the Text node to show character runs for
-     */
-    public static void createFor(TextFlow owner) {
-        ShowCaretPaths p = new ShowCaretPaths();
-        int len = FX.getTextLength(owner);
-        for (int i = 0; i < len; i++) {
-            PathElement[] es = owner.getCaretShape(i, true);
-            p.getElements().addAll(es);
-        }
-        owner.getChildren().add(p);
+    @Override
+    public double getPrefWidth(double viewWidth) {
+        return 20.0;
     }
 
-    public static void remove(Pane p) {
-        for (Node ch : p.getChildren()) {
-            if (ch instanceof ShowCaretPaths) {
-                p.getChildren().remove(ch);
-                return;
-            }
-        }
+    @Override
+    public Node getNode(int index) {
+        int num = 36;
+        double a = 360.0 * (index % num) / num;
+        Color c = Color.hsb(a, 0.5, 1.0);
+
+        Region r = new Region();
+        r.setOpacity(1.0);
+        r.setBackground(new Background(new BackgroundFill(c, null, null)));
+        return r;
+    }
+
+    @Override
+    public Node getMeasurementNode(int index) {
+        return null;
     }
 }
