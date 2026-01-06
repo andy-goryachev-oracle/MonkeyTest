@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,14 +24,18 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HeaderBar;
+import javafx.scene.layout.HeaderDragType;
 import javafx.scene.paint.Color;
 
 /**
@@ -55,7 +59,7 @@ public class HeaderBars {
     }
 
     public static Parent createSimple(Parent n) {
-        HeaderBar headerBar = new HeaderBar();
+        HeaderBar headerBar = headerBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(searchField());
         headerBar.setLeft(new Label("Left"));
@@ -68,13 +72,13 @@ public class HeaderBars {
     }
 
     public static Parent createSplit(Parent n) {
-        HeaderBar leftHeaderBar = new HeaderBar();
+        HeaderBar leftHeaderBar = headerBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
         leftHeaderBar.setLeft(new Button("Left"));
         leftHeaderBar.setCenter(searchField());
         leftHeaderBar.setRightSystemPadding(false);
 
-        HeaderBar rightHeaderBar = new HeaderBar();
+        HeaderBar rightHeaderBar = headerBar();
         rightHeaderBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         rightHeaderBar.setLeftSystemPadding(false);
         rightHeaderBar.setRight(new Button("Right"));
@@ -94,5 +98,27 @@ public class HeaderBars {
         f.setPromptText("Search...");
         f.setMaxWidth(300);
         return f;
+    }
+
+    public static HeaderBar headerBar() {
+        HeaderBar h = new HeaderBar();
+        FX.setPopupMenu(h, () -> {
+            Menu m2;
+            ContextMenu m = new ContextMenu();
+            m2 = FX.menu(m, "Drag Type (Children)");
+            FX.item(m2, "NONE", () -> setDragType(h, HeaderDragType.NONE));
+            FX.item(m2, "DRAGGABLE", () -> setDragType(h, HeaderDragType.DRAGGABLE));
+            FX.item(m2, "DRAGGABLE_SUBTREE", () -> setDragType(h, HeaderDragType.DRAGGABLE_SUBTREE));
+            FX.item(m2, "TRANSPARENT", () -> setDragType(h, HeaderDragType.TRANSPARENT));
+            FX.item(m2, "TRANSPARENT_SUBTREE", () -> setDragType(h, HeaderDragType.TRANSPARENT_SUBTREE));
+            return m;
+        });
+        return h;
+    }
+
+    private static void setDragType(HeaderBar h, HeaderDragType t) {
+        for (Node n: h.getChildrenUnmodifiable()) {
+            HeaderBar.setDragType(n, t);
+        }
     }
 }
