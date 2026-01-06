@@ -133,9 +133,9 @@ public class StagePage extends TestPaneBase {
         // window
         op.section("Window");
         op.option(new BooleanOption("focused", "focused", focused));
-        op.option("Opacity:", opacity("opacity", opacity));
-        op.option("Render Scale X:", scale("renderScaleX", renderScaleX));
-        op.option("Render Scale Y:", scale("renderScaleY", renderScaleY));
+        op.option("Opacity:", Options.opacity("opacity", opacity));
+        op.option("Render Scale X:", Options.scale("renderScaleX", renderScaleX));
+        op.option("Render Scale Y:", Options.scale("renderScaleY", renderScaleY));
         return op;
     }
 
@@ -198,27 +198,6 @@ public class StagePage extends TestPaneBase {
         op.addChoice(100.0);
         op.addChoice("Double.MAX_VALUE", Double.MAX_VALUE);
         op.addChoice("Double.POSITIVE_INFINITY", Double.POSITIVE_INFINITY);
-        op.addChoice("NaN", Double.NaN);
-        op.selectInitialValue();
-        return op;
-    }
-
-    private static Node opacity(String name, DoubleProperty p) {
-        DoubleOption op = new DoubleOption(name, p);
-        op.addChoice(0);
-        op.addChoice(0.5);
-        op.addChoice(1.0);
-        op.addChoice("NaN", Double.NaN);
-        op.selectInitialValue();
-        return op;
-    }
-
-    private static Node scale(String name, DoubleProperty p) {
-        DoubleOption op = new DoubleOption(name, p);
-        op.addChoice(0);
-        op.addChoice(0.5);
-        op.addChoice(1.0);
-        op.addChoice(2.0);
         op.addChoice("NaN", Double.NaN);
         op.selectInitialValue();
         return op;
