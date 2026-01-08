@@ -32,6 +32,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HeaderBar;
@@ -62,8 +65,8 @@ public class HeaderBars {
         HeaderBar headerBar = headerBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(searchField());
-        headerBar.setLeft(new Label("Left"));
-        headerBar.setRight(new Label("Right"));
+        headerBar.setLeft(button("Left"));
+        headerBar.setRight(label("Right"));
 
         BorderPane bp = new BorderPane();
         bp.setTop(headerBar);
@@ -74,14 +77,14 @@ public class HeaderBars {
     public static Parent createSplit(Parent n) {
         HeaderBar leftHeaderBar = headerBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
-        leftHeaderBar.setLeft(new Button("Left"));
+        leftHeaderBar.setLeft(button("Left"));
         leftHeaderBar.setCenter(searchField());
         leftHeaderBar.setRightSystemPadding(false);
 
         HeaderBar rightHeaderBar = headerBar();
         rightHeaderBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         rightHeaderBar.setLeftSystemPadding(false);
-        rightHeaderBar.setRight(new Button("Right"));
+        rightHeaderBar.setRight(button("Right"));
 
         BorderPane left = new BorderPane();
         left.setTop(leftHeaderBar);
@@ -120,5 +123,43 @@ public class HeaderBars {
         for (Node n: h.getChildrenUnmodifiable()) {
             HeaderBar.setDragType(n, t);
         }
+    }
+
+    private static Button button(String text) {
+        Button b = new Button(text);
+        setDnD(b, text);
+        return b;
+    }
+
+    private static Label label(String text) {
+        Label b = new Label(text);
+        setDnD(b, text);
+        return b;
+    }
+
+    private static void setDnD(Node n, String text) {
+        n.setOnDragDetected((ev) -> {
+            Dragboard db = n.startDragAndDrop(TransferMode.ANY);
+            ClipboardContent cc = new ClipboardContent();
+            cc.putString(text);
+            db.setContent(cc);
+            ev.consume();
+        });
+        n.setOnDragOver((ev) -> {
+            if (ev.getDragboard().hasString()) {
+                ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            ev.consume();
+        });
+        n.setOnDragDropped((ev) -> {
+            Dragboard db = ev.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                System.out.println("accepted drop: " + db.getString());
+                success = true;
+            }
+            ev.setDropCompleted(success);
+            ev.consume();
+        });
     }
 }
