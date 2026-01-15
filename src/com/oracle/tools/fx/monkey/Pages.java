@@ -47,6 +47,7 @@ public class Pages {
             new DemoPage("Canvas", true, CanvasPage::new),
             new DemoPage("CheckBox", CheckBoxPage::new),
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
+            new DemoPage("Clipboard", ClipboardPage::new),
             new DemoPage("CodeArea", CodeAreaPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("ColorPicker", ColorPickerPage::new),
@@ -76,6 +77,7 @@ public class Pages {
             new DemoPage("Pagination", true, PaginationPage::new),
             new DemoPage("PasswordField", PasswordFieldPage::new),
             new DemoPage("PieChart", PieChartPage::new),
+            new DemoPage("Popup", PopupPage::new),
             new DemoPage("ProgressBar", ProgressBarPage::new),
             new DemoPage("ProgressIndicator", ProgressIndicatorPage::new),
             // r
@@ -83,6 +85,7 @@ public class Pages {
             new DemoPage("RichTextArea", RichTextAreaPage::new),
             // s
             new DemoPage("ScatterChart", true, ScatterChartPage::new),
+            new DemoPage("Screen", ScreenPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("ScrollPane", ScrollPanePage::new),
             new DemoPage("Separator", SeparatorPage::new),

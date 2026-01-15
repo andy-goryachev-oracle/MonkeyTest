@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package com.oracle.tools.fx.monkey.options;
+package com.oracle.tools.fx.monkey.util;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -53,16 +53,14 @@ import javafx.scene.text.Font;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.util.converter.DoubleStringConverter;
-import com.oracle.tools.fx.monkey.util.NamedValue;
-import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Font Picker Pane.
  */
 public class FontPickerPane extends GridPane {
     private final static boolean allowLogical = false;
+    private final ObjectProperty<Font> prop;
     private final boolean allowNull;
-    private final Consumer<Font> client;
     // TODO editable combo box w/list of previously selected fonts (font + style + size)
     private final TextField patternField;
     private final ListView<String> familyField = new ListView<>();
@@ -71,12 +69,10 @@ public class FontPickerPane extends GridPane {
     private final Label sample;
     private final List<String> fonts;
 
-    public FontPickerPane(Font f, boolean allowNull, Consumer<Font> client) {
+    public FontPickerPane(ObjectProperty<Font> prop, boolean allowNull, Runnable onCompletion) {
+        this.prop = prop;
         this.allowNull = allowNull;
-        this.client = client;
         
-        //getStyleClass().add("date-picker-popup");
-
         fonts = collectFonts(allowNull);
 
         patternField = new TextField();
@@ -136,8 +132,12 @@ public class FontPickerPane extends GridPane {
         ButtonBar.setButtonData(ok, ButtonData.OK_DONE);
         ok.setOnAction((_) -> {
             pickFont();
+            onCompletion.run();
         });
         Button cancel = new Button("Cancel");
+        cancel.setOnAction((_) -> {
+            onCompletion.run();
+        });
         ButtonBar.setButtonData(cancel, ButtonData.CANCEL_CLOSE);
         ButtonBar bb = new ButtonBar();
         bb.getButtons().setAll(ok, cancel);
@@ -170,7 +170,7 @@ public class FontPickerPane extends GridPane {
         add(scroll, 0, 2, 2, 1);
         add(bb, 0, 3, 2, 1);
 
-        setFont(f);
+        setFont(prop.get());
     }
 
     // TODO there is an alternative: open a resizeable dialog/owned window instead
@@ -269,7 +269,7 @@ public class FontPickerPane extends GridPane {
                 sizeField.getSelectionModel().select(ix);
             }
 
-            patternField.setText(FontOption.getFontString(f));
+            patternField.setText(Formats.font(f));
         }
     }
 
@@ -390,7 +390,7 @@ public class FontPickerPane extends GridPane {
 
     private void pickFont() {
         Font f = getCurrentFont();
-        client.accept(f);
+        prop.set(f);
     }
 
     public Font getCurrentFont() {
@@ -407,5 +407,9 @@ public class FontPickerPane extends GridPane {
             double sz = getCurrentSize();
             return new Font(name, sz);
         }
+    }
+
+    public void requestPatternFieldFocus() {
+        patternField.requestFocus();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -35,6 +35,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.BoundingBox;
@@ -42,11 +43,8 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -78,6 +76,7 @@ import com.oracle.tools.fx.monkey.util.CustomPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.ObjectSelector;
+import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.StageInfoPane;
 import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -452,5 +451,34 @@ public class Options {
         op.addChoiceSupplier("Stage Information", StageInfoPane::new);
         op.selectInitialValue();
         return op;
+    }
+
+    public static Node opacity(String name, DoubleProperty p) {
+        DoubleOption op = new DoubleOption(name, p);
+        op.addChoice(0);
+        op.addChoice(0.5);
+        op.addChoice(1.0);
+        op.addChoice("NaN", Double.NaN);
+        op.selectInitialValue();
+        return op;
+    }
+
+    public static Node scale(String name, DoubleProperty p) {
+        DoubleOption op = new DoubleOption(name, p);
+        op.addChoice(0);
+        op.addChoice(0.5);
+        op.addChoice(1.0);
+        op.addChoice(2.0);
+        op.addChoice("NaN", Double.NaN);
+        op.selectInitialValue();
+        return op;
+    }
+
+    public static CheckBox booleanIndicator(String text, ReadOnlyBooleanProperty p) {
+        CheckBox c = new CheckBox(text);
+        c.setPadding(OptionPane.INDENT);
+        c.setDisable(true);
+        c.selectedProperty().bind(p);
+        return c;
     }
 }

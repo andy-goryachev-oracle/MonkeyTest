@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -421,6 +421,10 @@ public class FxSettingsSchema {
     }
 
     private static void storeCheckBox(CheckBox n) {
+        if (n.selectedProperty().isBound()) {
+            return;
+        }
+
         String name = computeName(n);
         if (name == null) {
             return;
@@ -431,6 +435,10 @@ public class FxSettingsSchema {
     }
 
     private static void restoreCheckBox(CheckBox n) {
+        if (n.selectedProperty().isBound()) {
+            return;
+        }
+
         if (checkNoScene(n)) {
             return;
         }

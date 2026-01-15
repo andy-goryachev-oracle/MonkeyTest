@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,14 +24,21 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HeaderBar;
+import javafx.scene.layout.HeaderDragType;
 import javafx.scene.paint.Color;
 
 /**
@@ -55,11 +62,11 @@ public class HeaderBars {
     }
 
     public static Parent createSimple(Parent n) {
-        HeaderBar headerBar = new HeaderBar();
+        HeaderBar headerBar = headerBar();
         headerBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
         headerBar.setCenter(searchField());
-        headerBar.setLeading(new Label("Leading"));
-        headerBar.setTrailing(new Label("Trailing"));
+        headerBar.setLeft(button("Left"));
+        headerBar.setRight(label("Right"));
 
         BorderPane bp = new BorderPane();
         bp.setTop(headerBar);
@@ -68,16 +75,16 @@ public class HeaderBars {
     }
 
     public static Parent createSplit(Parent n) {
-        HeaderBar leftHeaderBar = new HeaderBar();
+        HeaderBar leftHeaderBar = headerBar();
         leftHeaderBar.setBackground(Background.fill(Color.VIOLET));
-        leftHeaderBar.setLeading(new Button("Leading"));
+        leftHeaderBar.setLeft(button("Left"));
         leftHeaderBar.setCenter(searchField());
-        leftHeaderBar.setTrailingSystemPadding(false);
+        leftHeaderBar.setRightSystemPadding(false);
 
-        HeaderBar rightHeaderBar = new HeaderBar();
+        HeaderBar rightHeaderBar = headerBar();
         rightHeaderBar.setBackground(Background.fill(Color.LIGHTSKYBLUE));
-        rightHeaderBar.setLeadingSystemPadding(false);
-        rightHeaderBar.setTrailing(new Button("Trailing"));
+        rightHeaderBar.setLeftSystemPadding(false);
+        rightHeaderBar.setRight(button("Right"));
 
         BorderPane left = new BorderPane();
         left.setTop(leftHeaderBar);
@@ -94,5 +101,65 @@ public class HeaderBars {
         f.setPromptText("Search...");
         f.setMaxWidth(300);
         return f;
+    }
+
+    public static HeaderBar headerBar() {
+        HeaderBar h = new HeaderBar();
+        FX.setPopupMenu(h, () -> {
+            Menu m2;
+            ContextMenu m = new ContextMenu();
+            m2 = FX.menu(m, "Drag Type (Children)");
+            FX.item(m2, "NONE", () -> setDragType(h, HeaderDragType.NONE));
+            FX.item(m2, "DRAGGABLE", () -> setDragType(h, HeaderDragType.DRAGGABLE));
+            FX.item(m2, "DRAGGABLE_SUBTREE", () -> setDragType(h, HeaderDragType.DRAGGABLE_SUBTREE));
+            FX.item(m2, "TRANSPARENT", () -> setDragType(h, HeaderDragType.TRANSPARENT));
+            FX.item(m2, "TRANSPARENT_SUBTREE", () -> setDragType(h, HeaderDragType.TRANSPARENT_SUBTREE));
+            return m;
+        });
+        return h;
+    }
+
+    private static void setDragType(HeaderBar h, HeaderDragType t) {
+        for (Node n: h.getChildrenUnmodifiable()) {
+            HeaderBar.setDragType(n, t);
+        }
+    }
+
+    private static Button button(String text) {
+        Button b = new Button(text);
+        setDnD(b, text);
+        return b;
+    }
+
+    private static Label label(String text) {
+        Label b = new Label(text);
+        setDnD(b, text);
+        return b;
+    }
+
+    private static void setDnD(Node n, String text) {
+        n.setOnDragDetected((ev) -> {
+            Dragboard db = n.startDragAndDrop(TransferMode.ANY);
+            ClipboardContent cc = new ClipboardContent();
+            cc.putString(text);
+            db.setContent(cc);
+            ev.consume();
+        });
+        n.setOnDragOver((ev) -> {
+            if (ev.getDragboard().hasString()) {
+                ev.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            ev.consume();
+        });
+        n.setOnDragDropped((ev) -> {
+            Dragboard db = ev.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                System.out.println("accepted drop: " + db.getString());
+                success = true;
+            }
+            ev.setDropCompleted(success);
+            ev.consume();
+        });
     }
 }

@@ -226,6 +226,10 @@ public class MainWindow extends Stage {
         FX.item(m2, "Modena.css", this::useModenaCSS);
         FX.item(m2, "Caspian.css", this::useCaspianCSS);
         FX.separator(m);
+        FX.item(m, "Fullscreen", () -> setFullScreen(true));
+        FX.item(m, "Maximize", () -> setMaximized(true));
+        FX.item(m, "Iconify", () -> setIconified(true));
+        FX.separator(m);
         FX.item(m, "Open Modal Window", this::openModalWindow);
         return m;
     }
@@ -269,9 +273,9 @@ public class MainWindow extends Stage {
         }
 
         sb.append(" [");
-        sb.append(f(getWidth())).append("x").append(f(getHeight()));
+        sb.append(Formats.num2(getWidth())).append("x").append(Formats.num2(getHeight()));
         sb.append("] @(");
-        sb.append(f(getX())).append(",").append(f(getY()));
+        sb.append(Formats.num2(getX())).append(",").append(Formats.num2(getY()));
         sb.append(")");
 
         sb.append(" ◆fx:");
@@ -282,10 +286,6 @@ public class MainWindow extends Stage {
         sb.append(" ◆dir:");
         sb.append(new File("").getAbsolutePath());
         return sb.toString();
-    }
-
-    private String f(double v) {
-        return Formats.format2DP(v);
     }
 
     private DemoPage[] createPages() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -50,11 +50,12 @@ public class LabeledPropertySheet {
         op.option("Graphic:", Options.nodeOption("graphic", n.graphicProperty()));
         op.option("Padding:", new InsetsOption("padding", false, n.paddingProperty()));
         op.option("Line Spacing:", Options.lineSpacing("lineSpacing", n.lineSpacingProperty()));
+        op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", n.mnemonicParsingProperty()));
         op.option("Text:", Options.textOption("text", multiLine, true, n.textProperty()));
         op.option("Text Alignment:", new EnumOption<>("textAlignment", TextAlignment.class, n.textAlignmentProperty()));
         op.option("Text Fill:", new PaintOption("textFill", n.textFillProperty()));
         op.option("Text Overrun:", new EnumOption<>("textOverrun", OverrunStyle.class, n.textOverrunProperty()));
-        op.option(new BooleanOption("mnemonicParsing", "mnemonic parsing", n.mnemonicParsingProperty()));
+        op.option(Options.booleanIndicator("text truncated", n.textTruncatedProperty()));
         op.option(new BooleanOption("underline", "underline", n.underlineProperty()));
         op.option(new BooleanOption("wrapText", "wrap text", n.wrapTextProperty()));
 

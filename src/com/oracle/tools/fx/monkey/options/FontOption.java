@@ -27,26 +27,23 @@ package com.oracle.tools.fx.monkey.options;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.text.Font;
-import javafx.stage.Popup;
 import com.oracle.tools.fx.monkey.settings.HasSettings;
 import com.oracle.tools.fx.monkey.settings.SStream;
 import com.oracle.tools.fx.monkey.util.FX;
+import com.oracle.tools.fx.monkey.util.FontPickerPane;
+import com.oracle.tools.fx.monkey.util.Formats;
+import com.oracle.tools.fx.monkey.util.PopupButton;
 
 /**
  * Font Option Bound to a Property.
  */
-public class FontOption extends Button implements HasSettings {
+public class FontOption extends PopupButton implements HasSettings {
+
     private final SimpleObjectProperty<Font> property = new SimpleObjectProperty<>();
-    private Popup popup;
-    private final boolean allowNull;
 
     public FontOption(String name, boolean allowNull, ObjectProperty<Font> p) {
-        this.allowNull = allowNull;
-
         FX.name(this, name);
         setMaxWidth(Double.MAX_VALUE);
         setAlignment(Pos.CENTER_LEFT);
@@ -55,32 +52,17 @@ public class FontOption extends Button implements HasSettings {
             property.bindBidirectional(p);
         }
 
+        setContentSupplier(() -> {
+            FontPickerPane fp = new FontPickerPane(property, allowNull, this::hidePopup);
+            onShown(fp::requestPatternFieldFocus);
+            return fp;
+        });
+
         textProperty().bind(Bindings.createStringBinding(this::getButtonText, property));
 
         setFontValue(property.get());
 
         setOnAction((ev) -> togglePopup());
-    }
-
-    private void togglePopup() {
-        if (popup == null) {
-            Point2D p = localToScreen(0.0, getHeight());
-            Font f = property.get();
-            FontPickerPane fp = new FontPickerPane(f, allowNull, (v) -> {
-                property.set(v);
-                popup.hide();
-            });
-            popup = fp.createPopup();
-            popup.setOnHidden((_) -> {
-                if (popup != null) {
-                    popup = null;
-                }
-            });
-            popup.show(this, p.getX(), p.getY());
-        } else {
-            popup.hide();
-            popup = null;
-        }
     }
 
     private void setFontValue(Font f) {
@@ -90,7 +72,7 @@ public class FontOption extends Button implements HasSettings {
         if (f == null) {
             name = null;
             style = null;
-            size = 12.0;
+            size = Font.getDefault().getSize();
         } else {
             name = f.getFamily();
             style = f.getStyle();
@@ -118,7 +100,7 @@ public class FontOption extends Button implements HasSettings {
         if ("-".equals(name)) {
             f = null;
         } else {
-            double sz = s.nextDouble(12.0);
+            double sz = s.nextDouble(Font.getDefault().getSize());
             f = new Font(name, sz);
         }
         property.set(f);
@@ -126,7 +108,7 @@ public class FontOption extends Button implements HasSettings {
 
     private String getButtonText() {
         Font f = property.get();
-        return getFontString(f);
+        return Formats.font(f);
     }
 
     public SimpleObjectProperty<Font> getProperty() {
@@ -135,16 +117,5 @@ public class FontOption extends Button implements HasSettings {
 
     public void selectSystemFont() {
         setFont(Font.getDefault());
-    }
-
-    public static String getFontString(Font f) {
-        if (f == null) {
-            return null;
-        }
-
-        String fam = f.getFamily();
-        String sty = f.getStyle();
-        double sz = f.getSize();
-        return fam + " " + sty + " " + sz;
     }
 }
