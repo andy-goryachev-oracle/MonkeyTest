@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -42,6 +42,8 @@ import com.oracle.tools.fx.monkey.options.BooleanOption;
  */
 public class OptionPane extends VBox {
 
+    public static final Insets INDENT = new Insets(0, 0, 0, 10);
+
     public OptionPane() {
         FX.name(this, "OptionPane");
         FX.style(this, "option-pane");
@@ -56,7 +58,7 @@ public class OptionPane extends VBox {
     }
 
     public void option(BooleanOption op) {
-        op.setPadding(new Insets(0, 0, 0, 10));
+        op.setPadding(INDENT);
         lastSection().addFull(new HBox(op));
     }
 
