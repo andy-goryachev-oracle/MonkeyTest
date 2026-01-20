@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -131,17 +131,9 @@ public class ClipboardPage extends TestPaneBase {
             return null;
         } else if (x instanceof DataFormat f) {
             return f;
-        }
-
-        // unbelievable!
-        // new DataFormat() throws an exception if some other code has created the same data format earlier
-        String mime = x.toString();
-        synchronized (DataFormat.class) {
-            DataFormat f = DataFormat.lookupMimeType(mime);
-            if (f != null) {
-                return f;
-            }
-            return new DataFormat(mime);
+        } else {
+            String mime = x.toString();
+            return DataFormat.of(mime);
         }
     }
 
