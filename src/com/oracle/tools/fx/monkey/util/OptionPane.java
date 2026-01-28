@@ -78,6 +78,11 @@ public class OptionPane extends VBox {
         section(name, new OptionGridPane());
     }
 
+    public void section(String name, boolean expanded) {
+        TitledPane p = section(name, new OptionGridPane());
+        p.setExpanded(expanded);
+    }
+
     private List<TitledPane> getPanes() {
         return getChildren().
             stream().
@@ -86,9 +91,10 @@ public class OptionPane extends VBox {
             collect(Collectors.toList());
     }
 
-    public void section(String name, OptionGridPane content) {
+    public TitledPane section(String name, OptionGridPane content) {
         TitledPane t = new TitledPane(name, content);
         getChildren().add(t);
+        return t;
     }
 
     private OptionGridPane lastSection() {
