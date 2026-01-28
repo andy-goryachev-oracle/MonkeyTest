@@ -38,7 +38,6 @@ import com.oracle.tools.fx.monkey.util.FX;
  */
 // TODO combo box for history?
 // TODO highlight special characters?
-// TODO does not seem to work?..
 public class TextOption extends BorderPane {
     private final TextField textField;
 
