@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -38,30 +39,11 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  */
 public class VirtualKeyboardPage extends TestPaneBase {
     
-    // FXVK:58
-    private enum Type {
-        TEXT("text", 0),
-        NUMERIC("numeric", 1),
-        URL("url", 2),
-        EMAIL("email", 3);
-
-        public final String text;
-        public final int type;
-
-        Type(String text, int type) {
-            this.text = text;
-            this.type = type;
-        }
-    };
+    // FXVK:59
     private final static String VK_TYPE_PROP_KEY = "vkType";
 
     public VirtualKeyboardPage() {
         super("VirtualKeyboardPage");
-        
-        TextField text = create(Type.TEXT);
-        TextField numeric = create(Type.NUMERIC);
-        TextField url = create(Type.URL);
-        TextField email = create(Type.EMAIL);
         
         TextArea info = new TextArea("""
             The FX virtual keyboard must be enabled by adding the following command line argument:
@@ -71,11 +53,10 @@ public class VirtualKeyboardPage extends TestPaneBase {
         info.setWrapText(true);
         info.setEditable(false);
 
-        ColumnConstraints c1 = new ColumnConstraints();
-        c1.setHgrow(Priority.SOMETIMES);
+        ColumnConstraints c0 = new ColumnConstraints();
 
-        ColumnConstraints c2 = new ColumnConstraints();
-        c2.setHgrow(Priority.ALWAYS);
+        ColumnConstraints cFill = new ColumnConstraints();
+        cFill.setHgrow(Priority.ALWAYS);
 
         RowConstraints r0 = new RowConstraints();
         r0.setVgrow(Priority.SOMETIMES);
@@ -87,21 +68,24 @@ public class VirtualKeyboardPage extends TestPaneBase {
         p.setPadding(new Insets(10));
         p.setHgap(10);
         p.setVgap(10);
-        p.getColumnConstraints().setAll(c1, c2);
+        p.getColumnConstraints().setAll(c0, c0, cFill);
         p.getRowConstraints().setAll(r0, r0, r0, r0, rFill);
-        p.add(text, 0, 0);
-        p.add(numeric, 0, 1);
-        p.add(url, 0, 2);
-        p.add(email, 0, 3);
-        p.add(info, 0, 4, 2, 1);
+        p.add(new Label("Text:"), 0, 0);
+        p.add(create(0), 1, 0);
+        p.add(new Label("Numeric:"), 0, 1);
+        p.add(create(1), 1, 1);
+        p.add(new Label("URL:"), 0, 2);
+        p.add(create(2), 1, 2);
+        p.add(new Label("Email:"), 0, 3);
+        p.add(create(3), 1, 3);
+        p.add(info, 0, 4, 3, 1);
         
         setContent(p);
     }
 
-    private static TextField create(Type type) {
+    private static TextField create(int type) {
         TextField t = new TextField();
-        t.setPromptText(type.text);
-        t.getProperties().put(VK_TYPE_PROP_KEY, type.type);
+        t.getProperties().put(VK_TYPE_PROP_KEY, type);
         return t;
     }
 }
