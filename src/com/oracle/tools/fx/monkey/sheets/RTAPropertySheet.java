@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -49,6 +49,7 @@ import jfx.incubator.scene.control.richtext.CodeArea;
 import jfx.incubator.scene.control.richtext.LineEnding;
 import jfx.incubator.scene.control.richtext.LineNumberDecorator;
 import jfx.incubator.scene.control.richtext.RichTextArea;
+import jfx.incubator.scene.control.richtext.AbstractStyledTextArea;
 import jfx.incubator.scene.control.richtext.SideDecorator;
 import jfx.incubator.scene.control.richtext.SyntaxDecorator;
 import jfx.incubator.scene.control.richtext.TextPos;
@@ -63,7 +64,7 @@ import jfx.incubator.scene.control.richtext.model.StyledTextModel;
  * RichTextArea/CodeArea property sheet.
  */
 public class RTAPropertySheet {
-    public static void appendTo(OptionPane op, RichTextArea r) {
+    public static void appendTo(OptionPane op, AbstractStyledTextArea r) {
         Label caret = new Label();
         caret.textProperty().bind(Bindings.createStringBinding(() -> caretPosition(r), r.caretPositionProperty()));
 
@@ -104,7 +105,7 @@ public class RTAPropertySheet {
         ControlPropertySheet.appendTo(op, r, contextMenuOptions("contextMenu", r));
     }
 
-    private static String caretPosition(RichTextArea r) {
+    private static String caretPosition(AbstractStyledTextArea r) {
         TextPos p = r.getCaretPosition();
         if(p == null) {
             return "Caret: null";
@@ -112,7 +113,7 @@ public class RTAPropertySheet {
         return "Caret: ix=" + p.index() + " off=" + p.offset() + " ch=" + p.charIndex() + (p.isLeading() ? " leading" : "");
     }
 
-    private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
+    private static ContextMenuOptions contextMenuOptions(String name, AbstractStyledTextArea r) {
         ContextMenuOptions c = new ContextMenuOptions(name, r);
         if (!(r instanceof CodeArea)) {
             c.addChoice("RichTextArea Menu", createRtaContextMenu(r));
@@ -120,7 +121,7 @@ public class RTAPropertySheet {
         return c;
     }
 
-    private static ContextMenu createRtaContextMenu(RichTextArea r) {
+    private static ContextMenu createRtaContextMenu(AbstractStyledTextArea r) {
         Menu m2;
         ContextMenu m = new ContextMenu();
         FX.item(m, "Undo", r::undo);
@@ -157,7 +158,7 @@ public class RTAPropertySheet {
         return m;
     }
 
-    private static <T> void menuItem(Menu menu, String name, RichTextArea control, StyleAttribute<T> a, T... values) {
+    private static <T> void menuItem(Menu menu, String name, AbstractStyledTextArea control, StyleAttribute<T> a, T... values) {
         Menu m = FX.menu(menu, name);
         FX.item(m, "<null>", () -> setAttribute(control, a, null));
         for (T v : values) {
@@ -166,7 +167,7 @@ public class RTAPropertySheet {
         }
     }
 
-    private static <T> void setAttribute(RichTextArea control, StyleAttribute<T> att, T value) {
+    private static <T> void setAttribute(AbstractStyledTextArea control, StyleAttribute<T> att, T value) {
         TextPos start = control.getAnchorPosition();
         TextPos end = control.getCaretPosition();
         if (start == null) {
@@ -176,7 +177,7 @@ public class RTAPropertySheet {
         control.applyStyle(start, end, a);
     }
 
-    private static void toggle(RichTextArea control, StyleAttribute<Boolean> attr) {
+    private static void toggle(AbstractStyledTextArea control, StyleAttribute<Boolean> attr) {
         TextPos start = control.getAnchorPosition();
         TextPos end = control.getCaretPosition();
         if (start == null) {
