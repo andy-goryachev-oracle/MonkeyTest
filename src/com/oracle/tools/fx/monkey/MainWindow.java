@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -193,6 +193,8 @@ public class MainWindow extends Stage {
         Menu m2;
         // File
         FX.menu(m, "File");
+        FX.item(m, "Print", this::print);
+        FX.separator(m);
         FX.item(m, "Quit", Platform::exit);
         // Page
         FX.menu(m, "Page");
@@ -449,5 +451,10 @@ public class MainWindow extends Stage {
             }
             """;
         return "data:text/css;base64," + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.US_ASCII));
+    }
+
+    private void print() {
+        Node n = contentPane.getCenter();
+        FX.print(n);
     }
 }
