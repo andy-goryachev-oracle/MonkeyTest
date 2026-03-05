@@ -51,12 +51,14 @@ public class FileChooserPage extends TestPaneBase {
     private final SimpleObjectProperty<FileChooser.ExtensionFilter> extensionFilter = new SimpleObjectProperty<>();
     private final SimpleBooleanProperty extJpg = new SimpleBooleanProperty();
     private final SimpleBooleanProperty extTxt = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty extUnk = new SimpleBooleanProperty();
     private final SimpleObjectProperty<File> initialDirectory = new SimpleObjectProperty<>();
     private final SimpleStringProperty initialFileName = new SimpleStringProperty();
     private final SimpleBooleanProperty owner = new SimpleBooleanProperty(true);
     private final SimpleStringProperty title = new SimpleStringProperty();
     private static final FileChooser.ExtensionFilter EF_JPG = new FileChooser.ExtensionFilter("*.jpg", ".jpg", ".jpeg");
     private static final FileChooser.ExtensionFilter EF_TXT = new FileChooser.ExtensionFilter("*.txt", ".txt");
+    private static final FileChooser.ExtensionFilter EF_UNK = new FileChooser.ExtensionFilter("*.unk", ".unk");
     
     @FunctionalInterface
     interface FCMethod {
@@ -97,6 +99,7 @@ public class FileChooserPage extends TestPaneBase {
         op.option("Initial File Name:", Options.textOption("initialFileName", false, true, initialFileName));
         op.option("Extension Filter:", new BooleanOption("extJpg", "*.jpg", extJpg));
         op.option("", new BooleanOption("extTxt", "*.txt", extTxt));
+        op.option("", new BooleanOption("extUnk", "*.unk", extUnk));
         op.option("Selected Filter:", extensionFilter("extensionFilter", extensionFilter));
         op.option("Title:", Options.textOption("title", true, true, title));
         op.separator();
@@ -109,6 +112,7 @@ public class FileChooserPage extends TestPaneBase {
         op.addChoice("<null>", null);
         op.addChoice("*.jpg", EF_JPG);
         op.addChoice("*.txt", EF_TXT);
+        op.addChoice("*.unk", EF_UNK);
         return op;
     }
 
@@ -138,6 +142,9 @@ public class FileChooserPage extends TestPaneBase {
         }
         if (extTxt.get()) {
             fs.add(EF_TXT);
+        }
+        if (extUnk.get()) {
+            fs.add(EF_UNK);
         }
 
         FileChooser fc = new FileChooser();
