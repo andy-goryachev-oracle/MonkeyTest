@@ -56,7 +56,8 @@ public class Pages {
             new DemoPage("Dialog", DialogPage::new),
             new DemoPage("Drag and Drop", DnDPage::new),
             // f
-            new DemoPage("FlowPane", true, FlowPanePage::new),
+            new DemoPage("FileChooser", true, FileChooserPage::new),
+            new DemoPage("FlowPane", FlowPanePage::new),
             // g
             new DemoPage("GridPane", true, GridPanePage::new),
             // h
