@@ -56,9 +56,9 @@ public class FileChooserPage extends TestPaneBase {
     private final SimpleStringProperty initialFileName = new SimpleStringProperty();
     private final SimpleBooleanProperty owner = new SimpleBooleanProperty(true);
     private final SimpleStringProperty title = new SimpleStringProperty();
-    private static final FileChooser.ExtensionFilter EF_JPG = new FileChooser.ExtensionFilter("*.jpg", ".jpg", ".jpeg");
-    private static final FileChooser.ExtensionFilter EF_TXT = new FileChooser.ExtensionFilter("*.txt", ".txt");
-    private static final FileChooser.ExtensionFilter EF_UNK = new FileChooser.ExtensionFilter("*.unk", ".unk");
+    private static final FileChooser.ExtensionFilter EF_JPG = new FileChooser.ExtensionFilter("*.jpg", "*.jpg", "*.jpeg");
+    private static final FileChooser.ExtensionFilter EF_TXT = new FileChooser.ExtensionFilter("*.txt", "*.txt");
+    private static final FileChooser.ExtensionFilter EF_UNK = new FileChooser.ExtensionFilter("*.unk", "*.unk");
     
     @FunctionalInterface
     interface FCMethod {
