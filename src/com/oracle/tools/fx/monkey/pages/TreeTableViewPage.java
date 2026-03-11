@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -308,6 +308,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoice("AUTO_RESIZE_SUBSEQUENT_COLUMNS", TreeTableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
         s.addChoice("UNCONSTRAINED_RESIZE_POLICY", TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
         s.addChoice("user defined, equal width", new UserDefinedResizePolicy());
+        s.setPrefWidth(100);
         return s;
     }
 
@@ -373,6 +374,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoiceSupplier("null value + 5 Rows", mk(true, 5));
         s.addChoiceSupplier("null value + 15 Rows", mk(true, 15));
         s.addChoice("<null>", null);
+        s.setPrefWidth(70);
         return s;
     }
 
