@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -43,6 +43,7 @@ import com.oracle.tools.fx.monkey.options.EnumOption;
 import com.oracle.tools.fx.monkey.sheets.NodePropertySheet;
 import com.oracle.tools.fx.monkey.sheets.Options;
 import com.oracle.tools.fx.monkey.util.EnterTextDialog;
+import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.OptionPane;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
 import com.oracle.tools.fx.monkey.util.Utils;
@@ -81,6 +82,12 @@ public class WebViewPage extends TestPaneBase {
             openContentEditor();
         });
 
+        Button printButton = new Button("P");
+        FX.tooltip(printButton, "Print Page");
+        printButton.setOnAction((ev) -> {
+            FX.print(webView);
+        });
+
         OptionPane op = new OptionPane();
         op.section("WebView");
         op.option(new BooleanOption("contextMenuEnabled", "context menu enabled", webView.contextMenuEnabledProperty()));
@@ -106,7 +113,8 @@ public class WebViewPage extends TestPaneBase {
         HBox tb = new HBox(
             5,
             addressField,
-            contentButton
+            contentButton,
+            printButton
         );
         HBox.setHgrow(addressField, Priority.ALWAYS);
         tb.setBackground(Background.fill(Color.gray(0.8)));

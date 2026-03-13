@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -32,8 +32,11 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.print.PrinterJob;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
@@ -444,5 +447,26 @@ public class FX {
             }
         }
         return hb;
+    }
+
+    public static void print(Node n) {
+        if (n == null) {
+            return;
+        }
+        Window w = FX.getParentWindow(n);
+        PrinterJob job = PrinterJob.createPrinterJob();
+        System.out.println("PrinterJob: " + job);
+        if (job == null) {
+            Alert a = new Alert(AlertType.ERROR, "No printers found.");
+            a.initOwner(w);
+            a.showAndWait();
+        } else {
+            boolean ready = job.showPrintDialog(w);
+            if (ready) {
+                job.printPage(n);
+                job.endJob();
+            }
+            System.out.println("Done: " + ready);
+        }
     }
 }
