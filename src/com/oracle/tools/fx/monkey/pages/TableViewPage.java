@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -401,6 +401,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoiceSupplier("100 Rows", () -> createRows(100));
         s.addChoiceSupplier("1,000 Rows", () -> createRows(1000));
         s.addChoiceSupplier("10,000 Rows", () -> createRows(10_000));
+        s.addChoiceSupplier("500,000 Rows", () -> createRows(500_000));
         s.addChoiceSupplier("<empty>", () -> createRows(0));
         return s;
     }
