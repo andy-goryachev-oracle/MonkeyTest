@@ -25,6 +25,7 @@
 package com.oracle.tools.fx.monkey.pages;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -112,7 +113,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Placeholder:", Options.placeholderNode("placeholder", control.placeholderProperty()));
         op.option("Row Factory:", createRowFactoryOptions("rowFactory", control.rowFactoryProperty()));
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
-        op.option("Sort Policy: TODO", null); // TODO
+        op.option("Sort Policy:", createSortPolicyOptions("sortPolicy", control.sortPolicyProperty()));
         op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", control.tableMenuButtonVisibleProperty()));
         op.separator();
         op.option(refresh);
@@ -348,6 +349,7 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
 
     private Node createColumnResizePolicy(String name, ObjectProperty<Callback<ResizeFeatures, Boolean>> p) {
         ObjectOption<Callback<ResizeFeatures, Boolean>> s = new ObjectOption<>(name, p);
+        s.setPrefWidth(150);
         s.addChoice("AUTO_RESIZE_FLEX_NEXT_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN);
         s.addChoice("AUTO_RESIZE_FLEX_LAST_COLUMN", TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         s.addChoice("AUTO_RESIZE_ALL_COLUMNS", TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
@@ -453,6 +455,44 @@ public class TableViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoice("Red Background", createRowFactory(Color.RED));
         s.addChoice("Green Background", createRowFactory(Color.GREEN));
         s.addChoice("Canvas-based", createCanvasRowFactory());
+        s.addChoice("<null>", null);
+        s.selectFirst();
+        return s;
+    }
+
+    private Node createSortPolicyOptions(String name, ObjectProperty<Callback<TableView<DataRow>, Boolean>> p) {
+        Callback<TableView<DataRow>, Boolean> defaultValue = p.get();
+        ObjectOption<Callback<TableView<DataRow>, Boolean>> s = new ObjectOption<>(name, p);
+        s.addChoice("<default>", defaultValue);
+        s.addChoice("String Sorting", new Callback<TableView<DataRow>, Boolean>() {
+            @Override
+            public Boolean call(TableView<DataRow> t) {
+                List<TableColumn<DataRow, ?>> order = t.getSortOrder();
+                if (!order.isEmpty()) {
+                    FXCollections.sort(t.getItems(), new Comparator<DataRow>() {
+                        @Override
+                        public int compare(DataRow a, DataRow b) {
+                            for (var tc: order) {
+                                Object va = tc.getCellData(a);
+                                Object vb = tc.getCellData(b);
+                                int d = compareValues(va, vb);
+                                if (d != 0) {
+                                    return tc.getSortType() == TableColumn.SortType.ASCENDING ? d : -d;
+                                }
+                            }
+                            return 0;
+                        }
+
+                        private int compareValues(Object a, Object b) {
+                            String sa = (a == null) ? "" : a.toString();
+                            String sb = (b == null) ? "" : b.toString();
+                            return sa.compareTo(sb);
+                        }
+                    });
+                }
+                return Boolean.TRUE;
+            }
+        });
         s.addChoice("<null>", null);
         s.selectFirst();
         return s;
