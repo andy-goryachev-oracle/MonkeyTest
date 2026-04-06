@@ -76,7 +76,7 @@ import com.oracle.tools.fx.monkey.util.Utils;
 public class TableViewPage extends TestPaneBase implements HasSkinnable {
     private final TableView<DataRow> control;
     private static final Label measurer = createMeasurer();
-    
+
     public TableViewPage() {
         super("TableViewPage");
 
