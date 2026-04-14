@@ -66,6 +66,7 @@ import com.oracle.tools.fx.monkey.tools.ModalWindow;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.tools.StageTesterWindow;
 import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
+import com.oracle.tools.fx.monkey.tools.snippet.SnippetRunner;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -215,6 +216,7 @@ public class MainWindow extends Stage {
         FX.item(m, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(m, "Native to ASCII", this::openNative2Ascii);
         FX.item(m, "Platform Preferences Monitor", this::openPlatformPreferencesMonitor);
+        FX.item(m, "Snippet Runner", this::openSnippetRunner);
         FX.item(m, "Stage Tester", this::openStageTesterWindow);
         FX.item(m, "System Info", this::openSystemInfo);
         // Logs
@@ -338,6 +340,14 @@ public class MainWindow extends Stage {
             "KeyboardEventViewer",
             "Keyboard / Input Method Event Viewer",
             KeyboardEventViewer::new
+        );
+    }
+
+    private void openSnippetRunner() {
+        SingleInstance.openSingleInstance(
+            "SnippetRunner",
+            "Snippet Runner",
+            SnippetRunner::new
         );
     }
 
