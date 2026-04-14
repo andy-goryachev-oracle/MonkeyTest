@@ -66,7 +66,7 @@ import com.oracle.tools.fx.monkey.tools.ModalWindow;
 import com.oracle.tools.fx.monkey.tools.Native2AsciiPane;
 import com.oracle.tools.fx.monkey.tools.StageTesterWindow;
 import com.oracle.tools.fx.monkey.tools.SystemInfoViewer;
-import com.oracle.tools.fx.monkey.tools.snippet.SnippetRunner;
+import com.oracle.tools.fx.monkey.tools.snippet.SnippetRunnerPane;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
@@ -347,7 +347,7 @@ public class MainWindow extends Stage {
         SingleInstance.openSingleInstance(
             "SnippetRunner",
             "Snippet Runner",
-            SnippetRunner::new
+            SnippetRunnerPane::new
         );
     }
 

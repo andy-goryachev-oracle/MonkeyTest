@@ -33,97 +33,20 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 import javafx.application.Application;
-import javafx.geometry.Orientation;
-import javafx.scene.control.Button;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.ToolBar;
-import javafx.scene.layout.BorderPane;
 
 /**
- * Here we can run FX snippets from source.
- * 
- * TODO
- * - launch in its own JVM
- * - run the main(String...) method
- * - run javafx Application
+ * Supports running JavaFX snippets from source.
  */
-public class SnippetRunner extends BorderPane {
-    private final TextArea sourceField;
-    private final TextArea logField;
-
-    public SnippetRunner() {
-        sourceField = new TextArea();
-        sourceField.setStyle("-fx-font-family:'Iosevka Fixed SS16',Monospace;");
-        // TODO proof of concept
-        sourceField.setText("""
-        public class CompilerTest {
-            static {
-                IO.println("static");
-            }
-            
-            public static void main(String[] args) {
-                IO.println("instance");
-            }
-        }
-        """);
-        
-        logField = new TextArea();
-        logField.setEditable(false);
-        
-        Button runButton = new Button("▶ Run");
-        runButton.setOnAction((_) -> {
-            execute();
-        });
-
-        Button closeButton = new Button("Close");
-        closeButton.setOnAction((_) -> {
-            // TODO hide();
-        });
-        
-        ToolBar tb = new ToolBar();
-        tb.getItems().setAll(
-            runButton,
-            closeButton
-        );
-        
-        SplitPane split = new SplitPane(sourceField, logField);
-        split.setOrientation(Orientation.VERTICAL);
-        setCenter(split);
-        setTop(tb);
+public class SnippetRunner {
+    
+    public interface Logger {
+        public void log(String message); 
     }
 
-    private void execute() {
-        String source = sourceField.getText();
-        if(source.trim().length() > 0) {
-            try {
-                execute(source);
-            } catch (Throwable e) {
-                // TODO stack trace
-                logField.appendText(e.toString());
-            }
-        }
-    }
-
-    private String extractName(String source) throws Exception {
-        String prefix = "public class ";
-        int start = source.indexOf(prefix);
-        int len = prefix.length();
-        if (start < 0) {
-            throw new Exception("no public class defined");
-        }
-        int end = source.indexOf("extends Application", start + len);
-        if (end < 0) {
-            end = source.indexOf("{", start + len);
-            if (end < 0) {
-                throw new Exception("cannot find the class name");
-            }
-        }
-        return source.substring(start + len, end).trim();
-    }
-
-    private void execute(String source) throws Exception {
-        
+    public static void execute(String source, Logger logger) throws Throwable {
+        // TODO extract name
+        // TODO remove package
+        // TODO add default imports
         String name = extractName(source);
         
         JavaFileObject file = new StringJavaSource(name, source);
@@ -135,6 +58,7 @@ public class SnippetRunner extends BorderPane {
         
         boolean success = task.call();
 
+        // TODO log errors
         for (Diagnostic d: diagnostics.getDiagnostics()) {
             System.out.println("code=" + d.getCode());
             System.out.println("kind=" + d.getKind());
@@ -155,14 +79,12 @@ public class SnippetRunner extends BorderPane {
                 Method main = getMethod(tc, "main", String[].class);
                 if (main != null) {
                     main.invoke(null, new Object[] { new String[0] });
-                } else {
-                    if (Application.class.isAssignableFrom(tc)) {
-                        // TODO module path, lauch jdk, command line options
-                        Application.launch(tc);
-                    } else {
-                        System.err.println("Don't know how to launch " + tc);
-                    }
+                    return;
+                } else if (Application.class.isAssignableFrom(tc)) {
+                    Application.launch(tc);
+                    return;
                 }
+                System.err.println("Class must have main(String) or extend Application: " + tc);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -175,5 +97,22 @@ public class SnippetRunner extends BorderPane {
         } catch (NoSuchMethodException e) {
             return null;
         }
+    }
+
+    private static String extractName(String source) throws Exception {
+        String prefix = "public class ";
+        int start = source.indexOf(prefix);
+        int len = prefix.length();
+        if (start < 0) {
+            throw new Exception("no public class defined");
+        }
+        int end = source.indexOf("extends Application", start + len);
+        if (end < 0) {
+            end = source.indexOf("{", start + len);
+            if (end < 0) {
+                throw new Exception("cannot find the class name");
+            }
+        }
+        return source.substring(start + len, end).trim();
     }
 }
