@@ -30,7 +30,7 @@ import javax.tools.SimpleJavaFileObject;
 /**
  * in memory java source file object
  */
-public class StringJavaSource extends SimpleJavaFileObject {
+class StringJavaSource extends SimpleJavaFileObject {
     
     private final String code;
 

@@ -43,13 +43,13 @@ public class SnippetRunner {
         public void log(String message); 
     }
 
-    public static void execute(String source, Logger logger) throws Throwable {
-        // TODO extract name
-        // TODO remove package
-        // TODO add default imports
-        String name = extractName(source);
+    public static void execute(String sourceText, Logger logger) throws Throwable {
+        JavDoc jd = JavDoc.of(sourceText);
+        String name = jd.getName();
+        String src = jd.getTransformedSource();
+        System.out.println("\n\n---\n\n" + src + "\n\n---\n\n"); // FIX
+        JavaFileObject file = new StringJavaSource(name, src);
         
-        JavaFileObject file = new StringJavaSource(name, source);
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         InMemoryJavaFileManager fm = InMemoryJavaFileManager.init(compiler);
         Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(file);
@@ -60,6 +60,14 @@ public class SnippetRunner {
 
         // TODO log errors
         for (Diagnostic d: diagnostics.getDiagnostics()) {
+            //    code=compiler.err.expected
+            //    kind=ERROR
+            //    pos=6
+            //    start=6
+            //    end=6
+            //    source=com.oracle.tools.fx.monkey.tools.snippet.StringJavaSource[in-mem:///CompilerTest.java]
+            //    message=<identifier> expected
+
             System.out.println("code=" + d.getCode());
             System.out.println("kind=" + d.getKind());
             System.out.println("pos=" + d.getPosition());
@@ -97,22 +105,5 @@ public class SnippetRunner {
         } catch (NoSuchMethodException e) {
             return null;
         }
-    }
-
-    private static String extractName(String source) throws Exception {
-        String prefix = "public class ";
-        int start = source.indexOf(prefix);
-        int len = prefix.length();
-        if (start < 0) {
-            throw new Exception("no public class defined");
-        }
-        int end = source.indexOf("extends Application", start + len);
-        if (end < 0) {
-            end = source.indexOf("{", start + len);
-            if (end < 0) {
-                throw new Exception("cannot find the class name");
-            }
-        }
-        return source.substring(start + len, end).trim();
     }
 }

@@ -53,6 +53,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import com.oracle.tools.fx.monkey.pages.DemoPage;
 import com.oracle.tools.fx.monkey.settings.FxSettings;
 import com.oracle.tools.fx.monkey.sheets.PropertiesMonitor;
@@ -161,6 +162,8 @@ public class MainWindow extends Stage {
             yProperty(),
             widthProperty(),
             heightProperty()));
+
+        addEventHandler(WindowEvent.WINDOW_HIDDEN, (ev) -> Platform.exit());
     }
 
     private MenuBar createMenu() {

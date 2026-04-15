@@ -49,6 +49,7 @@ public class SnippetRunnerPane extends BorderPane {
         sourceField = new TextArea();
         sourceField.setStyle("-fx-font-family:'Iosevka Fixed SS16',Monospace;");
         // TODO proof of concept
+        /*
         sourceField.setText("""
         public class CompilerTest {
             static {
@@ -60,6 +61,7 @@ public class SnippetRunnerPane extends BorderPane {
             }
         }
         """);
+        */
 
         logField = new TextArea();
         logField.setEditable(false);

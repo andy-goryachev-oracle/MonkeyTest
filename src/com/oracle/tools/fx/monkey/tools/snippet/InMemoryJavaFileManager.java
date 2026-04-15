@@ -37,9 +37,9 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 
 /**
- * in memory java file manager
+ * In-memory JavaFileManager.
  */
-public class InMemoryJavaFileManager implements JavaFileManager {
+class InMemoryJavaFileManager implements JavaFileManager {
     public static final String PROTOCOL = "in-mem";
     private final StandardJavaFileManager fm;
     private static InMemoryJavaFileManager instance;
@@ -60,6 +60,7 @@ public class InMemoryJavaFileManager implements JavaFileManager {
         return PROTOCOL + ":///" + name.replace('.', '/') + (source ? ".java" : ".class");
     }
 
+    // TODO
     private static void p(String s) {
         if (true) {
             System.out.println(s);
@@ -82,6 +83,7 @@ public class InMemoryJavaFileManager implements JavaFileManager {
 
     @Override
     public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
+        p("FM.list " + location);
         var v = fm.list(location, packageName, kinds, recurse);
         //p("list " + location + " " + v);
         return v;
@@ -90,7 +92,7 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     @Override
     public String inferBinaryName(Location location, JavaFileObject file) {
         var v = fm.inferBinaryName(location, file);
-        //p("inferBinaryName " + location + " file=" + file + " " + v);
+        p("FM.inferBinaryName " + location + " file=" + file + " " + v);
         return v;
     }
 
@@ -103,13 +105,15 @@ public class InMemoryJavaFileManager implements JavaFileManager {
 
     @Override
     public boolean handleOption(String current, Iterator<String> remaining) {
+        p("FM.handleOption " + current);
         return fm.handleOption(current, remaining);
     }
 
     @Override
     public boolean hasLocation(Location location) {
+        //p("FM.hasLocation " + location);
         var v = fm.hasLocation(location);
-        //p("hasLocation " + location + " " + v);
+        p("FM.hasLocation " + location + " " + v);
         return v;
     }
 
@@ -160,11 +164,13 @@ public class InMemoryJavaFileManager implements JavaFileManager {
 
     @Override
     public Iterable<Set<Location>> listLocationsForModules(Location location) throws IOException {
+        p("FM.listLocationsForModules " + location);
         return fm.listLocationsForModules(location);
     }
 
     @Override
     public String inferModuleName(Location location) throws IOException {
+        p("FM.inferModuleName " + location);
         return fm.inferModuleName(location);
     }
     

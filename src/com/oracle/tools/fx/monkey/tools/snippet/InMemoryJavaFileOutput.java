@@ -34,16 +34,17 @@ import java.net.URI;
 import javax.tools.SimpleJavaFileObject;
 
 /**
- * in memory java file output object
+ * In-memory output JavaFileObject.
  */
-public class InMemoryJavaFileOutput extends SimpleJavaFileObject {
+class InMemoryJavaFileOutput extends SimpleJavaFileObject {
 
     private ByteArrayOutputStream out;
 
     public InMemoryJavaFileOutput(URI uri, Kind kind) {
         super(uri, kind);
     }
-    
+
+    // TODO
     private void p(String s) {
         if (true) {
             System.out.println(s);
