@@ -42,18 +42,15 @@ import javax.tools.StandardJavaFileManager;
 class InMemoryJavaFileManager implements JavaFileManager {
     public static final String PROTOCOL = "in-mem";
     private final StandardJavaFileManager fm;
-    private static InMemoryJavaFileManager instance;
-    private static final HashMap<String,InMemoryJavaFileOutput> files = new HashMap<>();
+    private final HashMap<String,InMemoryJavaFileOutput> files = new HashMap<>();
 
     private InMemoryJavaFileManager(StandardJavaFileManager fm) {
         this.fm = fm;
     }
     
-    public synchronized static InMemoryJavaFileManager init(JavaCompiler compiler) {
-        if (instance == null) {
-            instance = new InMemoryJavaFileManager(compiler.getStandardFileManager(null, null, null));
-        }
-        return instance;
+    public static InMemoryJavaFileManager create(JavaCompiler compiler) {
+        StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null);
+        return new InMemoryJavaFileManager(fm);
     }
 
     public static String createUrl(String name, boolean source) {

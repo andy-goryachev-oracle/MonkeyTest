@@ -25,7 +25,9 @@
 package com.oracle.tools.fx.monkey.tools.snippet;
 
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.List;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -37,13 +39,22 @@ import javafx.application.Application;
 /**
  * Supports running JavaFX snippets from source.
  */
+// FIX in-memory idea does not work: need to specify javafx modules for compilation, etc.
+// it's probably easier to create a temp file and run that with the java command and the standard module path
 public class SnippetRunner {
     
     public interface Logger {
-        public void log(String message); 
+        public void log(String message);
+
+        default public void log(String fmt, Object ... args) {
+            log(MessageFormat.format(fmt, args));
+        }
     }
 
-    public static void execute(String sourceText, Logger logger) throws Throwable {
+    public static void execute(String sourceText, Logger log) throws Throwable {
+
+        String root = "/Users/angorya/Projects/jfx-1/jfx/rt/";
+
         JavDoc jd = JavDoc.of(sourceText);
         String name = jd.getName();
         String src = jd.getTransformedSource();
@@ -51,11 +62,22 @@ public class SnippetRunner {
         JavaFileObject file = new StringJavaSource(name, src);
         
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        InMemoryJavaFileManager fm = InMemoryJavaFileManager.init(compiler);
+        InMemoryJavaFileManager fm = InMemoryJavaFileManager.create(compiler);
         Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(file);
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-        CompilationTask task = compiler.getTask(null, fm, diagnostics, null, null, compilationUnits);
-        
+        List<String> options = List.of(
+            "-d", "/Users/angorya/snippet-out",
+            "--module-source-path", "javafx.graphics=" + root + "modules/javafx.graphics/src",
+            "--module-path", root + "modules/javafx.base/build/classes/java/main/javafx.base",
+            "--module-path", root + "modules/javafx.graphics/build/classes/java/main/javafx.graphics",
+
+//          "-source-path",
+//          "/Users/angorya/Projects/jfx-1/jfx/rt/build/sdk/src.zip"
+
+            "-verbose"
+        );
+
+        CompilationTask task = compiler.getTask(null, fm, diagnostics, options, null, compilationUnits);        
         boolean success = task.call();
 
         // TODO log errors
@@ -75,27 +97,29 @@ public class SnippetRunner {
             System.out.println("end=" + d.getEndPosition());
             System.out.println("source=" + d.getSource());
             System.out.println("message=" + d.getMessage(null));
+            
+            var kind = d.getKind();
+            switch(kind) {
+            case ERROR:
+            case WARNING:
+            case MANDATORY_WARNING:
+                // TODO lookup the line index from the start position
+                log.log("{0}: {1}", kind, d.getMessage(null));
+            }
         }
 
-        // TODO this is a proof of concept,
-        // should run in its own JVM
-        
         if (success) {
-            try {
-                ClassLoader ldr = fm.getInMemClassLoader();
-                Class tc = Class.forName(name, true, ldr);
-                Method main = getMethod(tc, "main", String[].class);
-                if (main != null) {
-                    main.invoke(null, new Object[] { new String[0] });
-                    return;
-                } else if (Application.class.isAssignableFrom(tc)) {
-                    Application.launch(tc);
-                    return;
-                }
-                System.err.println("Class must have main(String) or extend Application: " + tc);
-            } catch (Exception e) {
-                e.printStackTrace();
+            ClassLoader ldr = fm.getInMemClassLoader();
+            Class tc = Class.forName(name, true, ldr);
+            Method main = getMethod(tc, "main", String[].class);
+            if (main != null) {
+                main.invoke(null, new Object[] { new String[0] });
+                return;
+            } else if (Application.class.isAssignableFrom(tc)) {
+                Application.launch(tc);
+                return;
             }
+            throw new Error("Class must have main(String) or extend Application: " + tc);
         }
     }
 

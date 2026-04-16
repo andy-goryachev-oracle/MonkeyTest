@@ -219,7 +219,7 @@ public class MainWindow extends Stage {
         FX.item(m, "Keyboard Event Viewer", this::openKeyboardViewer);
         FX.item(m, "Native to ASCII", this::openNative2Ascii);
         FX.item(m, "Platform Preferences Monitor", this::openPlatformPreferencesMonitor);
-        FX.item(m, "Snippet Runner", this::openSnippetRunner);
+        FX.item(m, "▶ Snippet Runner", this::openSnippetRunner);
         FX.item(m, "Stage Tester", this::openStageTesterWindow);
         FX.item(m, "System Info", this::openSystemInfo);
         // Logs

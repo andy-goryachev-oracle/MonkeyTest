@@ -31,6 +31,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Here we can run FX snippets from source.
@@ -48,20 +49,7 @@ public class SnippetRunnerPane extends BorderPane {
     public SnippetRunnerPane() {
         sourceField = new TextArea();
         sourceField.setStyle("-fx-font-family:'Iosevka Fixed SS16',Monospace;");
-        // TODO proof of concept
-        /*
-        sourceField.setText("""
-        public class CompilerTest {
-            static {
-                IO.println("static");
-            }
-            
-            public static void main(String[] args) {
-                IO.println("instance");
-            }
-        }
-        """);
-        */
+        sourceField.setText(getText());
 
         logField = new TextArea();
         logField.setEditable(false);
@@ -82,7 +70,70 @@ public class SnippetRunnerPane extends BorderPane {
         setTop(tb);
     }
 
+    // TODO remove later
+    private static String getText() {
+        return switch(2) {
+        case 1 ->
+            """
+            public class CompilerTest {
+                static {
+                    IO.println("static");
+                }
+                
+                public static void main(String[] args) {
+                    IO.println("instance");
+                }
+            }
+            """;
+        case 2 ->
+            """
+            package goryachev.bugs;
+    
+            import javafx.application.Application;
+            import javafx.scene.Scene;
+            import javafx.scene.control.Button;
+            import javafx.scene.control.ComboBox;
+            import javafx.scene.control.ToolBar;
+            import javafx.scene.layout.BorderPane;
+            import javafx.stage.Stage;
+    
+            /// https://bugs.openjdk.org/browse/JDK-8374214
+            public class ToolBar_OverflowButton_8374214 extends Application {
+                @Override
+                public void start(Stage stage) throws Exception {
+                    ComboBox<String> cbox = new ComboBox<>();
+                    cbox.getItems().add("Lalalalalalalalalalalalalalalalalalalalalalalalalalala");
+                    
+                    // BUG: messes up the toolbar overflow button logic 
+                    cbox.setMaxWidth(100);
+                    // this code works correctly
+                    //cbox.setPrefWidth(100);
+    
+                    ToolBar tb = new ToolBar();
+                    tb.getItems().addAll(
+                        cbox,
+                        new Button("1")
+                    );
+                    
+                    BorderPane bp = new BorderPane();
+                    bp.setTop(tb);
+    
+                    stage.setScene(new Scene(bp, 200, 200));
+                    stage.show();
+                }
+            }
+            """;
+        default -> null;
+        };
+    }
+
+    private void append(String message) {
+        logField.appendText(message);
+        logField.appendText("\n");
+    }
+
     private void execute() {
+        logField.setText(null);
         String source = sourceField.getText();
         if (source.trim().length() > 0) {
             try {
@@ -90,13 +141,13 @@ public class SnippetRunnerPane extends BorderPane {
                     @Override
                     public void log(String message) {
                         Platform.runLater(() -> {
-                            logField.appendText(message);
+                            append(message);
                         });
                     }
                 });
             } catch (Throwable e) {
-                // TODO stack trace
-                logField.appendText(e.toString());
+                e.printStackTrace();
+                append(Utils.printStackTrace(e));
             }
         }
     }

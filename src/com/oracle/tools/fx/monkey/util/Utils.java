@@ -24,7 +24,10 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -282,5 +285,12 @@ public class Utils {
 
     public static <T> void setUniversalConverter(ComboBox<T> c) {
         c.setConverter(Formats.universalConverter());
+    }
+
+    public static String printStackTrace(Throwable e) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream wr = new PrintStream(out, false, StandardCharsets.UTF_8);
+        e.printStackTrace(wr);
+        return new String(out.toByteArray(), StandardCharsets.UTF_8);
     }
 }
