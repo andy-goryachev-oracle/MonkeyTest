@@ -38,6 +38,9 @@ class JavDoc {
     private static final Pattern CLASS_NAME = Pattern.compile("^.*class\\s+([A-Za-z0-9_$]+)\\s+.*");
     private final List<Ln> lines;
     private String name;
+    private int nameStart = -1;
+    private int nameEnd = -1;
+    private int nameIndex = -1;
 
     private JavDoc(List<Ln> lines) {
         this.lines = lines;
@@ -75,7 +78,8 @@ class JavDoc {
     
     private void process() throws Exception {
         // remove package definition and determine the class name
-        for(Ln ln: lines) {
+        for(int i=0; i<lines.size(); i++) {
+            Ln ln = lines.get(i);
             String text = ln.getOriginalText();
             if(PACKAGE.matcher(text).matches()) {
                 // remove package name
@@ -86,6 +90,9 @@ class JavDoc {
                 if(m.matches()) {
                     // done with modifications
                     name = m.group(1);
+                    nameStart = m.start(1);
+                    nameEnd = m.end(1);
+                    nameIndex = i;
                     break;
                 }
             }
@@ -98,6 +105,14 @@ class JavDoc {
 
     public String getName() {
         return name;
+    }
+
+    public String replaceName(String replace) {
+        Ln ln = lines.get(nameIndex);
+        String text = ln.getOriginalText();
+        String s = text.substring(0, nameStart) + replace + text.substring(nameEnd);
+        ln.setTransformedText(s);
+        return replace;
     }
 
     public String getTransformedSource() {

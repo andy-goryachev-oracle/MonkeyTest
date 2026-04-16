@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.tools.snippet;
 
+import java.time.LocalDateTime;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -137,14 +138,30 @@ public class SnippetRunnerPane extends BorderPane {
         String source = sourceField.getText();
         if (source.trim().length() > 0) {
             try {
-                InMemorySnippetRunner.execute(source, new InMemorySnippetRunner.Logger() {
+                SnippetRunner.execute(source, new SnippetRunner.Client() {
+
                     @Override
-                    public void log(String message) {
-                        Platform.runLater(() -> {
-                            append(message);
-                        });
+                    public void onProcessFinished(int exitCode, Throwable error, LocalDateTime time) {
                     }
+
+                    @Override
+                    public void onOutput(char ch, boolean stdout) {
+                    }
+//                    @Override
+//                    public void log(String message) {
+//                        Platform.runLater(() -> {
+//                            append(message);
+//                        });
+//                    }
                 });
+//                InMemorySnippetRunner.execute(source, new InMemorySnippetRunner.Logger() {
+//                    @Override
+//                    public void log(String message) {
+//                        Platform.runLater(() -> {
+//                            append(message);
+//                        });
+//                    }
+//                });
             } catch (Throwable e) {
                 e.printStackTrace();
                 append(Utils.printStackTrace(e));
