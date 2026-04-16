@@ -137,7 +137,7 @@ public class SnippetRunnerPane extends BorderPane {
         String source = sourceField.getText();
         if (source.trim().length() > 0) {
             try {
-                SnippetRunner.execute(source, new SnippetRunner.Logger() {
+                InMemorySnippetRunner.execute(source, new InMemorySnippetRunner.Logger() {
                     @Override
                     public void log(String message) {
                         Platform.runLater(() -> {

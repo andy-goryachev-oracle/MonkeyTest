@@ -41,7 +41,7 @@ import javafx.application.Application;
  */
 // FIX in-memory idea does not work: need to specify javafx modules for compilation, etc.
 // it's probably easier to create a temp file and run that with the java command and the standard module path
-public class SnippetRunner {
+public class InMemorySnippetRunner {
     
     public interface Logger {
         public void log(String message);
