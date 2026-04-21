@@ -38,13 +38,13 @@ import com.oracle.tools.fx.monkey.util.TestPaneBase;
  * Virtual keyboard test page.
  */
 public class VirtualKeyboardPage extends TestPaneBase {
-    
+
     // FXVK:59
     private final static String VK_TYPE_PROP_KEY = "vkType";
 
     public VirtualKeyboardPage() {
         super("VirtualKeyboardPage");
-        
+
         TextArea info = new TextArea("""
             The FX virtual keyboard must be enabled by adding the following command line argument:
 
@@ -79,7 +79,7 @@ public class VirtualKeyboardPage extends TestPaneBase {
         p.add(new Label("Email:"), 0, 3);
         p.add(create(3), 1, 3);
         p.add(info, 0, 4, 3, 1);
-        
+
         setContent(p);
     }
 

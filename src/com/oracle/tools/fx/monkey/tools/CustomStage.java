@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -118,7 +118,7 @@ public class CustomStage extends Stage {
 
         setWidth(700);
         setHeight(500);
-        
+
         setContent(content, h);
     }
 
@@ -300,7 +300,7 @@ public class CustomStage extends Stage {
         onTopButton.setOnAction((_) -> {
             setAlwaysOnTop(!onTopButton.getText().contains("✓"));
         });
-        
+
         Button closeButton = new Button("Close");
         closeButton.setOnAction((_) -> {
             hide();
@@ -312,7 +312,7 @@ public class CustomStage extends Stage {
             Modality mod = conf.modality.get();
             CustomStage own = conf.owner.get() ? this : null;
             Position pos = getPosition(conf.location.get());
-            
+
             StringBuilder sb = new StringBuilder();
             if ((mod != null) && (mod != Modality.NONE)) {
                 sb.append(mod).append(" ");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -121,7 +121,7 @@ public class StagePage extends TestPaneBase {
         op.option(new BooleanOption("reducedData", "reduced data", conf.reducedData));
         op.option(new BooleanOption("reducedMotion", "reduced motion", conf.reducedMotion));
         op.option(new BooleanOption("reducedTransparency", "reduced transparency", conf.reducedTransparency));
-        
+
         // init
         op.section("Stage Initialization");
         op.option(new BooleanOption("alwaysOnTop", "always on top", conf.alwaysOnTop));
