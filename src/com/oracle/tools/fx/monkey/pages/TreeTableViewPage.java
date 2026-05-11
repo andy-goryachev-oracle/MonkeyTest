@@ -24,6 +24,7 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.beans.property.ObjectProperty;
@@ -107,7 +108,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         op.option("Selection Model:", createSelectionModelOptions("selectionModel"));
         op.option(new BooleanOption("showRoot", "show root", control.showRootProperty()));
         op.option("Sort Mode:", new EnumOption("sortMode", TreeSortMode.class, control.sortModeProperty()));
-        //op.option("Sort Policy: TODO", null); // TODO
+        op.option("Sort Policy:", createSortPolicyOptions("sortPolicy", control.sortPolicyProperty()));
         op.option(new BooleanOption("tableMenuButtonVisible", "table menu button visible", control.tableMenuButtonVisibleProperty()));
         op.separator();
         op.option(refresh);
@@ -370,7 +371,9 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
         ObjectOption<TreeItem<DataRow>> s = new ObjectOption(name, p);
         s.addChoiceSupplier("1 Row", mk(false, 1));
         s.addChoiceSupplier("10 Rows", mk(false, 10));
-        s.addChoiceSupplier("1_000 Rows", mk(false, 1_000));
+        s.addChoiceSupplier("1,000 Rows", mk(false, 1_000));
+        s.addChoiceSupplier("10,000 Rows", mk(false, 10_000));
+        s.addChoiceSupplier("100,000 Rows", mk(false, 100_000));
         s.addChoiceSupplier("null value + 5 Rows", mk(true, 5));
         s.addChoiceSupplier("null value + 15 Rows", mk(true, 15));
         s.addChoice("<null>", null);
@@ -403,5 +406,44 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
                 p.getChildren().remove(item);
             }
         });
+    }
+
+    private Node createSortPolicyOptions(String name, ObjectProperty<Callback<TreeTableView<DataRow>, Boolean>> p) {
+        Callback<TreeTableView<DataRow>, Boolean> defaultValue = p.get();
+        ObjectOption<Callback<TreeTableView<DataRow>, Boolean>> s = new ObjectOption<>(name, p);
+        s.addChoice("<default>", defaultValue);
+        s.addChoice("String Sorting", new Callback<TreeTableView<DataRow>, Boolean>() {
+            @Override
+            public Boolean call(TreeTableView<DataRow> table) {
+                List<TreeTableColumn<DataRow, ?>> order = table.getSortOrder();
+                if (order.isEmpty()) {
+                    return Boolean.TRUE;
+                }
+                TreeTableColumn<DataRow, ?> tc = order.get(0);
+
+                FXCollections.sort(table.getRoot().getChildren(), new Comparator<TreeItem<DataRow>>() {
+                    @Override
+                    public int compare(TreeItem<DataRow> a, TreeItem<DataRow> b) {
+                        Object va = a.getValue().getValue(tc);
+                        Object vb = b.getValue().getValue(tc);
+                        int d = compareValues(va, vb);
+                        if (d != 0) {
+                            return tc.getSortType() == TreeTableColumn.SortType.ASCENDING ? d : -d;
+                        }
+                        return 0;
+                    }
+
+                    private int compareValues(Object a, Object b) {
+                        String sa = (a == null) ? "" : a.toString();
+                        String sb = (b == null) ? "" : b.toString();
+                        return sa.compareTo(sb);
+                    }
+                });
+                return Boolean.TRUE;
+            }
+        });
+        s.addChoice("<null>", null);
+        s.selectFirst();
+        return s;
     }
 }

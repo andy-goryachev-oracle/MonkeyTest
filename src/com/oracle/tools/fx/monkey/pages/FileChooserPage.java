@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -59,7 +59,7 @@ public class FileChooserPage extends TestPaneBase {
     private static final FileChooser.ExtensionFilter EF_JPG = new FileChooser.ExtensionFilter("*.jpg", "*.jpg", "*.jpeg");
     private static final FileChooser.ExtensionFilter EF_TXT = new FileChooser.ExtensionFilter("*.txt", "*.txt");
     private static final FileChooser.ExtensionFilter EF_UNK = new FileChooser.ExtensionFilter("*.unk", "*.unk");
-    
+
     @FunctionalInterface
     interface FCMethod {
         public Object call(FileChooser fc, Window w);

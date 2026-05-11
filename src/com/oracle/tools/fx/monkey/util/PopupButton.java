@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -46,16 +46,16 @@ public class PopupButton extends Button {
     public PopupButton(Supplier<Node> gen) {
         setContentSupplier(gen);
     }
-    
+
     public PopupButton() {
     }
-    
+
     public final void setContentSupplier(Supplier<Node> gen) {
         this.generator = gen;
     }
 
     public final void onShown(Runnable r) {
-        if(onShown == null) {
+        if (onShown == null) {
             onShown = new CopyOnWriteArrayList();
         }
         onShown.add(r);

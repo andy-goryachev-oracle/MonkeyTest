@@ -284,6 +284,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
         s.addChoiceSupplier("10 Rows", createItems(10));
         s.addChoiceSupplier("200 Rows", createItems(200));
         s.addChoiceSupplier("10,000 Rows", createItems(10_000));
+        s.addChoiceSupplier("500,000 Rows", createItems(500_000));
         s.addChoiceSupplier("10 Variable Height Rows", createVariableItems(10));
         s.addChoiceSupplier("200 Variable HeightRows", createVariableItems(200));
         s.addChoiceSupplier("2,000 Variable HeightRows", createVariableItems(2000));

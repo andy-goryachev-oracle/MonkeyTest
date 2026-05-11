@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -72,7 +72,7 @@ public class FontPickerPane extends GridPane {
     public FontPickerPane(ObjectProperty<Font> prop, boolean allowNull, Runnable onCompletion) {
         this.prop = prop;
         this.allowNull = allowNull;
-        
+
         fonts = collectFonts(allowNull);
 
         patternField = new TextField();
@@ -125,9 +125,9 @@ public class FontPickerPane extends GridPane {
         ScrollPane scroll = new ScrollPane(sample);
         scroll.setMinHeight(80);
         scroll.setMaxHeight(80);
-        // FIX
+
         scroll.setBackground(Background.fill(Color.WHITE));
-        
+
         Button ok = new Button("OK");
         ButtonBar.setButtonData(ok, ButtonData.OK_DONE);
         ok.setOnAction((_) -> {
@@ -156,7 +156,7 @@ public class FontPickerPane extends GridPane {
         ColumnConstraints c1 = new ColumnConstraints();
         c1.setPercentWidth(25.0);
         getColumnConstraints().addAll(c0, c1);
-        
+
         RowConstraints r0 = new RowConstraints();
         RowConstraints r1 = new RowConstraints();
         r1.setFillHeight(true);
@@ -246,7 +246,7 @@ public class FontPickerPane extends GridPane {
         }
         return false;
     }
-    
+
     private void setFont(Font f) {
         if (f == null) {
             if (allowNull) {
@@ -351,7 +351,7 @@ public class FontPickerPane extends GridPane {
         sort(rv);
         return rv;
     }
-    
+
     private static void sort(List<?> items) {
         Collator coll = Collator.getInstance(Locale.ROOT);
         Collections.sort(items, new Comparator<Object>() {
@@ -399,10 +399,10 @@ public class FontPickerPane extends GridPane {
             return allowNull ? null : Font.getDefault();
         } else {
             NamedValue<String> v = styleField.getSelectionModel().getSelectedItem();
-            if(v == null) {
+            if (v == null) {
                 return Font.getDefault();
             }
-            
+
             String name = v.getValue();
             double sz = getCurrentSize();
             return new Font(name, sz);

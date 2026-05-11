@@ -65,10 +65,10 @@ public class Formats {
     }
 
     public static String insets(Insets v) {
-        if(v == null) {
+        if (v == null) {
             return "<null>";
         }
-        if(
+        if (
             (v.getTop() == v.getBottom()) &&
             (v.getBottom() == v.getLeft()) &&
             (v.getLeft() == v.getRight()))
@@ -84,10 +84,10 @@ public class Formats {
     }
 
     public static String screen(Screen s) {
-        if(s == null) { 
+        if (s == null) {
             return "<null>";
         }
-        if(Screen.getPrimary().equals(s)) {
+        if (Screen.getPrimary().equals(s)) {
             return "Primary";
         }
         Rectangle2D r = s.getBounds();
