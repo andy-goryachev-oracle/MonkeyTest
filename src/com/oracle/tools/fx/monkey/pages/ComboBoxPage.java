@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2024, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -133,15 +133,18 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
     }
 
 
-    private Supplier<List<Object>> createItems(int count, Function<Integer, Object> gen) {
-        return () -> {
-            ArrayList<Object> rv = new ArrayList<>(count);
-            for (int i = 0; i < count; i++) {
-                Object v = gen.apply(i);
-                rv.add(v);
-            }
-            return rv;
-        };
+    private List<Object> createItems(int count, Function<Integer, Object> gen) {
+        ArrayList<Object> rv = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            Object v = gen.apply(i);
+            rv.add(v);
+        }
+        return rv;
+    }
+
+    private List<Object> addNull(List<Object> list) {
+        list.add(null);
+        return list;
     }
 
     private Node createItemsOptions(String name, ObservableList<Object> items) {
@@ -149,12 +152,13 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
             items.setAll(v);
         });
         s.addChoice("<empty>", List.of());
-        s.addChoiceSupplier("1 Row", createItems(1, this::newItem));
-        s.addChoiceSupplier("10 Rows", createItems(10, this::newItem));
-        s.addChoiceSupplier("200 Rows", createItems(200, this::newItem));
-        s.addChoiceSupplier("10,000 Rows", createItems(10_000, this::newItem));
-        s.addChoiceSupplier("10 Variable Height Rows", createItems(10, this::newVariableItem));
-        s.addChoiceSupplier("200 Variable HeightRows", createItems(200, this::newVariableItem));
+        s.addChoiceSupplier("1 Row", () -> createItems(1, this::newItem));
+        s.addChoiceSupplier("10 Rows", () -> createItems(10, this::newItem));
+        s.addChoiceSupplier("10 Rows w/null", () -> addNull(createItems(10, this::newItem)));
+        s.addChoiceSupplier("200 Rows", () -> createItems(200, this::newItem));
+        s.addChoiceSupplier("10,000 Rows", () -> createItems(10_000, this::newItem));
+        s.addChoiceSupplier("10 Variable Height Rows", () -> createItems(10, this::newVariableItem));
+        s.addChoiceSupplier("200 Variable HeightRows", () -> createItems(200, this::newVariableItem));
         s.selectFirst();
         return s;
     }
