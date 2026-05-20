@@ -67,6 +67,9 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
             }
         };
         control.setOnAction((ev) -> addItem());
+        control.valueProperty().addListener((_,_,v) -> {
+            IO.println("value=" + v);
+        });
 
         Button addButton = FX.button("Add Item", () -> {
             control.getItems().add(newItem(""));
