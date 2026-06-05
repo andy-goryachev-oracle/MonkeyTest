@@ -161,9 +161,9 @@ public class RTAPropertySheet {
             Menu m3 = FX.menu(m, "Default Tab Stops");
             FX.item(m3, "<8 spaces>", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_8));
             FX.item(m3, "Disabled", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_DISABLED));
-            FX.item(m3, "50", () -> model.setDefaultTabStops(100));
-            FX.item(m3, "100", () -> model.setDefaultTabStops(200));
-            FX.item(m3, "200", () -> model.setDefaultTabStops(300));
+            FX.item(m3, "50", () -> model.setDefaultTabStops(50));
+            FX.item(m3, "100", () -> model.setDefaultTabStops(100));
+            FX.item(m3, "200", () -> model.setDefaultTabStops(200));
         }
         return m;
     }
