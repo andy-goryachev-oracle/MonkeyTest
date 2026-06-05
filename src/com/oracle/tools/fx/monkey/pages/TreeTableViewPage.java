@@ -120,7 +120,7 @@ public class TreeTableViewPage extends TestPaneBase implements HasSkinnable {
 
     private ContextMenuOptions contextMenuOptions(String name) {
         ContextMenuOptions c = new ContextMenuOptions(name, control);
-        c.addChoiceSupplier("Data Manipulation", () -> {
+        c.addChoice("Data Manipulation", () -> {
             ContextMenu m = new ContextMenu();
             FX.item(m, "Add After", this::addAfter);
             FX.item(m, "Add Child", this::addChild);
