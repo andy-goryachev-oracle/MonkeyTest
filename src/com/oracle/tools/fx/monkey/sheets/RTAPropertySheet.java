@@ -31,7 +31,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TabStop;
 import javafx.scene.text.TextAlignment;
 import com.oracle.tools.fx.monkey.options.BooleanOption;
 import com.oracle.tools.fx.monkey.options.DurationOption;
@@ -59,6 +58,7 @@ import jfx.incubator.scene.control.richtext.model.RichTextModel;
 import jfx.incubator.scene.control.richtext.model.StyleAttribute;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModel;
+import jfx.incubator.scene.control.richtext.model.TabStops;
 
 /**
  * RichTextArea/CodeArea property sheet.
@@ -172,19 +172,10 @@ public class RTAPropertySheet {
         var a = StyleAttributeMap.TAB_STOPS;
         Menu m = FX.menu(menu, name);
         FX.item(m, "<null>", () -> setAttribute(control, a, null));
-        FX.item(m, "[]", () -> setAttribute(control, a, new TabStop[0]));
-        FX.item(m, "[100]", () -> setAttribute(control, a, new TabStop[] {
-            new TabStop(100)
-        }));
-        FX.item(m, "[50, 100, 200]", () -> setAttribute(control, a, new TabStop[] {
-            new TabStop(50),
-            new TabStop(100),
-            new TabStop(200)
-        }));
-        FX.item(m, "[100, 200]", () -> setAttribute(control, a, new TabStop[] {
-            new TabStop(100),
-            new TabStop(200)
-        }));
+        FX.item(m, "[]", () -> setAttribute(control, a, TabStops.of()));
+        FX.item(m, "[100]", () -> setAttribute(control, a, TabStops.of(100)));
+        FX.item(m, "[50, 100, 200]", () -> setAttribute(control, a, TabStops.of(50, 100, 200)));
+        FX.item(m, "[100, 200]", () -> setAttribute(control, a, TabStops.of(100, 200)));
     }
 
     private static <T> void menuItem(Menu menu, String name, RichTextArea control, StyleAttribute<T> a, T... values) {
