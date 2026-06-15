@@ -146,6 +146,12 @@ public class RTAPropertySheet {
         menuItem(m2, "Font Family", r, StyleAttributeMap.FONT_FAMILY, "Cursive", "Fantasy", "Monospace", "Sans-serif", "Serif", "System");
         menuItem(m2, "Font Size", r, StyleAttributeMap.FONT_SIZE, 2.0, 6.0, 8.0, 10.0, 12.0, 24.0, 48.0, 72.0, 144.0);
         menuItem(m2, "Text Color", r, StyleAttributeMap.TEXT_COLOR, Color.BLACK, Color.RED, Color.GREEN, Color.BLUE, Color.WHITE);
+        menuItem(m2, "Text Highlight", r,
+            StyleAttributeMap.TEXT_HIGHLIGHT_1,
+            StyleAttributeMap.TEXT_HIGHLIGHT_2,
+            StyleAttributeMap.TEXT_HIGHLIGHT_3,
+            StyleAttributeMap.TEXT_HIGHLIGHT_4,
+            StyleAttributeMap.TEXT_HIGHLIGHT_5);
         m2 = FX.menu(m, "Paragraph Styles");
         menuItem(m2, "Background", r, StyleAttributeMap.BACKGROUND, Color.rgb(255, 0, 0, 0.3), Color.rgb(0, 0, 0, 0.3));
         menuItem(m2, "Bullet", r, StyleAttributeMap.BULLET, "•", "✓");
@@ -234,6 +240,26 @@ public class RTAPropertySheet {
         for (T v : values) {
             String s = v.toString();
             FX.item(m, s, () -> setAttribute(control, a, v));
+        }
+    }
+
+    private static void menuItem(Menu menu, String name, RichTextArea control, StyleAttribute<Boolean> ... attrs) {
+        Menu m = FX.menu(menu, name);
+        for (StyleAttribute<Boolean> a : attrs) {
+            String s = a.toString();
+            FX.item(m, s, () -> setBooleanAttributeSpan(control, a));
+        }
+    }
+
+    private static void setBooleanAttributeSpan(RichTextArea control, StyleAttribute<Boolean> a) {
+        SelectionSegment sel = control.getSelection();
+        if (sel != null) {
+            if (!sel.isCollapsed()) {
+                StyleAttributeMap attr = control.getStyleAttributeMap(sel.getMin(), false);
+                Boolean on = attr.get(a);
+                on = (on == null) ? Boolean.TRUE : !on;
+                control.applyStyle(sel.getMin(), sel.getMax(), StyleAttributeMap.of(a, on));
+            }
         }
     }
 
