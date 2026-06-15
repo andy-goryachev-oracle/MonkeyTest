@@ -43,6 +43,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import jfx.incubator.scene.control.richtext.TextPos;
 
 /**
  * Monkey Tester Utilities
@@ -282,5 +283,19 @@ public class Utils {
 
     public static <T> void setUniversalConverter(ComboBox<T> c) {
         c.setConverter(Formats.universalConverter());
+    }
+
+    public static TextPos leading(TextPos p) {
+        if (!p.isLeading()) {
+            return new TextPos(p.index(), p.offset() - 1, p.charIndex(), true);
+        }
+        return p;
+    }
+
+    public static TextPos trailing(TextPos p) {
+        if (p.isLeading()) {
+            return new TextPos(p.index(), p.offset() + 1, p.charIndex(), false);
+        }
+        return p;
     }
 }

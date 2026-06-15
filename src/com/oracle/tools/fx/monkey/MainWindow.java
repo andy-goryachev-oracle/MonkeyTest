@@ -225,8 +225,8 @@ public class MainWindow extends Stage {
         m1 = FX.menu(m, "Window");
         FX.item(m, orientation);
         m2 = FX.menu(m1, "Stylesheet");
-        FX.item(m2, "Modena.css", this::useModenaCSS);
-        FX.item(m2, "Caspian.css", this::useCaspianCSS);
+        FX.item(m2, "modena.css", this::useModenaCSS);
+        FX.item(m2, "caspian.css", this::useCaspianCSS);
         FX.separator(m);
         FX.item(m, "Fullscreen", () -> setFullScreen(true));
         FX.item(m, "Maximize", () -> setMaximized(true));
