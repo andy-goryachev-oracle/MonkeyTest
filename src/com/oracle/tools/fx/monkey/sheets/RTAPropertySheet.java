@@ -160,7 +160,7 @@ public class RTAPropertySheet {
         menuItem(m2, "Text Alignment", r, StyleAttributeMap.TEXT_ALIGNMENT, TextAlignment.values());
         if (r.getModel() instanceof RichTextModel model) {
             Menu m3 = FX.menu(m, "Default Tab Stops");
-            FX.item(m3, "<8 spaces>", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_8));
+            FX.item(m3, "<8 spaces>", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_FIXED));
             FX.item(m3, "Disabled", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_DISABLED));
             FX.item(m3, "50", () -> model.setDefaultTabStops(50));
             FX.item(m3, "100", () -> model.setDefaultTabStops(100));
