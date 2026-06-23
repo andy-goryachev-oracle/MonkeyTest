@@ -58,6 +58,7 @@ import jfx.incubator.scene.control.richtext.model.RichTextModel;
 import jfx.incubator.scene.control.richtext.model.StyleAttribute;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModel;
+import jfx.incubator.scene.control.richtext.model.TabStops;
 
 /**
  * RichTextArea/CodeArea property sheet.
@@ -115,7 +116,7 @@ public class RTAPropertySheet {
     private static ContextMenuOptions contextMenuOptions(String name, RichTextArea r) {
         ContextMenuOptions c = new ContextMenuOptions(name, r);
         if (!(r instanceof CodeArea)) {
-            c.addChoice("RichTextArea Menu", createRtaContextMenu(r));
+            c.addChoice("RichTextArea Menu", () -> createRtaContextMenu(r));
         }
         return c;
     }
@@ -153,8 +154,28 @@ public class RTAPropertySheet {
         menuItem(m2, "Space Below", r, StyleAttributeMap.SPACE_BELOW, 10.0, 33.0, 100.0);
         menuItem(m2, "Space Left", r, StyleAttributeMap.SPACE_LEFT, 10.0, 33.0, 100.0);
         menuItem(m2, "Space Right", r, StyleAttributeMap.SPACE_RIGHT, 10.0, 33.0, 100.0);
+        createTabStopsSubmenu(m2, "Tabs", r);
         menuItem(m2, "Text Alignment", r, StyleAttributeMap.TEXT_ALIGNMENT, TextAlignment.values());
+        if (r.getModel() instanceof RichTextModel model) {
+            FX.separator(m);
+            Menu m3 = FX.menu(m, "Default Tab Stops");
+            FX.item(m3, "<8 spaces>", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_FIXED));
+            FX.item(m3, "Disabled", () -> model.setDefaultTabStops(RichTextModel.DEFAULT_TAB_STOPS_DISABLED));
+            FX.item(m3, "50", () -> model.setDefaultTabStops(50));
+            FX.item(m3, "100", () -> model.setDefaultTabStops(100));
+            FX.item(m3, "200", () -> model.setDefaultTabStops(200));
+        }
         return m;
+    }
+
+    private static void createTabStopsSubmenu(Menu menu, String name, RichTextArea control) {
+        var a = StyleAttributeMap.TAB_STOPS;
+        Menu m = FX.menu(menu, name);
+        FX.item(m, "<null>", () -> setAttribute(control, a, null));
+        FX.item(m, "[]", () -> setAttribute(control, a, TabStops.of()));
+        FX.item(m, "[100]", () -> setAttribute(control, a, TabStops.of(100)));
+        FX.item(m, "[50, 100, 200]", () -> setAttribute(control, a, TabStops.of(50, 100, 200)));
+        FX.item(m, "[100, 200]", () -> setAttribute(control, a, TabStops.of(100, 200)));
     }
 
     private static <T> void menuItem(Menu menu, String name, RichTextArea control, StyleAttribute<T> a, T... values) {
