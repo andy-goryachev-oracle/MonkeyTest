@@ -74,6 +74,9 @@ public class ImageTools {
     }
 
     public static Image createImage(String s, int w, int h) {
+        if (s == null) {
+            s = "";
+        }
         byte[] hash;
         try {
             hash = MessageDigest.getInstance("sha-256").digest(s.getBytes());
