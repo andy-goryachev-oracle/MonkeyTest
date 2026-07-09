@@ -121,11 +121,11 @@ public class SampleModel extends SimpleViewOnlyStyledModel {
         addSegment("Highlighting with StyleAttributes:");
         nl();
         addSegment("-----");
-        addSegment("wavy1", StyleAttributeMap.of(StyleAttributeMap.UNDERLINE_WAVY_1, Boolean.TRUE));
-        addSegment("wavy1", StyleAttributeMap.of(StyleAttributeMap.UNDERLINE_WAVY_1, Boolean.TRUE));
-        addSegment("-no-break", StyleAttributeMap.of(StyleAttributeMap.UNDERLINE_WAVY_1, Boolean.TRUE));
-        addSegment("wavy2", StyleAttributeMap.of(StyleAttributeMap.UNDERLINE_WAVY_2, Boolean.TRUE));
-        addSegment("wavy3", StyleAttributeMap.of(StyleAttributeMap.UNDERLINE_WAVY_3, Boolean.TRUE));
+        addSegment("wavy1", StyleAttributeMap.of(StyleAttributeMap.WAVY_UNDERLINE_1, Boolean.TRUE));
+        addSegment("wavy1", StyleAttributeMap.of(StyleAttributeMap.WAVY_UNDERLINE_1, Boolean.TRUE));
+        addSegment("-no-break", StyleAttributeMap.of(StyleAttributeMap.WAVY_UNDERLINE_1, Boolean.TRUE));
+        addSegment("wavy2", StyleAttributeMap.of(StyleAttributeMap.WAVY_UNDERLINE_2, Boolean.TRUE));
+        addSegment("wavy3", StyleAttributeMap.of(StyleAttributeMap.WAVY_UNDERLINE_3, Boolean.TRUE));
         addSegment(" ");
         addSegment("high1", StyleAttributeMap.of(StyleAttributeMap.TEXT_HIGHLIGHT_1, Boolean.TRUE));
         addSegment("high2", StyleAttributeMap.of(StyleAttributeMap.TEXT_HIGHLIGHT_2, Boolean.TRUE));
