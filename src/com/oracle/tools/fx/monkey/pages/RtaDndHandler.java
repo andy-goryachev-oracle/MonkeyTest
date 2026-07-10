@@ -35,6 +35,7 @@ import jfx.incubator.scene.control.richtext.RichTextArea;
 import jfx.incubator.scene.control.richtext.SelectionSegment;
 import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.FileListFormatHandler;
+import jfx.incubator.scene.control.richtext.model.StyledInput;
 
 /**
  * Standard Drag and Drop Handler for RichTextArea.
@@ -77,7 +78,13 @@ public class RtaDndHandler {
                 List<File> files = ev.getDragboard().getFiles();
                 TextPos p = editor.getDropTarget();
                 if (p != null) {
-                    FileListFormatHandler.handleDrop(editor, p, files);
+                    try {
+                        StyledInput in = FileListFormatHandler.getInstance().createStyledInput(files, null);
+                        editor.clearSelection();
+                        editor.replaceText(p, p, in);
+                    } catch (Exception e) {
+                        editor.errorFeedback();
+                    }
                     ev.consume();
                 }
             }
