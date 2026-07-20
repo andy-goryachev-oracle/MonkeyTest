@@ -40,6 +40,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import com.oracle.tools.fx.monkey.media.Resources;
 import com.oracle.tools.fx.monkey.tools.ClipboardViewer;
 import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
@@ -115,16 +116,27 @@ public class ClipboardPage extends TestPaneBase {
             """));
         v.add(new NamedValue<>("Byte Array", new byte[] { 0x01, 0x02, 0x03 }));
         v.add(new NamedValue<>("Byte Buffer", ByteBuffer.wrap(new byte[] { 0x04, 0x05, 0x06 })));
-        v.add(new NamedValue<>("PNG Image", sup(this::pngImage)));
+        v.add(new NamedValue<>("JPEG Image", sup(this::jpegImage)));
         v.add(new NamedValue<>("File List", sup(this::fileList)));
+        v.add(new NamedValue<>("PNG Image", sup(this::pngImage)));
         v.add(new NamedValue<>("String[]", sup(this::stringArray)));
         v.add(new NamedValue<>("<null>", null));
         return v;
     }
 
-    private static DataFormat parseFormat(Object x) {
+    private DataFormat getFormat() {
+        Object x = typeField.getSelectionModel().getSelectedItem();
         if (x instanceof NamedValue n) {
             x = n.getValue();
+        } else if (x instanceof String s) {
+            for (Object item : typeField.getItems()) {
+                if (item instanceof NamedValue n) {
+                    if (s.equals(n.getDisplay())) {
+                        x = n.getValue();
+                        break;
+                    }
+                }
+            }
         }
 
         if (Utils.isBlank(x)) {
@@ -135,6 +147,7 @@ public class ClipboardPage extends TestPaneBase {
 
         // unbelievable!
         // new DataFormat() throws an exception if some other code has created the same data format earlier
+        // see JDK-8373452
         String mime = x.toString();
         synchronized (DataFormat.class) {
             DataFormat f = DataFormat.lookupMimeType(mime);
@@ -178,6 +191,10 @@ public class ClipboardPage extends TestPaneBase {
         }
     }
 
+    private Object jpegImage() {
+        return new Image(Resources.getURI("small-jpeg.jpg"));
+    }
+
     private String[] stringArray() {
         return new String[] {
             "string1",
@@ -188,8 +205,7 @@ public class ClipboardPage extends TestPaneBase {
 
     private void copy() {
         try {
-            Object x = typeField.getSelectionModel().getSelectedItem();
-            DataFormat f = parseFormat(x);
+            DataFormat f = getFormat();
             if (f == null) {
                 return;
             }
