@@ -31,12 +31,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -72,7 +74,9 @@ public class ClipboardPage extends TestPaneBase {
         Button button = new Button("Copy to Clipboard");
         button.setOnAction((ev) -> {
             copy();
-            viewer.reload();
+            Platform.runLater(() -> {
+                viewer.reload();
+            });
         });
 
         GridPane g = new GridPane(10, 5);
@@ -84,8 +88,8 @@ public class ClipboardPage extends TestPaneBase {
         g.add(button, 2, 1);
 
         BorderPane p = new BorderPane();
-        p.setTop(g);
         p.setCenter(viewer);
+        p.setBottom(g);
 
         setContent(p);
     }
@@ -181,14 +185,7 @@ public class ClipboardPage extends TestPaneBase {
     }
 
     private Object pngImage() {
-        try {
-            Image im = ImageTools.createImage(100, 100);
-            return ImageTools.writePNG(im);
-        } catch (IOException e) {
-            // should not happen
-            e.printStackTrace();
-            return null;
-        }
+        return ImageTools.createImage(100, 100);
     }
 
     private Object jpegImage() {
@@ -211,9 +208,13 @@ public class ClipboardPage extends TestPaneBase {
             }
             NamedValue v = dataField.getSelectionModel().getSelectedItem();
             Object value = parseData(v);
-            HashMap<DataFormat, Object> content = new HashMap<>();
-            content.put(f, value);
-            Clipboard.getSystemClipboard().setContent(content);
+
+            // TODO convert data if necessary (Image->PNG bytes for application/octet-stream)
+
+            ClipboardContent cc = new ClipboardContent();
+            cc.put(f, value);
+            // TODO this might throw ClassCastException, IllegalArgumentException
+            Clipboard.getSystemClipboard().setContent(cc);
         } catch (Throwable e) {
             e.printStackTrace();
         }

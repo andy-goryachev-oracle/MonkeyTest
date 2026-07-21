@@ -24,6 +24,8 @@
  */
 package com.oracle.tools.fx.monkey.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Random;
@@ -39,6 +41,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -297,5 +300,22 @@ public class Utils {
             return new TextPos(p.index(), p.offset() + 1, p.charIndex(), false);
         }
         return p;
+    }
+
+    public static Region spacer() {
+        Region r = new Region();
+        r.setMinWidth(10);
+        r.setMaxWidth(10);
+        return r;
+    }
+
+    public static String stackTrace(Throwable err) {
+        if (err == null) {
+            return "";
+        } else {
+            StringWriter wr = new StringWriter();
+            err.printStackTrace(new PrintWriter(wr));
+            return wr.toString();
+        }
     }
 }
