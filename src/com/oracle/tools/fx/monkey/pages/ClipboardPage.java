@@ -24,11 +24,12 @@
  */
 package com.oracle.tools.fx.monkey.pages;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.application.Platform;
@@ -56,11 +57,12 @@ import com.oracle.tools.fx.monkey.util.Utils;
 public class ClipboardPage extends TestPaneBase {
     private final ComboBox<Object> typeField;
     private final ComboBox<NamedValue<Object>> dataField;
+    private final ClipboardViewer viewer;
 
     public ClipboardPage() {
         super("ClipboardPage");
 
-        ClipboardViewer viewer = new ClipboardViewer();
+        viewer = new ClipboardViewer();
 
         typeField = new ComboBox<>();
         FX.name(typeField, "typeField");
@@ -114,13 +116,12 @@ public class ClipboardPage extends TestPaneBase {
     private List<NamedValue<Object>> listData() {
         ArrayList<NamedValue<Object>> v = new ArrayList<>();
         v.add(new NamedValue<>("Text", """
-            {
-                "type": "json",
-                "text": "here is some text"
-            }
+            This text is placed into the clipboard
+            for the purposes of testing.
             """));
-        v.add(new NamedValue<>("Byte Array", new byte[] { 0x01, 0x02, 0x03 }));
-        v.add(new NamedValue<>("Byte Buffer", ByteBuffer.wrap(new byte[] { 0x04, 0x05, 0x06 })));
+        v.add(new NamedValue<>("Byte Array", new byte[] { 'H', 'E', 'X', 0x1a, 0x00 }));
+        v.add(new NamedValue<>("Byte Buffer", ByteBuffer.wrap(new byte[] { 'B', 'U', 'F', 0x09, 0x00 })));
+        v.add(new NamedValue<>("InputStream", sup(this::inputStream)));
         v.add(new NamedValue<>("JPEG Image", sup(this::jpegImage)));
         v.add(new NamedValue<>("File List", sup(this::fileList)));
         v.add(new NamedValue<>("PNG Image", sup(this::pngImage)));
@@ -185,12 +186,17 @@ public class ClipboardPage extends TestPaneBase {
         return v;
     }
 
-    private Object pngImage() {
+    private Image pngImage() {
         return ImageTools.createImage(100, 100);
     }
 
-    private Object jpegImage() {
+    private Image jpegImage() {
         return new Image(Resources.getURI("small-jpeg.jpg"));
+    }
+
+    private InputStream inputStream() {
+        byte[] b = "This content comes\nfrom an InputStream.".getBytes(StandardCharsets.UTF_8);
+        return new ByteArrayInputStream(b);
     }
 
     private String[] stringArray() {

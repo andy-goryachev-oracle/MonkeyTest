@@ -27,7 +27,6 @@ package com.oracle.tools.fx.monkey.tools;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 import jfx.incubator.scene.control.richtext.StyleResolver;
@@ -36,7 +35,7 @@ import jfx.incubator.scene.control.richtext.model.RichParagraph;
 import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
 import jfx.incubator.scene.control.richtext.model.StyledTextModelViewOnlyBase;
 
-public abstract class TextModel extends StyledTextModelViewOnlyBase {
+public abstract class TextViewModel extends StyledTextModelViewOnlyBase {
 
     private static final StyleAttributeMap PLAIN = StyleAttributeMap.builder()
         .setFontFamily("Monospaced")
@@ -47,7 +46,7 @@ public abstract class TextModel extends StyledTextModelViewOnlyBase {
         .build();
     private static final int WIDTH = 16;
 
-    public static TextModel ofText(Color color, String text, boolean ascii) {
+    public static TextViewModel ofText(Color color, String text, boolean ascii) {
         ArrayList<String> lines = new ArrayList<>();
         if (text != null) {
             try (BufferedReader rd = new BufferedReader(new StringReader(text))) {
@@ -64,7 +63,7 @@ public abstract class TextModel extends StyledTextModelViewOnlyBase {
             .setFontFamily("Monospaced")
             .build();
 
-        return new TextModel() {
+        return new TextViewModel() {
             @Override
             public String getPlainText(int index) {
                 if (ascii) {
@@ -114,8 +113,8 @@ public abstract class TextModel extends StyledTextModelViewOnlyBase {
         };
     }
 
-    public static TextModel ofBytes(byte[] bytes) {
-        return new TextModel() {
+    public static TextViewModel ofBytes(byte[] bytes) {
+        return new TextViewModel() {
             private final StringBuilder sb = new StringBuilder(WIDTH * 3);
 
             @Override
@@ -155,7 +154,7 @@ public abstract class TextModel extends StyledTextModelViewOnlyBase {
         };
     }
 
-    private TextModel() {
+    private TextViewModel() {
     }
 
     @Override

@@ -32,9 +32,12 @@ import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
@@ -73,6 +76,7 @@ public class ClipboardViewer extends BorderPane {
     private final RadioButton imageMode;
     private final RadioButton textMode;
     private final TableView<Entry> table;
+    private final Label classField;
     private final BorderPane detailPane;
     private final ToggleButton wrapButton;
     private RichTextArea textView;
@@ -134,6 +138,11 @@ public class ClipboardViewer extends BorderPane {
             wrapButton
         );
 
+        classField = new Label();
+        classField.setPadding(new Insets(1, 10, 0, 10));
+        classField.setAlignment(Pos.CENTER_RIGHT);
+        classField.setMaxWidth(1e20);
+
         detailPane = new BorderPane();
 
         SplitPane split = new SplitPane(table, detailPane);
@@ -142,6 +151,7 @@ public class ClipboardViewer extends BorderPane {
 
         setCenter(split);
         setTop(tp);
+        setBottom(classField);
 
         table.getSelectionModel().selectedItemProperty().subscribe(this::showDetail);
         table.getSelectionModel().selectFirst();
@@ -156,6 +166,7 @@ public class ClipboardViewer extends BorderPane {
         if (detailPane.getCenter() != n) {
             detailPane.setCenter(n);
         }
+        classField.setText(en == null ? null : en.getType());
     }
 
     private RichTextArea textView() {
@@ -176,7 +187,7 @@ public class ClipboardViewer extends BorderPane {
         Object data = en.data.get();
         if (en.error) {
             String trace = Utils.stackTrace((Throwable)data);
-            textView().setModel(TextModel.ofText(Color.RED, "Not an image", false));
+            textView().setModel(TextViewModel.ofText(Color.RED, "Not an image", false));
             return textView;
         }
 
@@ -185,16 +196,16 @@ public class ClipboardViewer extends BorderPane {
         case ASCII:
             {
                 String text = asText(data);
-                textView().setModel(TextModel.ofText(Color.BLACK, text, true));
+                textView().setModel(TextViewModel.ofText(Color.BLACK, text, true));
             }
             return textView;
         case HEX:
             {
                 byte[] b = asBytes(data);
                 if (b == null) {
-                    textView().setModel(TextModel.ofText(Color.RED, "Not a binary", false));
+                    textView().setModel(TextViewModel.ofText(Color.RED, "Not a binary", false));
                 } else {
-                    textView().setModel(TextModel.ofBytes(b));
+                    textView().setModel(TextViewModel.ofBytes(b));
                 }
             }
             return textView;
@@ -204,14 +215,14 @@ public class ClipboardViewer extends BorderPane {
                 if (d instanceof Image im) {
                     return new ScrollPane(new ImageView(im));
                 } else {
-                    textView().setModel(TextModel.ofText(Color.RED, "Not an image", false));
+                    textView().setModel(TextViewModel.ofText(Color.RED, "Not an image", false));
                     return textView;
                 }
             }
         default:
             {
                 String text = asText(data);
-                textView().setModel(TextModel.ofText(Color.BLACK, text, false));
+                textView().setModel(TextViewModel.ofText(Color.BLACK, text, false));
             }
             return textView;
         }
@@ -236,7 +247,13 @@ public class ClipboardViewer extends BorderPane {
     private static byte[] asBytes(Object v) {
         if (v instanceof byte[] b) {
             return b;
-        } else if(v instanceof String s) {
+        } else if (v instanceof ByteBuffer bb) {
+            ByteBuffer buf = bb.asReadOnlyBuffer();
+            buf.position(0);
+            byte[] b = new byte[buf.limit()];
+            buf.get(b);
+            return b;
+        } else if (v instanceof String s) {
             return s.getBytes(StandardCharsets.UTF_8);
         }
         return null;
@@ -327,6 +344,14 @@ public class ClipboardViewer extends BorderPane {
             this.name = new SimpleStringProperty(name);
             this.data = new SimpleObjectProperty<>(data);
             this.error = error;
+        }
+
+        public String getType() {
+            if (error) {
+                return null;
+            }
+            Object d = data.get();
+            return "Class: " + ((d == null) ? "<null>" : d.getClass());
         }
     }
 }
