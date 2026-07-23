@@ -121,7 +121,8 @@ public abstract class TextViewModel extends StyledTextModelViewOnlyBase {
             public String getPlainText(int index) {
                 int off = index * WIDTH;
                 int max = Math.min(bytes.length, off + WIDTH);
-                for (int i = 0; i < WIDTH; i++) {
+                int i = 0;
+                for ( ; i < WIDTH; i++) {
                     if (off >= bytes.length) {
                         break;
                     }
@@ -132,6 +133,26 @@ public abstract class TextViewModel extends StyledTextModelViewOnlyBase {
                     if ((i & 0x07) == 0x07) {
                         sb.append(' ');
                     }
+                    off++;
+                }
+
+                // separator
+                int ct = 2 + ((WIDTH - i) * 3) + (i < (WIDTH / 2) ? 2 : 0); 
+                for(int j=0; j<ct; j++) {
+                    sb.append(' ');
+                }
+
+                // ascii block
+                off = index * WIDTH;
+                for (i = 0; i < WIDTH; i++) {
+                    if (off >= bytes.length) {
+                        break;
+                    }
+                    int c = bytes[off];
+                    if ((c < 0x20) || (c > 0x7f)) {
+                        c = '.';
+                    }
+                    sb.append((char)c);
                     off++;
                 }
                 String s = sb.toString();
