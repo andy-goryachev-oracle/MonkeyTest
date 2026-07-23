@@ -115,6 +115,16 @@ public class FX {
         return mi;
     }
 
+    public static CheckMenuItem checkItem(Menu m, String name, boolean selected, Consumer<Boolean> client) {
+        CheckMenuItem mi = new CheckMenuItem(name);
+        mi.setSelected(selected);
+        mi.selectedProperty().addListener((s, p, on) -> {
+            client.accept(on);
+        });
+        m.getItems().add(mi);
+        return mi;
+    }
+
     public static CheckMenuItem checkItem(ContextMenu m, String name, boolean selected, Consumer<Boolean> client) {
         CheckMenuItem mi = new CheckMenuItem(name);
         mi.setSelected(selected);
@@ -146,6 +156,12 @@ public class FX {
     public static SeparatorMenuItem separator(MenuBar b) {
         SeparatorMenuItem s = new SeparatorMenuItem();
         lastMenu(b).getItems().add(s);
+        return s;
+    }
+
+    public static SeparatorMenuItem separator(Menu m) {
+        SeparatorMenuItem s = new SeparatorMenuItem();
+        m.getItems().add(s);
         return s;
     }
 

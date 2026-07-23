@@ -70,6 +70,8 @@ public class RichTextAreaPage extends TestPaneBase implements HasSkinnable {
             }
         };
 
+        RtaDndHandler.install(control);
+
         OptionPane op = new OptionPane();
         RTAPropertySheet.appendTo(op, control);
 
