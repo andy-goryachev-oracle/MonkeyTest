@@ -348,10 +348,10 @@ public class ClipboardViewer extends BorderPane {
 
         public String getType() {
             if (error) {
-                return null;
+                return "ERROR";
             }
             Object d = data.get();
-            return "Class: " + ((d == null) ? "<null>" : d.getClass());
+            return "Content: " + ((d == null) ? "<null>" : d.getClass());
         }
     }
 }
