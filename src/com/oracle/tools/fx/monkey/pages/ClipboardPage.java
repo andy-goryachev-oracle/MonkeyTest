@@ -106,7 +106,8 @@ public class ClipboardPage extends TestPaneBase {
             "application/octet-stream",
             "text/css",
             "text/html",
-            "text/javascript"
+            "text/javascript",
+            "CUSTOM.CUSTOM"
         };
     }
 
