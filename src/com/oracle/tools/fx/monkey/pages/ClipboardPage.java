@@ -116,8 +116,8 @@ public class ClipboardPage extends TestPaneBase {
 
     private List<NamedValue<Object>> listData() {
         ArrayList<NamedValue<Object>> v = new ArrayList<>();
-        v.add(new NamedValue<>("Text", """
-            This text is placed into the clipboard
+        v.add(new NamedValue<>("String", """
+            This String is placed into the clipboard
             for the purposes of testing.
             """));
         v.add(new NamedValue<>("Byte Array", new byte[] { 'H', 'E', 'X', 0x1a, 0x00 }));
