@@ -27,6 +27,7 @@ package com.oracle.tools.fx.monkey.pages;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -125,6 +126,7 @@ public class ClipboardPage extends TestPaneBase {
         v.add(new NamedValue<>("JPEG Image", sup(this::jpegImage)));
         v.add(new NamedValue<>("File List", sup(this::fileList)));
         v.add(new NamedValue<>("PNG Image", sup(this::pngImage)));
+        v.add(new NamedValue<>("Serializable", sup(this::serializable)));
         v.add(new NamedValue<>("String[]", sup(this::stringArray)));
         v.add(new NamedValue<>("<null>", null));
         return v;
@@ -207,6 +209,10 @@ public class ClipboardPage extends TestPaneBase {
         };
     }
 
+    private Object serializable() {
+        return new SerializableObject(true);
+    }
+
     private void copy() {
         try {
             DataFormat f = getFormat();
@@ -224,6 +230,52 @@ public class ClipboardPage extends TestPaneBase {
             Clipboard.getSystemClipboard().setContent(cc);
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class SerializableObject implements Serializable {
+        private static final long serialVersionUID = 0x2026_0724_0803L;
+
+        public byte byteField;
+        public char charField;
+        public int intField;
+        public long longField;
+        public double doubleField;
+        public float floatField;
+        public short shortField;
+        public byte[] byteArray;
+        public char[] charArray;
+        public short[] shortArray;
+        public int[] intArray;
+        public double[] doubleArray;
+        public float[] floatArray;
+        public long[] longArray;
+        public String stringField;
+        public SerializableObject child;
+
+        public SerializableObject() {
+        }
+
+        public SerializableObject(boolean createChild) {
+            byteField = 1;
+            charField = 2;
+            intField = 3;
+            longField = 4;
+            doubleField = 5.0;
+            floatField = 6.0f;
+            shortField = 7;
+            byteArray = "Bytes".getBytes(StandardCharsets.UTF_8);
+            charArray = new char[] { 'C', 'h', 'a', 'r', 's' };
+            shortArray = new short[] { 'S', 'h', 'o', 'r', 't', 's' };
+            intArray = new int[] { 'I', 'n', 't', 's' };
+            doubleArray = new double[] { 8 };
+            floatArray = new float[] { 9 };
+            longArray = new long[] { 0x5555555555555555L, 0xaaaaaaaaaaaaaaaaL };
+            stringField = "string!";
+
+            if (createChild) {
+                child = new SerializableObject(false);
+            }
         }
     }
 }
