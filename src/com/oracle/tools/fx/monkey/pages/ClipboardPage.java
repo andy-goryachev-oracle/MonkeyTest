@@ -50,6 +50,7 @@ import com.oracle.tools.fx.monkey.util.FX;
 import com.oracle.tools.fx.monkey.util.ImageTools;
 import com.oracle.tools.fx.monkey.util.NamedValue;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.TextTemplates;
 import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
@@ -119,7 +120,7 @@ public class ClipboardPage extends TestPaneBase {
         v.add(new NamedValue<>("String", """
             This String is placed into the clipboard
             for the purposes of testing.
-            """));
+            """ + TextTemplates.ALL_PLANES));
         v.add(new NamedValue<>("Byte Array", new byte[] { 'H', 'E', 'X', 0x1a, 0x00 }));
         v.add(new NamedValue<>("Byte Buffer", ByteBuffer.wrap(new byte[] { 'B', 'U', 'F', 0x09, 0x00 })));
         v.add(new NamedValue<>("InputStream", sup(this::inputStream)));
