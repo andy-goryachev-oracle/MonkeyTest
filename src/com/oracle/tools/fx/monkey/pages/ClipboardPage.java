@@ -128,6 +128,7 @@ public class ClipboardPage extends TestPaneBase {
         v.add(new NamedValue<>("PNG Image", sup(this::pngImage)));
         v.add(new NamedValue<>("Serializable", sup(this::serializable)));
         v.add(new NamedValue<>("String[]", sup(this::stringArray)));
+        v.add(new NamedValue<>("int", 0xcafebabe));
         v.add(new NamedValue<>("<null>", null));
         return v;
     }
