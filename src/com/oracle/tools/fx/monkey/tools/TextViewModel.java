@@ -129,7 +129,7 @@ public abstract class TextViewModel extends StyledTextModelViewOnlyBase {
                     if (i > 0) {
                         sb.append(' ');
                     }
-                    sb.append(String.format("%02x", (int)bytes[off]));
+                    sb.append(String.format("%02x", (0xff & bytes[off])));
                     if ((i & 0x07) == 0x07) {
                         sb.append(' ');
                     }
@@ -148,7 +148,7 @@ public abstract class TextViewModel extends StyledTextModelViewOnlyBase {
                     if (off >= bytes.length) {
                         break;
                     }
-                    int c = bytes[off];
+                    int c = (0xff & bytes[off]);
                     if ((c < 0x20) || (c > 0x7f)) {
                         c = '.';
                     }

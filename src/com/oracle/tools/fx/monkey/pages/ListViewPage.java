@@ -78,7 +78,7 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
                 return v;
             }
         };
-        control.setTooltip(new Tooltip("edit to 'update' to commit the change"));
+        control.setTooltip(new Tooltip("<tooltip>"));
         control.setOnEditCommit((ev) -> {
             int ix = ev.getIndex();
             ev.getSource().getItems().set(ix, ev.getNewValue());
