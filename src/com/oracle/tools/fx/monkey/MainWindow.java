@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Comparator;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -38,8 +39,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -71,6 +74,7 @@ import com.oracle.tools.fx.monkey.util.Formats;
 import com.oracle.tools.fx.monkey.util.HasSkinnable;
 import com.oracle.tools.fx.monkey.util.SingleInstance;
 import com.oracle.tools.fx.monkey.util.TestPaneBase;
+import com.oracle.tools.fx.monkey.util.Utils;
 
 /**
  * Monkey Tester Main Window
@@ -205,6 +209,8 @@ public class MainWindow extends Stage {
         FX.menu(m, "Skin");
         FX.item(m, "Set New Skin", this::newSkin);
         FX.item(m, "<null> Skin", this::nullSkin);
+        FX.separator(m);
+        FX.item(m, "Skin Structure", this::showSkinStructure);
         // Tools
         FX.menu(m, "Tools");
         FX.item(m, "Clipboard Viewer", this::openClipboardViewer);
@@ -376,6 +382,49 @@ public class MainWindow extends Stage {
         Node n = contentPane.getCenter();
         if (n instanceof HasSkinnable s) {
             s.newSkin();
+        }
+    }
+
+    private void showSkinStructure() {
+        Node n = contentPane.getCenter();
+        if (n instanceof HasSkinnable h) {
+            Control c = h.getSkinnableControl();
+            StringBuilder sb = new StringBuilder();
+            if (c == null) {
+                sb.append("<null>");
+            } else {
+                printStylesRecursively(sb, c, 0);
+            }
+            IO.println(sb);
+        }
+    }
+
+    private static void printStylesRecursively(StringBuilder sb, Node node, int indent) {
+        for (int i = 0; i < indent; i++) {
+            sb.append("  ");
+        }
+        List<String> ss = node.getStyleClass();
+        for (String s : ss) {
+            sb.append(" .");
+            sb.append(s);
+        }
+        sb.append(" (");
+        sb.append(Utils.getClassName(node));
+        sb.append(") ");
+
+        String id = node.getId();
+        if (!Utils.isBlank(id)) {
+            sb.append(" #");
+            sb.append(id);
+        }
+        sb.append("\n");
+
+        if (node instanceof Parent p) {
+            indent++;
+            List<Node> cs = p.getChildrenUnmodifiable();
+            for (Node n : cs) {
+                printStylesRecursively(sb, n, indent);
+            }
         }
     }
 

@@ -318,4 +318,16 @@ public class Utils {
             return wr.toString();
         }
     }
+
+    public static String getClassName(Object x) {
+        if(x == null) {
+            return "<null>";
+        }
+        Class<?> c = x.getClass();
+        String s = c.getSimpleName();
+        if(isBlank(s)) {
+            return c.getName();
+        }
+        return s;
+    }
 }
