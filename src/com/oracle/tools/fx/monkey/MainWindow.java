@@ -409,7 +409,7 @@ public class MainWindow extends Stage {
             sb.append(s);
         }
         sb.append(" (");
-        sb.append(Utils.getClassName(node));
+        sb.append(getClassName(node));
         sb.append(") ");
 
         String id = node.getId();
@@ -426,6 +426,22 @@ public class MainWindow extends Stage {
                 printStylesRecursively(sb, n, indent);
             }
         }
+    }
+
+    private static String getClassName(Object x) {
+        if (x == null) {
+            return "<null>";
+        }
+        Class<?> c = x.getClass();
+        return getUsableClassName(c);
+    }
+
+    private static String getUsableClassName(Class<?> c) {
+        String s = c.getSimpleName();
+        if (Utils.isBlank(s)) {
+            return getUsableClassName(c.getSuperclass());
+        }
+        return s;
     }
 
     private void openPlatformPreferencesMonitor() {
