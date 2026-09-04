@@ -81,14 +81,17 @@ import com.oracle.tools.fx.monkey.util.Utils;
  */
 public class MainWindow extends Stage {
     private final ObservableList<DemoPage> pages = FXCollections.observableArrayList();
+    private final String title;
     private ListView<DemoPage> pageSelector;
     private BorderPane contentPane;
     private DemoPage currentPage;
     private Label status;
     private EventHandler<InputMethodEvent> monitor;
 
-    public MainWindow() {
+    public MainWindow(String title) {
         FX.name(this, "MainWindow");
+
+        this.title = (title == null) ? "Monkey Tester" : title;
 
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
@@ -259,7 +262,7 @@ public class MainWindow extends Stage {
 
     private void updateTitle() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Monkey Tester");
+        sb.append(title);
         if (currentPage != null) {
             sb.append(" - ");
             sb.append(currentPage.toString());
