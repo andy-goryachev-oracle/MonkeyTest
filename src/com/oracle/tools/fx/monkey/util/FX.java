@@ -321,30 +321,27 @@ public class FX {
                     m = null;
                 }
 
-                if (m != null) {
-                    if (m.getItems().size() > 0) {
-                        Platform.runLater(() -> {
-                            // javafx does not dismiss the popup when the user
-                            // clicks on the owner node
-                            EventHandler<MouseEvent> li = new EventHandler<MouseEvent>() {
-                                @Override
-                                public void handle(MouseEvent event) {
-                                    m.hide();
-                                    owner.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
-                                    event.consume();
-                                }
-                            };
+                if ((m != null) && (m.getItems().size() > 0)) {
+                    Platform.runLater(() -> {
+                        // javafx does not dismiss the popup when the user
+                        // clicks on the owner node
+                        EventHandler<MouseEvent> li = new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent event) {
+                                m.hide();
+                                owner.removeEventFilter(MouseEvent.MOUSE_PRESSED, this);
+                                event.consume();
+                            }
+                        };
 
-                            owner.addEventFilter(MouseEvent.MOUSE_PRESSED, li);
-                            m.setOnHidden((_) -> {
-                                owner.removeEventFilter(MouseEvent.MOUSE_PRESSED, li);
-                            });
-                            m.show(owner, ev.getScreenX(), ev.getScreenY());
+                        owner.addEventFilter(MouseEvent.MOUSE_PRESSED, li);
+                        m.setOnHidden((_) -> {
+                            owner.removeEventFilter(MouseEvent.MOUSE_PRESSED, li);
                         });
-                        ev.consume();
-                    }
+                        m.show(owner, ev.getScreenX(), ev.getScreenY());
+                    });
+                    ev.consume();
                 }
-                ev.consume();
             }
         });
     }
