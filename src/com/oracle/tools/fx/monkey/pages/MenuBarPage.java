@@ -212,7 +212,7 @@ public class MenuBarPage extends TestPaneBase implements HasSkinnable {
             } catch(Exception e) {
                 continue;
             }
-            //IO.println(k);
+
             mi.setAccelerator(kc);
             mi.setOnAction((_) -> {
                 IO.println("menu invoked via accelerator: " + kc);
