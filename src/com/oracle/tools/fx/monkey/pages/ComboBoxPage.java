@@ -34,6 +34,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
@@ -242,6 +243,11 @@ public class ComboBoxPage extends TestPaneBase implements HasSkinnable {
     @Override
     public void newSkin() {
         control.setSkin(new ComboBoxListViewSkin<>(control));
+    }
+
+    @Override
+    public Control getSkinnableControl() {
+        return control;
     }
 
     private static class LargeBlueListCell extends ListCell<Object> {

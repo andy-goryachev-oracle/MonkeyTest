@@ -37,6 +37,7 @@ import javafx.geometry.Side;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -217,6 +218,11 @@ public class TabPanePage extends TestPaneBase implements HasSkinnable {
     @Override
     public void newSkin() {
         control.setSkin(new TabPaneSkin(control));
+    }
+
+    @Override
+    public Control getSkinnableControl() {
+        return control;
     }
 
     private static void printTabs(String prefix, List<Tab> tabs) {

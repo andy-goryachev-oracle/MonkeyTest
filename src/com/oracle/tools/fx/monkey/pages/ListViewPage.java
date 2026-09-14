@@ -35,6 +35,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -154,6 +155,11 @@ public class ListViewPage extends TestPaneBase implements HasSkinnable {
     @Override
     public void newSkin() {
         control.setSkin(new ListViewSkin(control));
+    }
+
+    @Override
+    public Control getSkinnableControl() {
+        return control;
     }
 
     private Node createCellFactoryOptions() {
