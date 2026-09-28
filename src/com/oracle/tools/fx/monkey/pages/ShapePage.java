@@ -57,6 +57,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
@@ -213,6 +214,11 @@ public class ShapePage extends TestPaneBase {
         });
         op.addChoice("Rectangle", () -> {
             return new Rectangle(0, 0, 400, 200);
+        });
+        op.addChoice("SVG Path", () -> {
+            SVGPath svg = new SVGPath();
+            svg.setContent("M11.65,6.47A1.69,1.69 0 0,1 13.34,4.78"); // JDK-8393053
+            return svg;
         });
         op.addChoice("Text", () -> {
             Text t = new Text("Text");
