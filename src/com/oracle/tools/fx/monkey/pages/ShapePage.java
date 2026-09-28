@@ -225,7 +225,7 @@ public class ShapePage extends TestPaneBase {
             t.setFont(Font.font("System", FontWeight.BOLD, 48));
             return t;
         });
-        // TODO quad curve, svgpath?
+        // TODO quad curve?
         op.selectFirst();
         return op;
     }
