@@ -109,6 +109,7 @@ public class WritingSystemsDemo {
         "Thaana", "ދިވެހި",
         "Thai", "ไทย",
         "Tibetan", "བོད་",
+        "Tifinagh", "ⵜⴼⵏⵗ ⵜⵉⴼⵉⵏⴰⵖ",
         "Tigrinya", "ትግርኛ",
         "Tulu", "ತುಳು",
         "Turoyo", "ܛܘܪܝܐ",
