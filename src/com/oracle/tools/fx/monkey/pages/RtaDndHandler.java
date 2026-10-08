@@ -36,6 +36,7 @@ import jfx.incubator.scene.control.richtext.SelectionSegment;
 import jfx.incubator.scene.control.richtext.TextPos;
 import jfx.incubator.scene.control.richtext.model.FileListFormatHandler;
 import jfx.incubator.scene.control.richtext.model.StyledInput;
+import jfx.incubator.scene.control.richtext.model.StyledTextModel;
 
 /**
  * Standard Drag and Drop Handler for RichTextArea.
@@ -63,7 +64,7 @@ public class RtaDndHandler {
         });
 
         editor.getInputMap().addHandler(DragEvent.DRAG_OVER, (ev) -> {
-            if (editor.isEditable() && ev.getDragboard().hasFiles()) {
+            if (isEditable(editor) && ev.getDragboard().hasFiles()) {
                 editor.setDropTarget(ev.getScreenX(), ev.getScreenY());
                 // check for image types using extension maybe?
                 ev.acceptTransferModes(TransferMode.COPY);
@@ -74,7 +75,7 @@ public class RtaDndHandler {
             editor.clearDropTarget();
         });
         editor.getInputMap().addHandler(DragEvent.DRAG_DROPPED, (ev) -> {
-            if (editor.isEditable() && ev.getDragboard().hasFiles()) {
+            if (isEditable(editor) && ev.getDragboard().hasFiles()) {
                 List<File> files = ev.getDragboard().getFiles();
                 TextPos p = editor.getDropTarget();
                 if (p != null) {
@@ -89,5 +90,15 @@ public class RtaDndHandler {
                 }
             }
         });
+    }
+
+    private static boolean isEditable(RichTextArea editor) {
+        if (editor.isEditable()) {
+            StyledTextModel m = editor.getModel();
+            if (m != null) {
+                return m.isWritable();
+            }
+        }
+        return false;
     }
 }
