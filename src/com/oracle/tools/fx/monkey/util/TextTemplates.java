@@ -52,6 +52,7 @@ public class TextTemplates {
             "Short", "short",
             "Single Newline", "\n",
             "Tabs", "0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n",
+            "Unicode Clusters", "A𞤀𞤪", // JDK-8394318
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).",
             "Writing Systems", WritingSystemsDemo.getText(false),
             "<empty>", "",
@@ -70,6 +71,7 @@ public class TextTemplates {
             "Short", "short",
             "Single Tab", "\t",
             "Tibetan", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ",
+            "Unicode Clusters", "A𞤀𞤪", // JDK-8394318
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).",
             "<empty>", "",
             "<null>", null,
