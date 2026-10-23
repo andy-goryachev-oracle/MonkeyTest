@@ -43,7 +43,7 @@ public class WritingSystemsDemo {
         "Bagheli", "बघेली",
         "Bagri", "बागड़ी, باگڑی",
         "Balinese", "ᬅᬓ᭄ᬱᬭᬩᬮᬶ",
-        "Bamum", "ꚶꛉ꛰꛲ꚫꛦꚳ[",
+        "Bamum", "ꚶꛉ꛰꛲ꚫꛦꚳ",
         "Batak", "ᯘᯮᯒᯖ᯲ᯅᯖᯂ᯲",
         "Bengali", "বাংলা",
         "Bhojpuri", "𑂦𑂷𑂔𑂣𑂳𑂩𑂲",
