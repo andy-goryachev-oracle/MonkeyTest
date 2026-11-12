@@ -60,7 +60,7 @@ public class DemoSyntaxDecorator implements SyntaxDecorator {
             while (m.find(beg)) {
                 int start = m.start();
                 if (start > beg) {
-                    b.addSegment(text, beg, start, null);
+                    b.addSegment(text, beg, start, StyleAttributeMap.EMPTY);
                 }
                 int end = m.end();
                 boolean digit = (m.end(1) >= 0);
@@ -68,7 +68,7 @@ public class DemoSyntaxDecorator implements SyntaxDecorator {
                 beg = end;
             }
             if (beg < len) {
-                b.addSegment(text, beg, len, null);
+                b.addSegment(text, beg, len, StyleAttributeMap.EMPTY);
             }
         }
         return b.build();
